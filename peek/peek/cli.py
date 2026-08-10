@@ -29,9 +29,23 @@ from peek import __version__
 from peek.analyzer import analyze
 from peek.scanner import scan
 
+try:
+    from peek.themes import get_theme, list_themes, resolve_theme
+except Exception:  # fallback if themes not yet loaded
+    get_theme = list_themes = resolve_theme = None  # type: ignore
+
 ANTHRO_CLI = {"accent": "#D4A27F", "muted": "#9A9590", "ink": "#E8E6E3"}
 
-def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning"):
+# Theme-aware spinner accent helper
+def _theme_accent(theme=None) -> str:
+    try:
+        if theme and hasattr(theme, "tokens"):
+            return theme.tokens.get("accent", ANTHRO_CLI["accent"])
+    except Exception:
+        pass
+    return ANTHRO_CLI["accent"]
+
+def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning", theme=None):
     """Anthropic-style subtle spinner — only when TTY, else plain scan."""
     try:
         is_tty = False
@@ -45,7 +59,7 @@ def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning
             import threading
 
             with Progress(
-                SpinnerColumn(style=ANTHRO_CLI["accent"], spinner="dots"),
+                SpinnerColumn(style=_theme_accent(theme), spinner="dots"),
                 TextColumn(f"[bold {ANTHRO_CLI['ink']}]{label}[/] [dim {ANTHRO_CLI['muted']}]{{task.fields[path]}}[/]"),
                 console=err_console,
                 transient=True,
@@ -344,8 +358,17 @@ def scan_command(
     json_output: bool = typer.Option(False, "--json", help="Output JSON instead of Rich table."),
     html: bool = typer.Option(False, "--html", help="Export to HTML (use -o to specify file)."),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file for --html/--pack."),
+    theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
 ) -> None:
     """Scan a repo and show file stats, tech stack, and entry points."""
+    # Resolve theme early for error handling and spinner color
+    resolved_theme = None
+    if theme and resolve_theme:
+        try:
+            resolved_theme = resolve_theme(theme)
+        except ValueError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(2)
     t0 = time.perf_counter()
     root = path.resolve() if path.exists() else Path.cwd() / path
     if root.is_file():
@@ -353,7 +376,7 @@ def scan_command(
 
     # Subtle spinner only when TTY and not json/html
     if not json_output and not html and _should_animate():
-        result = _scan_with_spinner(root, max_files=max_files, label="Scanning")
+        result = _scan_with_spinner(root, max_files=max_files, label="Scanning", theme=resolved_theme)
     else:
         result = scan(root, max_files=max_files)
     elapsed = time.perf_counter() - t0
@@ -361,7 +384,7 @@ def scan_command(
     if html:
         from peek.renderer import build_html
         fake_analyzer = type("obj", (), {"root": result.root, "summary": "scan only", "tech_stack": result.tech_stack, "external_imports": set(), "stats": result.stats, "ranked": [], "graph": {}})()
-        html_str = build_html(result, fake_analyzer, elapsed)
+        html_str = build_html(result, fake_analyzer, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
             console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
@@ -400,15 +423,23 @@ def analyze_command(
     html: bool = typer.Option(False, "--html", help="Export to HTML (use -o to specify file)."),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file for --html."),
     llm: bool = typer.Option(False, "--llm", help="Try LLM summary if API key set."),
+    theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
 ) -> None:
     """Build import graph, rank files, and summarize the codebase."""
+    resolved_theme = None
+    if theme and resolve_theme:
+        try:
+            resolved_theme = resolve_theme(theme)
+        except ValueError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(2)
     t0 = time.perf_counter()
     root = path.resolve() if path.exists() else Path.cwd() / path
     if root.is_file():
         root = root.parent
 
     if not json_output and not html and _should_animate():
-        scan_result = _scan_with_spinner(root, max_files=max_files, label="Analyzing")
+        scan_result = _scan_with_spinner(root, max_files=max_files, label="Analyzing", theme=resolved_theme)
     else:
         scan_result = scan(root, max_files=max_files)
     result = analyze(scan_result)
@@ -427,7 +458,7 @@ def analyze_command(
 
     if html:
         from peek.renderer import build_html
-        html_str = build_html(scan_result, result, elapsed)
+        html_str = build_html(scan_result, result, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
             console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
@@ -519,6 +550,8 @@ def main_callback(
     ask: Optional[str] = typer.Option(None, "--ask", help="Filter --pack by keyword (e.g. --ask auth)."),
     llm: bool = typer.Option(False, "--llm", help="Try LLM summary if API key set."),
     find: Optional[str] = typer.Option(None, "--find", help="Find keyword (alternative to `peek find`)."),
+    theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
+    theme_list: bool = typer.Option(False, "--theme-list", help="List available themes and exit"),
 ) -> None:
     """peek — htop for codebases. Understand any repo in 5 seconds.
 
@@ -531,6 +564,56 @@ def main_callback(
     if version:
         console.print(f"peek v{__version__}")
         raise typer.Exit(0)
+
+    # --theme-list early exit (no scan needed)
+    if theme_list:
+        try:
+            from peek.themes import list_themes as _list_themes
+            from rich.table import Table as _Table
+            tbl = _Table(box=box.ROUNDED, show_header=True, header_style="bold cyan", padding=(0, 1))
+            tbl.add_column("■", style="white", width=2, justify="center")
+            tbl.add_column("ID", style="cyan")
+            tbl.add_column("Label", style="white")
+            tbl.add_column("Description", style="dim")
+            tbl.add_column("Accent", style="white")
+            tbl.add_column("Bg", style="dim")
+            for th in _list_themes():
+                tbl.add_row(f"[{th.tokens['accent']}]{th.preview}[/]", f"[bold]{th.id}[/]", th.label, th.description, th.tokens["accent"], th.tokens["bg"])
+            console.print(Panel(tbl, title="[bold]Available themes[/]  [dim]10 themes • --theme <id> • PEEK_THEME env • config.toml[/]", box=box.ROUNDED, border_style="cyan", padding=(0, 1)))
+            # also plain list for scripting
+            console.print("[dim]Usage: [bold]peek --theme dracula[/]  or  [bold]PEEK_THEME=dracula peek[/]  or  [bold]theme = \"dracula\"[/] in ~/.peek/config.toml[/]")
+        except Exception as e:
+            err_console.print(f"[red]Failed to list themes: {e}[/]")
+        raise typer.Exit(0)
+
+    # Resolve theme early (before scan) — handle invalid immediately
+    resolved_theme = None
+    # Check raw extra for --theme if Typer didn't parse due to ctx.args path handling
+    _raw_theme = theme
+    if ctx.args:
+        for idx, a in enumerate(ctx.args):
+            if a == "--theme" and idx + 1 < len(ctx.args):
+                _raw_theme = ctx.args[idx + 1]
+                break
+            if a.startswith("--theme="):
+                _raw_theme = a.split("=", 1)[1]
+                break
+    if _raw_theme or theme:
+        _want = _raw_theme or theme
+        if resolve_theme:
+            try:
+                resolved_theme = resolve_theme(_want)
+            except ValueError as e:
+                err_console.print(f"[red]{e}[/]")
+                raise typer.Exit(2)
+    else:
+        # No cli theme — try env/config via resolve_theme(None)
+        if resolve_theme:
+            try:
+                resolved_theme = resolve_theme(None)
+            except ValueError as e:
+                err_console.print(f"[red]{e}[/]")
+                raise typer.Exit(2)
 
     if ctx.invoked_subcommand is not None:
         return
@@ -546,6 +629,19 @@ def main_callback(
             if flag == "--html":
                 html = True
             extra = [a for a in extra if a != flag]
+    # Clean --theme / --theme-list from extra so path detection works (they were already resolved)
+    if "--theme" in extra:
+        try:
+            idx = extra.index("--theme")
+            if idx + 1 < len(extra):
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--theme"]
+        except ValueError:
+            pass
+    extra = [a for a in extra if not a.startswith("--theme=")]
+    if "--theme-list" in extra:
+        extra = [a for a in extra if a != "--theme-list"]
     # Also handle --pack/--ask/--llm/--find present as raw? Typer already parsed, but keep
     if "--pack" in extra:
         pack = True
@@ -630,7 +726,7 @@ def main_callback(
     t0 = time.perf_counter()
     try:
         if not pack and not html and not llm and _should_animate() and not no_tui:
-            scan_result = _scan_with_spinner(path, label="Scanning")
+            scan_result = _scan_with_spinner(path, label="Scanning", theme=resolved_theme)
         else:
             scan_result = scan(path)
         analyzer_result = analyze(scan_result)
@@ -655,7 +751,7 @@ def main_callback(
     # --html
     if html:
         from peek.renderer import build_html
-        html_str = build_html(scan_result, analyzer_result, elapsed)
+        html_str = build_html(scan_result, analyzer_result, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
             console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
@@ -700,7 +796,7 @@ def main_callback(
     if wants_static:
         try:
             from peek.renderer import render_static
-            render_static(scan_result, analyzer_result, elapsed, console)
+            render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
         except Exception as e:
             err_console.print(f"[dim]renderer fallback: {e}[/]")
             _print_analyze_result(scan_result, analyzer_result, elapsed)
@@ -712,9 +808,9 @@ def main_callback(
         if not TEXTUAL_AVAILABLE:
             err_console.print("[yellow]Textual not installed — falling back to static.[/]  [dim]pip install textual[/]")
             from peek.renderer import render_static
-            render_static(scan_result, analyzer_result, elapsed, console)
+            render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
             raise typer.Exit(0)
-        code = run_tui(path, scan_result, analyzer_result, elapsed)
+        code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme)
         raise typer.Exit(code if isinstance(code, int) else 0)
     except SystemExit:
         raise
@@ -724,7 +820,7 @@ def main_callback(
         err_console.print(f"[yellow]TUI failed ({e}) — falling back to static.[/]")
         try:
             from peek.renderer import render_static
-            render_static(scan_result, analyzer_result, elapsed, console)
+            render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
         except Exception:
             _print_analyze_result(scan_result, analyzer_result, elapsed)
         raise typer.Exit(0)
