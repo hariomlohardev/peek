@@ -1,13 +1,10 @@
 """CLI — Typer app for peek.
 
-Day 1 scope:
+Day 3: `peek [PATH]` launches TUI (Textual), `--no-tui` for static.
+  peek [PATH]            — full TUI (default, viral)
   peek scan [PATH]       — scan + stats (Rich table)
+  peek analyze [PATH]    — graph + ranking
   peek --help / scan --help
-
-Future (Day 2+):
-  peek analyze [PATH]
-  peek [PATH]            — full TUI
-  peek --find, --pack, --html etc.
 """
 
 from __future__ import annotations
@@ -353,38 +350,122 @@ def analyze_command(
 def main_callback(
     ctx: typer.Context,
     version: bool = typer.Option(False, "--version", "-V", help="Show version and exit."),
-    no_tui: bool = typer.Option(False, "--no-tui", help="Static output only (no TUI). Day 3+."),
+    no_tui: bool = typer.Option(False, "--no-tui", help="Static output only (no TUI)."),
 ) -> None:
-    """peek — htop for codebases. Understand any repo in 5 seconds."""
+    """peek — htop for codebases. Understand any repo in 5 seconds.
+
+    Default (no subcommand) launches the TUI: `peek` or `peek [PATH]`.
+    Use `--no-tui` for static Rich output (pipeable, screenshot-ready).
+    """
     if version:
         console.print(f"peek v{__version__}")
         raise typer.Exit(0)
 
-    # If no subcommand, scan current dir (Day 1: bare `peek` = scan cwd)
-    # Note: `peek .` alias for Day 3 will be added later — for Day 1 use `peek scan .`
-    if ctx.invoked_subcommand is None:
-        if version:
-            return
-        # Handle stray path arg like `peek .` gracefully (Day 3 compat)
-        # Typer would otherwise error "unexpected extra arg" — we catch via context
-        # For now, bare `peek` scans cwd; `peek scan <path>` is the explicit way
-        console.print("[dim]peek — htop for codebases. Scanning current directory...[/]\n")
-        t0 = time.perf_counter()
-        result = scan(Path.cwd(), max_files=2000)
+    if ctx.invoked_subcommand is not None:
+        return
+
+    # No subcommand: this is `peek` or `peek [PATH]` — Day 3 viral entry
+    # Handle `--no-tui` that may appear in ctx.args (e.g. `peek . --no-tui`)
+    extra = list(ctx.args) if ctx.args else []
+    if "--no-tui" in extra:
+        no_tui = True
+        extra = [a for a in extra if a != "--no-tui"]
+
+    # Help requested via bare args? Let Typer handle it
+    if extra and extra[0] in ("--help", "-h"):
+        # Typer will show help automatically for `peek --help`, but for `peek . --help` we just show help
+        console.print("[dim]peek — htop for codebases. Use [bold]peek --help[/] for usage.[/]")
+        # Let Typer's help flow continue — re-invoke with --help?
+        # We delegate to Typer's help by exiting and showing help text
+        # Instead, just print help manually via Typer
+        try:
+            ctx.obj = {}
+            # Trigger help
+            console.print(app.get_help(ctx))
+        except Exception:
+            pass
+        raise typer.Exit(0)
+
+    # Determine path
+    path = Path.cwd()
+    if extra:
+        cand = extra[0]
+        if cand not in ("--help", "-h"):
+            try:
+                p = Path(cand)
+                # Accept existing paths, or "."/".." or absolute
+                if p.exists() or cand in (".", "..") or cand.startswith("./") or cand.startswith("../"):
+                    path = p
+                elif cand.startswith("/") or cand.startswith("\\"):
+                    path = p
+                # else: treat as cwd if not a valid path (typo)
+            except Exception:
+                pass
+
+    # If user passed `peek .` style, that "." is in extra — handled above
+    # Now run scan+analyze once (shared for both TUI and static)
+    t0 = time.perf_counter()
+    try:
+        scan_result = scan(path)
+        analyzer_result = analyze(scan_result)
         elapsed = time.perf_counter() - t0
-        _print_scan_result(Path("."), result, elapsed)
-        console.print("\n[dim]Run [bold]peek scan .[/] for explicit path, or [bold]peek --help[/] for all commands.[/]")
-        # If user passed `peek .`, that `.` is in ctx.args when allow_extra_args — handle it
-        if ctx.args:
-            # Try to scan the extra path if it looks like a path
-            extra = ctx.args[0] if ctx.args else None
-            if extra and extra not in ("--help", "-h"):
-                try:
-                    p = Path(extra)
-                    if p.exists():
-                        console.print(f"\n[dim]Note: explicit path [bold]{extra}[/] detected — use [bold]peek scan {extra}[/] (Day 3 will support [bold]peek {extra}[/] directly).[/]")
-                except Exception:
-                    pass
+    except Exception as e:
+        err_console.print(f"[red]Failed to analyze {path}: {e}[/]")
+        raise typer.Exit(1)
+
+    # --no-tui or not a tty → static render (tweet-ready)
+    # Also if output is piped (CI), prefer static
+    wants_static = no_tui
+    # Heuristic: if stdout is not a tty and stderr not tty, prefer static unless forced TUI via env
+    if not wants_static:
+        try:
+            if not sys.stdout.isatty() and not sys.stderr.isatty():
+                # In tests / pipes, static is safer. But allow TUI if explicitly interactive
+                # We check if either is a tty; if neither, use static
+                wants_static = True
+        except Exception:
+            pass
+        # Also if peek is invoked as `peek --no-tui` via env var? no
+
+    if wants_static:
+        # Use new renderer for static — fallback to old helpers if needed
+        try:
+            from peek.renderer import render_static
+
+            render_static(scan_result, analyzer_result, elapsed, console)
+        except Exception as e:
+            # fallback to Day 2 helper
+            err_console.print(f"[dim]renderer fallback: {e}[/]")
+            _print_analyze_result(scan_result, analyzer_result, elapsed)
+        raise typer.Exit(0)
+
+    # Try TUI
+    try:
+        from peek.tui import run_tui, TEXTUAL_AVAILABLE
+
+        if not TEXTUAL_AVAILABLE:
+            err_console.print("[yellow]Textual not installed — falling back to static.[/]  [dim]pip install textual[/]")
+            from peek.renderer import render_static
+
+            render_static(scan_result, analyzer_result, elapsed, console)
+            raise typer.Exit(0)
+
+        # Launch TUI — run_tui will handle its own scan if needed, but we pass ours to avoid double scan
+        code = run_tui(path, scan_result, analyzer_result, elapsed)
+        raise typer.Exit(code if isinstance(code, int) else 0)
+    except SystemExit:
+        raise
+    except typer.Exit:
+        raise
+    except Exception as e:
+        err_console.print(f"[yellow]TUI failed ({e}) — falling back to static.[/]")
+        try:
+            from peek.renderer import render_static
+
+            render_static(scan_result, analyzer_result, elapsed, console)
+        except Exception:
+            _print_analyze_result(scan_result, analyzer_result, elapsed)
+        raise typer.Exit(0)
 
 
 if __name__ == "__main__":
