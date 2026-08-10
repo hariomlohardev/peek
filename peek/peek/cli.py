@@ -79,6 +79,56 @@ def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning
     # Fallback plain
     return scan(path, max_files=max_files)
 
+
+def _write_output_safely(path: Path, content: str) -> Path:
+    """Write content to path, creating parents. Handles Windows \tmp and Git Bash /tmp.
+
+    Returns the actual path written. Falls back to ./peek.html on failure.
+    """
+    try:
+        # Normalize Git Bash /tmp -> Windows TEMP on win32
+        # On Windows, /tmp as written by user in PowerShell is \tmp which is D:\tmp
+        # We try to handle both: if path is /tmp/... and we're on Windows, map to TEMP
+        orig = path
+        if sys.platform == "win32":
+            # Handle /tmp/... from Git Bash style even when invoked via PowerShell
+            # e.g., Path("/tmp/cinematic.html") on Windows is \tmp\cinematic.html
+            try:
+                # If path is absolute and starts with \tmp or /tmp
+                posix = orig.as_posix()
+                if posix.startswith("/tmp/") or posix.startswith("\\tmp\\") or posix.startswith("/tmp\\"):
+                    # Map to real temp dir
+                    import tempfile
+
+                    # Use tempfile.gettempdir() as base
+                    base = Path(tempfile.gettempdir())
+                    # Extract filename
+                    name = orig.name
+                    path = base / name
+                elif posix == "/tmp" or posix == "\\tmp":
+                    import tempfile
+
+                    path = Path(tempfile.gettempdir()) / "peek.html"
+            except Exception:
+                pass
+        # Ensure parent exists
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        path.write_text(content, encoding="utf-8")
+        return path
+    except Exception as e:
+        # Fallback to cwd peek.html
+        try:
+            fallback = Path.cwd() / "peek.html"
+            fallback.write_text(content, encoding="utf-8")
+            err_console.print(f"[yellow]Could not write to {orig} ({e}) — wrote to [bold]{fallback}[/] instead.[/]")
+            return fallback
+        except Exception as e2:
+            err_console.print(f"[red]Failed to write output: {e} / fallback {e2}[/]")
+            raise
+
 # Windows: force UTF-8 so Rich can render █, ─, ╭ etc. without cp1252 errors.
 if sys.platform == "win32":
     try:
@@ -353,13 +403,13 @@ def scan_command(
         fake_analyzer = type("obj", (), {"root": result.root, "summary": "scan only", "tech_stack": result.tech_stack, "external_imports": set(), "stats": result.stats, "ranked": [], "graph": {}})()
         html_str = build_html(result, fake_analyzer, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
             # default to peek.html
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         return
 
     if json_output:
@@ -452,12 +502,12 @@ def analyze_command(
         from peek.renderer import build_html
         html_str = build_html(scan_result, result, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         return
 
     if json_output:
@@ -713,12 +763,12 @@ def main_callback(
         from peek.renderer import build_html
         html_str = build_html(scan_result, analyzer_result, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         raise typer.Exit(0)
 
     # --pack
@@ -730,8 +780,8 @@ def main_callback(
             err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
             raise typer.Exit(0)
         if output:
-            output.write_text(packed, encoding="utf-8")
-            console.print(f"[green]Pack written to[/] [bold]{output}[/] • {len(included)} files • ~{tokens} tokens")
+            actual = _write_output_safely(output, packed)
+            console.print(f"[green]Pack written to[/] [bold]{actual}[/] • {len(included)} files • ~{tokens} tokens")
         else:
             # Write to stdout (so `peek --pack | pbcopy` works)
             # Use sys.stdout directly to avoid Rich markup
