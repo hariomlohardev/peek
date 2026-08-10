@@ -29,6 +29,56 @@ from peek import __version__
 from peek.analyzer import analyze
 from peek.scanner import scan
 
+# Cinematic tokens for CLI spinner
+CINE_CLI = {
+    "signal": "#FFE600",
+    "muted": "#7A86B6",
+    "ink": "#E6E8F0",
+}
+
+
+def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning"):
+    """Scan with cinematic spinner if TTY, else plain."""
+    try:
+        # Only animate if terminal and not piped
+        if sys.stdout.isatty() and sys.stderr.isatty():
+            from rich.progress import Progress, SpinnerColumn, TextColumn
+            import time as _t
+
+            with Progress(
+                SpinnerColumn(style=CINE_CLI["signal"]),
+                TextColumn(f"[bold {CINE_CLI['ink']}]{label}[/] [dim {CINE_CLI['muted']}]{{task.fields[path]}}[/]"),
+                TextColumn(f"[{CINE_CLI['signal']}]{{task.fields[extra]}}[/]"),
+                console=err_console,
+                transient=True,
+            ) as progress:
+                task = progress.add_task(label, path=str(path), extra="· cinematic scan")
+                # Run scan in thread? For now, run and update
+                # Since scan is fast, we fake progress
+                import threading
+
+                result = {}
+
+                def _do():
+                    result["scan"] = scan(path, max_files=max_files)
+
+                t = threading.Thread(target=_do, daemon=True)
+                t.start()
+                # Animate for at least 0.18s to show spinner (viral feel)
+                start = _t.perf_counter()
+                while t.is_alive() or (_t.perf_counter() - start) < 0.18:
+                    progress.update(task, extra="· walking · ignoring · counting")
+                    _t.sleep(0.04)
+                    if not t.is_alive() and (_t.perf_counter() - start) >= 0.18:
+                        break
+                t.join()
+                progress.update(task, extra="· done")
+                return result["scan"]
+    except Exception:
+        pass
+    # Fallback plain
+    return scan(path, max_files=max_files)
+
 # Windows: force UTF-8 so Rich can render █, ─, ╭ etc. without cp1252 errors.
 if sys.platform == "win32":
     try:
@@ -287,7 +337,11 @@ def scan_command(
     if root.is_file():
         root = root.parent
 
-    result = scan(root, max_files=max_files)
+    # Cinematic scan with spinner if TTY and not json/html
+    if not json_output and not html and sys.stdout.isatty():
+        result = _scan_with_spinner(root, max_files=max_files, label="Scanning")
+    else:
+        result = scan(root, max_files=max_files)
     elapsed = time.perf_counter() - t0
 
     if html:
@@ -344,8 +398,43 @@ def analyze_command(
     if root.is_file():
         root = root.parent
 
-    scan_result = scan(root, max_files=max_files)
-    result = analyze(scan_result)
+    # Cinematic: spinner for scan+analyze if TTY
+    if not json_output and not html and sys.stdout.isatty():
+        scan_result = _scan_with_spinner(root, max_files=max_files, label="Scanning")
+        # Analyze with brief spinner
+        try:
+            from rich.progress import Progress, SpinnerColumn, TextColumn
+
+            with Progress(
+                SpinnerColumn(style=CINE_CLI["signal"]),
+                TextColumn(f"[bold {CINE_CLI['ink']}]Analyzing[/] [dim {CINE_CLI['muted']}]graph · rank · summary[/]"),
+                console=err_console,
+                transient=True,
+            ) as p:
+                task = p.add_task("analyze")
+                import threading
+
+                res = {}
+
+                def _do():
+                    res["ar"] = analyze(scan_result)
+
+                th = threading.Thread(target=_do, daemon=True)
+                th.start()
+                import time as _t
+
+                start = _t.perf_counter()
+                while th.is_alive() or (_t.perf_counter() - start) < 0.15:
+                    _t.sleep(0.03)
+                    if not th.is_alive() and (_t.perf_counter() - start) >= 0.15:
+                        break
+                th.join()
+                result = res["ar"]
+        except Exception:
+            result = analyze(scan_result)
+    else:
+        scan_result = scan(root, max_files=max_files)
+        result = analyze(scan_result)
     elapsed = time.perf_counter() - t0
 
     # LLM optional
@@ -563,8 +652,44 @@ def main_callback(
     # If pack requested, we handle it before TUI
     t0 = time.perf_counter()
     try:
-        scan_result = scan(path)
-        analyzer_result = analyze(scan_result)
+        # Cinematic spinner if TTY and not html/pack/find
+        do_animate = sys.stdout.isatty() and not html and not pack and not find
+        if do_animate:
+            scan_result = _scan_with_spinner(path, label="Scanning")
+            # Analyze with spinner
+            try:
+                from rich.progress import Progress, SpinnerColumn, TextColumn
+
+                with Progress(
+                    SpinnerColumn(style=CINE_CLI["signal"]),
+                    TextColumn(f"[bold {CINE_CLI['ink']}]Analyzing[/] [dim {CINE_CLI['muted']}]graph · rank · signal[/]"),
+                    console=err_console,
+                    transient=True,
+                ) as p:
+                    task = p.add_task("analyze")
+                    import threading
+
+                    res = {}
+
+                    def _do2():
+                        res["ar"] = analyze(scan_result)
+
+                    th = threading.Thread(target=_do2, daemon=True)
+                    th.start()
+                    import time as _t
+
+                    start = _t.perf_counter()
+                    while th.is_alive() or (_t.perf_counter() - start) < 0.14:
+                        _t.sleep(0.03)
+                        if not th.is_alive() and (_t.perf_counter() - start) >= 0.14:
+                            break
+                    th.join()
+                    analyzer_result = res["ar"]
+            except Exception:
+                analyzer_result = analyze(scan_result)
+        else:
+            scan_result = scan(path)
+            analyzer_result = analyze(scan_result)
         elapsed = time.perf_counter() - t0
     except Exception as e:
         err_console.print(f"[red]Failed to analyze {path}: {e}[/]")
