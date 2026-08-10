@@ -1,23 +1,19 @@
-"""Animations — Anthropic Pro for peek
+"""Animations — themed for peek
 
-Professional, warm, subtle. Not flashy — feels like Claude Code.
-Tokens match Anthropic's design: warm ink on charcoal, clay accent, muted.
-Animations are 120–220ms, ease-out, staggered — professional, not viral-neon.
+Wraps Rich spinner with theme accent.
 """
 
 from __future__ import annotations
 
-import asyncio
-import time
 from pathlib import Path
+from typing import Any
 
 from rich.console import Console
-from rich.live import Live
 from rich.panel import Panel
-from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.text import Text
 
-# Anthropic Pro tokens — warm, editorial, terminal-native
+# Keep ANTHRO for backward compat
 ANTHRO = {
     "bg": "#141413",
     "bg2": "#1C1C19",
@@ -29,33 +25,47 @@ ANTHRO = {
     "ink2": "#D4D0C8",
     "muted": "#9A9590",
     "muted2": "#6B6661",
-    "accent": "#D4A27F",  # clay
-    "accent2": "#E07A5F",  # terracotta
+    "accent": "#D4A27F",
+    "accent2": "#C4896A",
     "signal": "#D4A27F",
     "cyan": "#8AB4B8",
     "violet": "#9A8FBF",
     "green": "#8BA888",
 }
 
-def anthropic_header(root: Path, elapsed: float, version: str = "0.1.0") -> Panel:
-    t = Text()
-    t.append("peek", style=f"bold {ANTHRO['ink']}")
-    t.append(f"  v{version}", style=f"dim {ANTHRO['muted']}")
-    t.append(f"  —  {root}", style=ANTHRO["accent"])
-    t.append(f"  {elapsed:.2f}s", style=f"dim {ANTHRO['muted']}")
+
+def _tok(theme: Any | None) -> dict[str, str]:
+    if theme is None:
+        return ANTHRO
+    if hasattr(theme, "tokens"):
+        return theme.tokens  # type: ignore[return-value]
+    if isinstance(theme, dict):
+        return theme
+    return ANTHRO
+
+
+def anthropic_header(root: Path, elapsed: float, version: str = "0.1.0", theme: Any | None = None) -> Panel:
+    t = _tok(theme)
+    txt = Text()
+    txt.append("peek", style=f"bold {t['ink']}")
+    txt.append(f"  v{version}", style=f"dim {t['muted']}")
+    txt.append(f"  —  {root}", style=t["accent"])
+    txt.append(f"  {elapsed:.2f}s", style=f"dim {t['muted']}")
     return Panel(
-        t,
+        txt,
         box=None,
-        style=f"on {ANTHRO['bg2']}",
+        style=f"on {t['bg2']}",
         padding=(0, 1),
-        border_style=ANTHRO["line"],
+        border_style=t["line"],
     )
 
-def scan_progress(console: Console, label: str = "Scanning"):
+
+def scan_progress(console: Console, label: str = "Scanning", theme: Any | None = None):
+    t = _tok(theme)
     return Progress(
-        SpinnerColumn(style=ANTHRO["accent"], spinner="dots"),
-        TextColumn(f"[bold {ANTHRO['ink']}]{label}[/]"),
-        TextColumn(f"[dim {ANTHRO['muted']}]{{task.fields[detail]}}[/]"),
+        SpinnerColumn(style=t["accent"], spinner="dots"),
+        TextColumn(f"[bold {t['ink']}]{label}[/]"),
+        TextColumn(f"[dim {t['muted']}]{{task.fields[detail]}}[/]"),
         console=console,
         transient=True,
     )
