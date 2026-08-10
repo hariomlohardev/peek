@@ -135,7 +135,7 @@ TECH_MARKERS: dict[str, tuple[str, str]] = {
 
 ENTRY_FILENAMES = {
     "main.py", "app.py", "cli.py", "manage.py", "server.py", "api.py",
-    "__main__.py", "wsgi.py", "asgi.py", "run.py", "index.py", "core.py",
+    "__main__.py", "wsgi.py", "asgi.py", "run.py",
 }
 
 # ---------------------------------------------------------------------------
@@ -407,24 +407,40 @@ def detect_tech_stack(root: Path, files: list[FileInfo]) -> dict:
 # ---------------------------------------------------------------------------
 
 def _has_main_guard(path: Path) -> bool:
-    """Check if file contains if __name__ == '__main__' or def main."""
+    """Check if file contains if __name__ == '__main__' or def main (AST-based)."""
     try:
         if path.suffix.lower() not in (".py", ".pyi"):
             return False
         if path.stat().st_size > 500_000:
             return False
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        if 'if __name__' in text and '__main__' in text:
-            return True
-        # Also check for def main( at top level via ast (more precise)
-        if "def main" in text:
-            try:
-                tree = ast.parse(text)
-                for node in tree.body:
-                    if isinstance(node, ast.FunctionDef) and node.name == "main":
-                        return True
-            except Exception:
-                pass
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except Exception:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        if text.startswith("﻿"):
+            text = text.lstrip("﻿")
+        if not text.strip():
+            return False
+        tree = ast.parse(text, filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.If):
+                try:
+                    test = node.test
+                    if isinstance(test, ast.Compare):
+                        left = test.left
+                        if isinstance(left, ast.Name) and left.id == "__name__":
+                            for comp in test.comparators:
+                                if isinstance(comp, ast.Constant) and comp.value == "__main__":
+                                    return True
+                                # also handle ast.Str for older python
+                                if hasattr(ast, "Str") and isinstance(comp, ast.Str) and comp.s == "__main__":  # type: ignore
+                                    return True
+                except Exception:
+                    continue
+            if isinstance(node, ast.FunctionDef) and node.name == "main":
+                return True
+    except (SyntaxError, UnicodeDecodeError, ValueError, OSError, RecursionError):
+        return False
     except Exception:
         pass
     return False
@@ -470,6 +486,9 @@ def detect_entry_points(root: Path, files: list[FileInfo]) -> list[Path]:
             pass
 
     for f in files:
+        # __init__.py is package init, not an entry point by itself
+        if f.rel.name == "__init__.py":
+            continue
         if f.language != "python" and f.rel.name not in ENTRY_FILENAMES:
             # Only consider python files + known entry filenames (even if not .py, like extensionless)
             continue
@@ -521,7 +540,7 @@ def detect_entry_points(root: Path, files: list[FileInfo]) -> list[Path]:
         if docker_entry and name.lower() in docker_entry.lower():
             score += 4.0
 
-        if score > 0:
+        if score >= 5.0:
             scored.append((score, f.path, ", ".join(reasons)))
 
     # Sort descending, take top 5

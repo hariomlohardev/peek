@@ -24,6 +24,7 @@ from rich.table import Table
 from rich.text import Text
 
 from peek import __version__
+from peek.analyzer import analyze
 from peek.scanner import scan
 
 # Windows: force UTF-8 so Rich can render █, ─, ╭ etc. without cp1252 errors.
@@ -159,7 +160,96 @@ def _print_scan_result(root: Path, result, elapsed: float) -> None:
             console.print(Panel(t2, title=f"[bold]Largest Files[/]  [dim](top {t2.row_count} by LOC, {len(result.files)} total)[/]", box=box.ROUNDED, border_style="white", padding=(0, 1)))
 
     # Footer hint
-    console.print("[dim]Next: [bold]peek analyze .[/] (Day 2) will add import graph + ranked Start Here.  [bold]peek .[/] (Day 3) adds the TUI.[/]")
+    console.print("[dim]Next: [bold]peek analyze .[/] adds import graph + ranked Start Here.  [bold]peek .[/] (Day 3) adds the TUI.[/]")
+
+
+def _print_analyze_result(scan_result, analyzer_result, elapsed: float) -> None:
+    """Rich rendering for `peek analyze` Day 2 output."""
+    root = analyzer_result.root
+    header = Text()
+    header.append("peek", style="bold magenta")
+    header.append(f"  v{__version__}", style="dim")
+    header.append(f"  —  {root}", style="cyan")
+    header.append(f"  ({elapsed:.2f}s)", style="dim")
+    console.print(Panel(header, box=box.ROUNDED, border_style="magenta", padding=(0, 1)))
+
+    s = analyzer_result.stats
+    trunc_note = "  [yellow](truncated)[/]" if s.get("truncated") else ""
+    console.print(
+        f"[bold]{s.get('total_files',0)}[/] files  •  [bold]{s.get('total_loc',0):,}[/] LOC  •  "
+        f"[bold]{_format_bytes(s.get('total_bytes',0))}[/]  •  "
+        f"[cyan]{s.get('graph_nodes',0)}[/] modules  •  [cyan]{s.get('graph_edges',0)}[/] edges{trunc_note}",
+        style="white",
+    )
+
+    # Summary panel (the star)
+    console.print(Panel(analyzer_result.summary, title="[bold]Summary[/]", box=box.ROUNDED, border_style="green", padding=(0, 1)))
+
+    # Tech stack reuse — compact
+    ts = analyzer_result.tech_stack
+    if ts:
+        lines: list[str] = []
+        if ts.get("primary") and ts["primary"] != "unknown":
+            lines.append(f"[bold cyan]Primary:[/] {ts['primary']}")
+        if ts.get("frameworks"):
+            lines.append(f"[bold cyan]Frameworks:[/] {', '.join(ts['frameworks'])}")
+        if analyzer_result.external_imports:
+            ext_preview = ", ".join(sorted(analyzer_result.external_imports)[:8])
+            if len(analyzer_result.external_imports) > 8:
+                ext_preview += f"  [dim](+{len(analyzer_result.external_imports)-8} more)[/]"
+            lines.append(f"[bold cyan]External imports:[/] {ext_preview}")
+        if ts.get("configs"):
+            lines.append(f"[bold cyan]Configs:[/] {', '.join(ts['configs'][:6])}")
+        if lines:
+            console.print(Panel("\n".join(lines), title="[bold]Tech Stack[/]", box=box.ROUNDED, border_style="cyan", padding=(0, 1)))
+
+    # Ranked Start Here — main Day 2 feature
+    ranked = analyzer_result.ranked
+    if ranked:
+        t = Table(box=box.SIMPLE_HEAD, show_header=True, header_style="bold yellow", padding=(0, 1))
+        t.add_column("#", style="dim", width=3, justify="right")
+        t.add_column("File", style="white", overflow="fold")
+        t.add_column("Score", justify="right", style="green")
+        t.add_column("Why", style="dim", overflow="fold")
+        t.add_column("LOC", justify="right", style="cyan")
+        # Find loc for each ranked
+        loc_map = {f.path: f.loc for f in scan_result.files}
+        # Show top 10
+        for i, r in enumerate(ranked[:10], 1):
+            why = ", ".join(r.reasons[:3])
+            loc = str(loc_map.get(r.path, "?"))
+            # Style top 3 bold
+            style = "bold white" if i <= 3 else "white"
+            # shorten file display
+            t.add_row(str(i), f"[{style}]{r.rel.as_posix()}[/]", f"{r.score:.1f}", why, loc)
+        # Bar hint
+        console.print(Panel(t, title=f"[bold]Start Here ⭐[/]  [dim](ranked — PageRank + in-degree + entry bonus • {len(ranked)} modules)[/]", box=box.ROUNDED, border_style="yellow", padding=(0, 1)))
+        # Graph edges preview — top hubs
+        if analyzer_result.graph:
+            # Show most connected
+            most_connected = sorted(analyzer_result.graph.items(), key=lambda kv: len(kv[1]), reverse=True)[:3]
+            edges_lines = []
+            for src, deps in most_connected:
+                if not deps:
+                    continue
+                try:
+                    src_rel = src.relative_to(root).as_posix()
+                except ValueError:
+                    src_rel = src.name
+                dep_rels = []
+                for d in list(deps)[:3]:
+                    try:
+                        dep_rels.append(d.relative_to(root).as_posix())
+                    except ValueError:
+                        dep_rels.append(d.name)
+                suffix = f" (+{len(deps)-3} more)" if len(deps) > 3 else ""
+                edges_lines.append(f"[cyan]{src_rel}[/] → {', '.join(dep_rels)}{suffix}")
+            if edges_lines:
+                console.print(Panel("\n".join(edges_lines), title="[bold]Import Graph[/]  [dim](top hubs → deps)[/]", box=box.ROUNDED, border_style="white", padding=(0, 1)))
+    else:
+        console.print(Panel("[dim]No Python modules found — nothing to rank.[/]", title="[bold]Start Here[/]", box=box.ROUNDED, border_style="yellow"))
+
+    console.print("[dim]Next: [bold]peek .[/] (Day 3) adds the TUI.  [bold]peek scan .[/] for file stats only.[/]")
 
 
 # ---------------------------------------------------------------------------
@@ -205,6 +295,58 @@ def scan_command(
         err_console.print(f"[yellow]No files found in[/] [bold]{path}[/] (empty or all ignored).")
         # Still show stats
     _print_scan_result(path, result, elapsed)
+
+
+@app.command("analyze")
+def analyze_command(
+    path: Path = typer.Argument(
+        Path("."),
+        help="Path to repo/directory to analyze (default: current dir).",
+        exists=False,
+    ),
+    max_files: int = typer.Option(2000, "--max-files", help="Hard cap on files scanned."),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON instead of Rich table."),
+) -> None:
+    """Build import graph, rank files, and summarize the codebase."""
+    t0 = time.perf_counter()
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+
+    scan_result = scan(root, max_files=max_files)
+    result = analyze(scan_result)
+    elapsed = time.perf_counter() - t0
+
+    if json_output:
+        payload = {
+            "root": str(result.root),
+            "elapsed": round(elapsed, 3),
+            "stats": result.stats,
+            "tech_stack": result.tech_stack,
+            "summary": result.summary,
+            "external_imports": sorted(result.external_imports),
+            "ranked": [
+                {"path": str(r.rel), "score": round(r.score, 2), "reasons": r.reasons}
+                for r in result.ranked[:20]
+            ],
+            "graph": {
+                "nodes": len(result.graph),
+                "edges": sum(len(v) for v in result.graph.values()),
+                "edges_detail": {
+                    k.relative_to(result.root).as_posix() if k.is_relative_to(result.root) else k.name: [
+                        p.relative_to(result.root).as_posix() if p.is_relative_to(result.root) else p.name
+                        for p in v
+                    ]
+                    for k, v in list(result.graph.items())[:30]
+                },
+            },
+        }
+        console.print_json(data=payload)
+        return
+
+    if scan_result.total_files == 0:
+        err_console.print(f"[yellow]No files found in[/] [bold]{path}[/] (empty or all ignored).")
+    _print_analyze_result(scan_result, result, elapsed)
 
 
 @app.callback(invoke_without_command=True)
