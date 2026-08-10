@@ -1,7 +1,7 @@
-﻿[project]
+[project]
 name = "peek"
 version = "0.1.0"
-description = "The htop for codebases â€” understand any repo in 5 seconds"
+description = "The htop for codebases - understand any repo in 5 seconds"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
