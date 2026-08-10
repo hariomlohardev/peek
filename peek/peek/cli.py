@@ -29,6 +29,47 @@ from peek import __version__
 from peek.analyzer import analyze
 from peek.scanner import scan
 
+ANTHRO_CLI = {"accent": "#D4A27F", "muted": "#9A9590", "ink": "#E8E6E3"}
+
+def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning"):
+    try:
+        if sys.stdout.isatty() and sys.stderr.isatty():
+            from rich.progress import Progress, SpinnerColumn, TextColumn
+            import time as _t, threading
+            with Progress(SpinnerColumn(style=ANTHRO_CLI["accent"], spinner="dots"), TextColumn(f"[bold {ANTHRO_CLI['ink']}]{label}[/] [dim {ANTHRO_CLI['muted']}]{{task.fields[path]}}[/]"), console=err_console, transient=True) as progress:
+                task = progress.add_task(label, path=str(path))
+                result = {}
+                def _do():
+                    result["scan"] = scan(path, max_files=max_files)
+                t = threading.Thread(target=_do, daemon=True)
+                t.start()
+                start = _t.perf_counter()
+                while t.is_alive() or (_t.perf_counter() - start) < 0.12:
+                    _t.sleep(0.03)
+                    if not t.is_alive() and (_t.perf_counter() - start) >= 0.12:
+                        break
+                t.join()
+                return result["scan"]
+    except Exception:
+        pass
+    return scan(path, max_files=max_files)
+
+def _write_output_safely(path: Path, content: str) -> Path:
+    try:
+        import tempfile
+        orig = path
+        if sys.platform == "win32":
+            posix = orig.as_posix()
+            if posix.startswith("/tmp/") or posix.startswith("\\tmp\\"):
+                path = Path(tempfile.gettempdir()) / orig.name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        return path
+    except Exception:
+        fallback = Path.cwd() / "peek.html"
+        fallback.write_text(content, encoding="utf-8")
+        return fallback
+
 # Windows: force UTF-8 so Rich can render █, ─, ╭ etc. without cp1252 errors.
 if sys.platform == "win32":
     try:
@@ -292,20 +333,15 @@ def scan_command(
 
     if html:
         from peek.renderer import build_html
-        # need dummy analyzer for scan-only html? create minimal
-        from unittest.mock import MagicMock as _MM
-        # Actually build html with scan only — use renderer's build_html which expects analyzer
-        # We'll create a minimal analyzer wrapper
         fake_analyzer = type("obj", (), {"root": result.root, "summary": "scan only", "tech_stack": result.tech_stack, "external_imports": set(), "stats": result.stats, "ranked": [], "graph": {}})()
         html_str = build_html(result, fake_analyzer, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
-            # default to peek.html
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         return
 
     if json_output:
@@ -363,12 +399,12 @@ def analyze_command(
         from peek.renderer import build_html
         html_str = build_html(scan_result, result, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         return
 
     if json_output:
@@ -588,12 +624,12 @@ def main_callback(
         from peek.renderer import build_html
         html_str = build_html(scan_result, analyzer_result, elapsed)
         if output:
-            output.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{output}[/] ({len(html_str)} bytes)")
+            actual = _write_output_safely(output, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
         else:
             out = Path("peek.html")
-            out.write_text(html_str, encoding="utf-8")
-            console.print(f"[green]HTML written to[/] [bold]{out}[/] — use -o to specify path")
+            actual = _write_output_safely(out, html_str)
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
         raise typer.Exit(0)
 
     # --pack
@@ -605,8 +641,8 @@ def main_callback(
             err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
             raise typer.Exit(0)
         if output:
-            output.write_text(packed, encoding="utf-8")
-            console.print(f"[green]Pack written to[/] [bold]{output}[/] • {len(included)} files • ~{tokens} tokens")
+            actual = _write_output_safely(output, packed)
+            console.print(f"[green]Pack written to[/] [bold]{actual}[/] • {len(included)} files • ~{tokens} tokens")
         else:
             # Write to stdout (so `peek --pack | pbcopy` works)
             # Use sys.stdout directly to avoid Rich markup
