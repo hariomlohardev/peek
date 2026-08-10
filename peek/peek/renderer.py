@@ -11,7 +11,6 @@ from pathlib import Path
 
 from rich import box
 from rich.console import Console
-from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
@@ -171,7 +170,7 @@ def render_static(
     console: Console,
     animate: bool | None = None,
 ) -> None:
-    """Anthropic Pro static — subtle Live when TTY."""
+    """Anthropic Pro static — subtle staggered reveal when TTY."""
     root = analyzer_result.root if analyzer_result else scan_result.root
     s = analyzer_result.stats if analyzer_result else scan_result.stats
     trunc = f"  [dim {ANTHRO['muted']}](truncated)[/]" if s.get("truncated") else ""
@@ -181,54 +180,58 @@ def render_static(
         except Exception:
             animate = False
 
+    # Anthropic-style: no flashy Live — just a gentle 40–60ms stagger between panels
+    # when on a real terminal. Feels precise, not viral.
     if animate and console.is_terminal:
         try:
-            with Live(console=console, refresh_per_second=10, transient=False) as live:
-                # Staggered reveal — professional, not flashy
-                live.update(make_header(root, elapsed))
-                time.sleep(0.06)
-                console.print(
-                    f"[bold {ANTHRO['ink']}]{s.get('total_files',0)}[/] files  •  [bold {ANTHRO['ink']}]{s.get('total_loc',0):,}[/] LOC  •  "
-                    f"[bold {ANTHRO['ink']}]{_format_bytes(s.get('total_bytes',0))}[/]  •  "
-                    f"[{ANTHRO['cyan']}]{s.get('graph_nodes',0) if analyzer_result else 0}[/] modules  •  [{ANTHRO['muted']}]{s.get('graph_edges',0) if analyzer_result else 0}[/] edges{trunc}",
-                )
-                lp = make_languages_panel(s)
-                if lp:
-                    console.print(lp)
-                if analyzer_result:
-                    time.sleep(0.04)
-                    console.print(make_summary_panel(analyzer_result.summary))
-                    time.sleep(0.03)
-                    tech = make_tech_stack_panel(analyzer_result.tech_stack, analyzer_result.external_imports)
-                    if tech:
-                        console.print(tech)
-                    time.sleep(0.03)
-                    ranked = make_ranked_panel(analyzer_result.ranked, analyzer_result.root, scan_result.files)
-                    if ranked:
-                        console.print(ranked)
-                    time.sleep(0.03)
-                    graph = make_graph_panel(analyzer_result.graph, analyzer_result.ranked, analyzer_result.root)
-                    if graph:
-                        console.print(graph)
-                    if scan_result.files:
-                        largest = sorted(scan_result.files, key=lambda f: f.loc, reverse=True)[:6]
-                        t2 = Table(box=box.SIMPLE_HEAD, show_header=True, header_style=f"bold {ANTHRO['muted']}", padding=(0, 1), border_style=ANTHRO["line"])
-                        t2.add_column("File", style=ANTHRO["ink"], overflow="fold")
-                        t2.add_column("LOC", justify="right", style=ANTHRO["accent"])
-                        t2.add_column("Lang", style=ANTHRO["cyan"])
-                        t2.add_column("Size", justify="right", style=f"dim {ANTHRO['muted']}")
-                        for f in largest:
-                            if f.loc == 0:
-                                continue
-                            t2.add_row(str(f.rel), str(f.loc), f.language, _format_bytes(f.size))
-                        if t2.row_count:
-                            console.print(Panel(t2, title=f"[bold {ANTHRO['ink']}]Largest Files[/]", box=box.ROUNDED, border_style=ANTHRO["line"], padding=(0, 1), style=f"on {ANTHRO['surface']}"))
-                    console.print(f"[dim {ANTHRO['muted']}]Tip: [bold {ANTHRO['ink']}]peek[/] pro TUI · [bold]peek --no-tui[/] static · [bold]peek --html[/] share[/]")
-                else:
-                    tech = make_tech_stack_panel(scan_result.tech_stack)
-                    if tech:
-                        console.print(tech)
-                return
+            console.print(make_header(root, elapsed))
+            time.sleep(0.04)
+            console.print(
+                f"[bold {ANTHRO['ink']}]{s.get('total_files',0)}[/] files  •  [bold {ANTHRO['ink']}]{s.get('total_loc',0):,}[/] LOC  •  "
+                f"[bold {ANTHRO['ink']}]{_format_bytes(s.get('total_bytes',0))}[/]  •  "
+                f"[{ANTHRO['cyan']}]{s.get('graph_nodes',0) if analyzer_result else 0}[/] modules  •  [{ANTHRO['muted']}]{s.get('graph_edges',0) if analyzer_result else 0}[/] edges{trunc}",
+            )
+            lp = make_languages_panel(s)
+            if lp:
+                time.sleep(0.03)
+                console.print(lp)
+            if analyzer_result:
+                time.sleep(0.03)
+                console.print(make_summary_panel(analyzer_result.summary))
+                time.sleep(0.03)
+                tech = make_tech_stack_panel(analyzer_result.tech_stack, analyzer_result.external_imports)
+                if tech:
+                    console.print(tech)
+                time.sleep(0.03)
+                ranked = make_ranked_panel(analyzer_result.ranked, analyzer_result.root, scan_result.files)
+                if ranked:
+                    console.print(ranked)
+                time.sleep(0.03)
+                graph = make_graph_panel(analyzer_result.graph, analyzer_result.ranked, analyzer_result.root)
+                if graph:
+                    console.print(graph)
+                if scan_result.files:
+                    largest = sorted(scan_result.files, key=lambda f: f.loc, reverse=True)[:6]
+                    t2 = Table(box=box.SIMPLE_HEAD, show_header=True, header_style=f"bold {ANTHRO['muted']}", padding=(0, 1), border_style=ANTHRO["line"])
+                    t2.add_column("File", style=ANTHRO["ink"], overflow="fold")
+                    t2.add_column("LOC", justify="right", style=ANTHRO["accent"])
+                    t2.add_column("Lang", style=ANTHRO["cyan"])
+                    t2.add_column("Size", justify="right", style=f"dim {ANTHRO['muted']}")
+                    for f in largest:
+                        if f.loc == 0:
+                            continue
+                        t2.add_row(str(f.rel), str(f.loc), f.language, _format_bytes(f.size))
+                    if t2.row_count:
+                        time.sleep(0.02)
+                        console.print(Panel(t2, title=f"[bold {ANTHRO['ink']}]Largest Files[/]", box=box.ROUNDED, border_style=ANTHRO["line"], padding=(0, 1), style=f"on {ANTHRO['surface']}"))
+                time.sleep(0.02)
+                console.print(f"[dim {ANTHRO['muted']}]Tip: [bold {ANTHRO['ink']}]peek[/] pro TUI · [bold]peek --no-tui[/] static · [bold]peek --html[/] share[/]")
+            else:
+                tech = make_tech_stack_panel(scan_result.tech_stack)
+                if tech:
+                    time.sleep(0.02)
+                    console.print(tech)
+            return
         except Exception:
             pass
 

@@ -32,18 +32,34 @@ from peek.scanner import scan
 ANTHRO_CLI = {"accent": "#D4A27F", "muted": "#9A9590", "ink": "#E8E6E3"}
 
 def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning"):
+    """Anthropic-style subtle spinner — only when TTY, else plain scan."""
     try:
-        if sys.stdout.isatty() and sys.stderr.isatty():
+        is_tty = False
+        try:
+            is_tty = sys.stderr.isatty()
+        except Exception:
+            pass
+        if is_tty:
             from rich.progress import Progress, SpinnerColumn, TextColumn
-            import time as _t, threading
-            with Progress(SpinnerColumn(style=ANTHRO_CLI["accent"], spinner="dots"), TextColumn(f"[bold {ANTHRO_CLI['ink']}]{label}[/] [dim {ANTHRO_CLI['muted']}]{{task.fields[path]}}[/]"), console=err_console, transient=True) as progress:
+            import time as _t
+            import threading
+
+            with Progress(
+                SpinnerColumn(style=ANTHRO_CLI["accent"], spinner="dots"),
+                TextColumn(f"[bold {ANTHRO_CLI['ink']}]{label}[/] [dim {ANTHRO_CLI['muted']}]{{task.fields[path]}}[/]"),
+                console=err_console,
+                transient=True,
+            ) as progress:
                 task = progress.add_task(label, path=str(path))
-                result = {}
+                result: dict = {}
+
                 def _do():
                     result["scan"] = scan(path, max_files=max_files)
+
                 t = threading.Thread(target=_do, daemon=True)
                 t.start()
                 start = _t.perf_counter()
+                # Ensure spinner visible at least 120ms so it doesn't flash
                 while t.is_alive() or (_t.perf_counter() - start) < 0.12:
                     _t.sleep(0.03)
                     if not t.is_alive() and (_t.perf_counter() - start) >= 0.12:
@@ -53,6 +69,13 @@ def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning
     except Exception:
         pass
     return scan(path, max_files=max_files)
+
+
+def _should_animate() -> bool:
+    try:
+        return sys.stdout.isatty() and sys.stderr.isatty()
+    except Exception:
+        return False
 
 def _write_output_safely(path: Path, content: str) -> Path:
     try:
@@ -328,7 +351,11 @@ def scan_command(
     if root.is_file():
         root = root.parent
 
-    result = scan(root, max_files=max_files)
+    # Subtle spinner only when TTY and not json/html
+    if not json_output and not html and _should_animate():
+        result = _scan_with_spinner(root, max_files=max_files, label="Scanning")
+    else:
+        result = scan(root, max_files=max_files)
     elapsed = time.perf_counter() - t0
 
     if html:
@@ -380,7 +407,10 @@ def analyze_command(
     if root.is_file():
         root = root.parent
 
-    scan_result = scan(root, max_files=max_files)
+    if not json_output and not html and _should_animate():
+        scan_result = _scan_with_spinner(root, max_files=max_files, label="Analyzing")
+    else:
+        scan_result = scan(root, max_files=max_files)
     result = analyze(scan_result)
     elapsed = time.perf_counter() - t0
 
@@ -599,7 +629,10 @@ def main_callback(
     # If pack requested, we handle it before TUI
     t0 = time.perf_counter()
     try:
-        scan_result = scan(path)
+        if not pack and not html and not llm and _should_animate() and not no_tui:
+            scan_result = _scan_with_spinner(path, label="Scanning")
+        else:
+            scan_result = scan(path)
         analyzer_result = analyze(scan_result)
         elapsed = time.perf_counter() - t0
     except Exception as e:
