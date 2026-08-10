@@ -84,7 +84,7 @@ def test_non_python_repo():
         sr = scan(root)
         ar = analyze(sr)
         assert ar.stats["graph_nodes"] == 0
-        assert "no Python" in ar.summary.lower() or "0" in ar.summary
+        assert "no python" in ar.summary.lower() or "0" in ar.summary
 
 
 def test_empty_repo():
