@@ -1,0 +1,615 @@
+<title>peek — Viral OSS Research Pack</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #14141e;
+    --surface2: #1c1c2a;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #9898b0;
+    --accent: #7c5cff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #f59e0b;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Hero */
+  .hero {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 24px 32px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .hero-badge span { width: 8px; height: 8px; background: var(--accent2); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero .tagline {
+    font-size: 20px;
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto 28px;
+    line-height: 1.5;
+  }
+  .hero-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+  }
+  .hero-code .prompt { color: var(--accent2); }
+  .hero-code .cmd { color: var(--text); }
+  .hero-code .comment { color: var(--muted); font-size: 13px; }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat b { display: block; font-size: 22px; font-weight: 800; color: var(--accent); }
+  .hero-stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Terminal mock */
+  .terminal-wrap {
+    max-width: 860px;
+    margin: 36px auto;
+    padding: 0 24px;
+  }
+  .terminal {
+    background: #11111a;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,92,255,0.15);
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f57; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #28c840; }
+  .term-title { flex: 1; text-align: center; font-size: 12px; color: var(--muted); font-family: monospace; }
+  .term-body {
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .term-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .term-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .term-panel h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent2); margin-bottom: 8px; }
+  .term-panel .line { color: var(--muted); }
+  .term-panel .line b { color: var(--text); }
+  .term-panel .line .star { color: var(--accent4); }
+  .term-panel .line .dim { opacity: 0.6; }
+  .term-summary {
+    background: linear-gradient(135deg, rgba(124,92,255,0.12), rgba(0,212,170,0.08));
+    border: 1px solid rgba(124,92,255,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: #c8c8e0;
+  }
+  .term-summary strong { color: var(--text); }
+  .term-footer {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .term-footer span { background: var(--surface); border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; }
+
+  /* Section */
+  .section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 24px;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 10px; }
+  .section p.lead { color: var(--muted); font-size: 15px; max-width: 680px; margin-bottom: 24px; }
+
+  /* Viral formula */
+  .formula {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .formula .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .formula .op { color: var(--accent); font-weight: 800; font-size: 18px; }
+  .formula .exp { color: var(--accent2); font-size: 13px; font-weight: 700; }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card .icon { font-size: 22px; margin-bottom: 10px; }
+  .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .card .score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .score.high { background: rgba(0,212,170,0.15); color: var(--accent2); }
+  .score.mid { background: rgba(245,158,11,0.15); color: var(--accent4); }
+
+  /* Ranking table */
+  .rank-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0 32px;
+  }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 70px 70px 70px 70px 70px;
+    align-items: center;
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-row.header { background: var(--surface2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .rank-row.winner { background: linear-gradient(90deg, rgba(124,92,255,0.12), transparent); border-left: 3px solid var(--accent); }
+  .rank-row .rank { font-weight: 800; color: var(--accent); }
+  .rank-row .name { font-weight: 700; }
+  .rank-row .name span { font-weight: 400; color: var(--muted); font-size: 11px; display: block; }
+  .bar { height: 6px; border-radius: 999px; background: var(--surface2); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 999px; }
+  .bar.high i { background: var(--accent2); }
+  .bar.mid i { background: var(--accent4); }
+  .bar.low i { background: var(--accent3); }
+
+  /* Timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin: 20px 0 32px;
+  }
+  .day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .day b { display: block; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .day strong { display: block; font-size: 14px; margin-bottom: 6px; }
+  .day p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .day .hours { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--surface2); color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .rank-row { grid-template-columns: 36px 1fr 44px 44px 44px 44px 54px; font-size: 12px; padding: 10px 10px; }
+    .rank-row.header { font-size: 10px; }
+    .timeline { grid-template-columns: 1fr; }
+    .term-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+  }
+
+  /* Docs list */
+  .docs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .doc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .doc-num {
+    width: 32px; height: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .doc h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .doc p { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .doc .meta { font-size: 11px; color: var(--accent2); font-weight: 600; margin-top: 6px; }
+
+  /* Launch */
+  .launch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .launch-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .launch-step .num { width: 28px; height: 28px; background: var(--accent); color: white; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; margin: 0 auto 10px; }
+  .launch-step h4 { font-size: 13px; margin-bottom: 4px; }
+  .launch-step p { font-size: 11px; color: var(--muted); }
+  .launch-step b { color: var(--accent2); font-size: 12px; }
+
+  .cta {
+    max-width: 860px;
+    margin: 36px auto;
+    padding: 0 24px;
+  }
+  .cta-box {
+    background: linear-gradient(135deg, rgba(124,92,255,0.18), rgba(0,212,170,0.12));
+    border: 1px solid rgba(124,92,255,0.3);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+  .cta-box h3 { font-size: 20px; margin-bottom: 8px; }
+  .cta-box p { color: var(--muted); font-size: 13px; margin-bottom: 18px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .footer {
+    text-align: center;
+    padding: 28px 24px 40px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+
+<div class="hero">
+  <div class="hero-badge"><span></span> Research Pack · 2026-08-10 · 8 Documents · Ready to Build</div>
+  <h1>Find the <em>viral</em> Python<br>project in 5 days.</h1>
+  <p class="tagline">We analyzed 30+ viral dev tools, scored 15 candidates, and found the one with <strong style="color:var(--text)">universal pain × instant wow × zero friction</strong> — buildable in a single work week.</p>
+  <div class="hero-code">
+    <span class="prompt">$</span>
+    <span class="cmd">pip install peek && peek .</span>
+    <span class="comment">— 5 sec → beautiful codebase map</span>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><b>90/100</b><span>Winner score</span></div>
+    <div class="hero-stat"><b>~46h</b><span>Build time</span></div>
+    <div class="hero-stat"><b>~1k LOC</b><span>Python</span></div>
+    <div class="hero-stat"><b>1k → 5k</b><span>Stars target</span></div>
+  </div>
+</div>
+
+<div class="terminal-wrap">
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+      <div class="term-title">peek v0.1.0 — ~/awesome-project (Python · 47 files · 4.2k LOC) — Textual TUI</div>
+    </div>
+    <div class="term-body">
+      <div class="term-summary">
+        <strong>Summary:</strong> FastAPI-based task queue with Redis backend. Workers pull jobs from Redis, execute via pluggable executors, and report results to Postgres. CLI via Typer, config via Pydantic.
+      </div>
+      <div class="term-grid">
+        <div class="term-panel">
+          <h4>◆ Architecture</h4>
+          <div class="line"><b>cli</b> ──→ <b>api</b> ──→ <b>core</b> ──→ <b>db</b></div>
+          <div class="line dim">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</div>
+          <div class="line dim">&nbsp;&nbsp;└───────┴────────┴──→ <b>redis</b></div>
+          <div class="line" style="margin-top:8px; font-size:11px; opacity:0.7">12 dirs · 47 files · 92% Python</div>
+        </div>
+        <div class="term-panel">
+          <h4>★ Start Here</h4>
+          <div class="line"><span class="star">★</span> <b>app/main.py</b> <span class="dim">(entry)</span></div>
+          <div class="line"><span class="star">★</span> <b>app/core/executor.py</b> <span class="dim">(hub)</span></div>
+          <div class="line dim">&nbsp;&nbsp;&nbsp; app/worker.py <span class="dim">(worker)</span></div>
+          <div class="line dim">&nbsp;&nbsp;&nbsp; app/config.py</div>
+          <div class="line dim">&nbsp;&nbsp;&nbsp; tests/test_exec.py</div>
+        </div>
+        <div class="term-panel">
+          <h4>▣ Stats</h4>
+          <div class="line">Python&nbsp; 92% <span style="color:var(--accent2)">██████████████</span></div>
+          <div class="line">YAML&nbsp;&nbsp;&nbsp;&nbsp; 5% <span style="color:var(--accent)">█</span></div>
+          <div class="line" style="margin-top:6px">4.2k LOC · 47 files</div>
+        </div>
+        <div class="term-panel">
+          <h4>⬡ Tech Stack</h4>
+          <div class="line"><b>FastAPI</b> · Redis · Postgres</div>
+          <div class="line dim">Typer · Pydantic · pytest</div>
+          <div class="line dim">Docker · ruff · uv</div>
+        </div>
+      </div>
+      <div class="term-footer">
+        <span>[j/k] navigate</span><span>[enter] drill in</span><span>[o] open</span><span>[p] pack for LLM</span><span>[q] quit</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">The Viral Formula</div>
+  <h2>Why dev tools go viral is not random.</h2>
+  <p class="lead">Across 30+ breakout tools (uv, ruff, textual, gitingest, htop, bat, fzf) the same equation appears. Miss one ingredient and you stall.</p>
+  <div class="formula">
+    <span class="pill">⚡ Instant Gratification</span><span class="op">×</span>
+    <span class="pill">✨ Visual Wow</span><span class="op">×</span>
+    <span class="pill">🌍 Universal Pain</span><span class="op">×</span>
+    <span class="pill">📦 One-Liner Install</span>
+    <span class="op">^</span><span class="exp">Distribution</span>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h3>Instant Gratification</h3>
+      <p><code>peek .</code> works in 5 seconds — no API key, no config, no setup. Heuristics offline. 80% of triers bounce if first success takes longer than 30 seconds.</p>
+      <span class="score high">peek: 10/10</span>
+    </div>
+    <div class="card">
+      <div class="icon">✨</div>
+      <h3>Visual Wow</h3>
+      <p>Rich + Textual beauty. Every output is a screenshot people <em>want</em> to share. Before/after GIF stops scrolling.</p>
+      <span class="score high">peek: 10/10</span>
+    </div>
+    <div class="card">
+      <div class="icon">🌍</div>
+      <h3>Universal Pain</h3>
+      <p>"What does this repo do? Where to start?" — every dev, every week. Onboarding, OSS eval, AI context packing. 30M+ TAM.</p>
+      <span class="score high">peek: 10/10</span>
+    </div>
+    <div class="card">
+      <div class="icon">📦</div>
+      <h3>One-Liner Install</h3>
+      <p><code>pip install peek</code> — under 10 seconds, pure Python, no Rust, no binary. Zero friction = zero excuse not to try.</p>
+      <span class="score high">peek: 10/10</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Candidates</div>
+  <h2>15 ideas scored. One clear winner.</h2>
+  <p class="lead">Generated from 3 lenses (AI-augmented, DX/Joy, Universal Pain) and scored on Viral × Feasible × TAM × Novelty.</p>
+  <div class="rank-table">
+    <div class="rank-row header">
+      <div>#</div><div>Project</div><div>Viral</div><div>Feas</div><div>TAM</div><div>Nov</div><div>Score</div>
+    </div>
+    <div class="rank-row winner">
+      <div class="rank">1</div>
+      <div class="name">peek <span>htop for codebases — any repo in 5 sec</span></div>
+      <div><div class="bar high"><i style="width:100%"></i></div></div>
+      <div><div class="bar high"><i style="width:80%"></i></div></div>
+      <div><div class="bar high"><i style="width:100%"></i></div></div>
+      <div><div class="bar mid"><i style="width:70%"></i></div></div>
+      <div style="font-weight:800; color:var(--accent)">90 🏆</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank">2</div>
+      <div class="name">wtf <span>beautiful traceback that explains itself</span></div>
+      <div><div class="bar high"><i style="width:90%"></i></div></div>
+      <div><div class="bar high"><i style="width:90%"></i></div></div>
+      <div><div class="bar high"><i style="width:90%"></i></div></div>
+      <div><div class="bar low"><i style="width:60%"></i></div></div>
+      <div style="font-weight:700">84</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank">3</div>
+      <div class="name">packit <span>smart codebase packer for LLMs</span></div>
+      <div><div class="bar high"><i style="width:80%"></i></div></div>
+      <div><div class="bar high"><i style="width:90%"></i></div></div>
+      <div><div class="bar high"><i style="width:100%"></i></div></div>
+      <div><div class="bar low"><i style="width:50%"></i></div></div>
+      <div style="font-weight:700">81</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank">4</div>
+      <div class="name">ship <span>one-command commit+push+PR</span></div>
+      <div><div class="bar high"><i style="width:80%"></i></div></div>
+      <div><div class="bar high"><i style="width:90%"></i></div></div>
+      <div><div class="bar high"><i style="width:100%"></i></div></div>
+      <div><div class="bar low"><i style="width:40%"></i></div></div>
+      <div style="font-weight:700">79</div>
+    </div>
+    <div class="rank-row">
+      <div class="rank">5</div>
+      <div class="name">lumen <span>inline execution visualizer</span></div>
+      <div><div class="bar high"><i style="width:100%"></i></div></div>
+      <div><div class="bar mid"><i style="width:60%"></i></div></div>
+      <div><div class="bar mid"><i style="width:70%"></i></div></div>
+      <div><div class="bar mid"><i style="width:70%"></i></div></div>
+      <div style="font-weight:700">77</div>
+    </div>
+    <div class="rank-row" style="opacity:0.6">
+      <div class="rank">6-15</div>
+      <div class="name" style="color:var(--muted)">findit · diffsense · dive · depcruise · envdoctor · hallucatch · mockit · aigen · gitlens · promptlint</div>
+      <div style="color:var(--muted)">—</div><div style="color:var(--muted)">—</div><div style="color:var(--muted)">—</div><div style="color:var(--muted)">—</div>
+      <div style="color:var(--muted)">60–75</div>
+    </div>
+  </div>
+  <p style="font-size:12px; color:var(--muted); margin-top:-20px; margin-bottom:32px;">Runners-up become <code>peek</code> features: <code>peek --pack</code> (packit) · <code>peek --find</code> (findit) · <code>peek --explain</code> (wtf) — platform, not just a tool.</p>
+</div>
+
+<div class="section">
+  <div class="section-label">5-Day Build</div>
+  <h2>Tight, realistic, scoped.</h2>
+  <p class="lead">~46 hours total, ~1k lines Python, Rich + Textual + AST. Strict P0/P1/P2 — cut P2 ruthlessly.</p>
+  <div class="timeline">
+    <div class="day">
+      <b>Day 1 — Scanner</b>
+      <strong>Walk &amp; Detect</strong>
+      <p>File walk respecting .gitignore, LOC + language stats, tech stack & entry point detection.</p>
+      <span class="hours">9h · peek scan .</span>
+    </div>
+    <div class="day">
+      <b>Day 2 — Analyzer</b>
+      <strong>Graph &amp; Rank</strong>
+      <p>AST import extraction, directed graph, centrality + PageRank-lite, heuristic summary, "Start Here" ranking.</p>
+      <span class="hours">10h · peek analyze .</span>
+    </div>
+    <div class="day" style="border-color: rgba(124,92,255,0.4)">
+      <b>Day 3 — Renderer</b>
+      <strong>Beautiful Output</strong>
+      <p>Rich static panels + Textual TUI with nav, drill-in, key bindings. The wow day.</p>
+      <span class="hours">10h · peek . ✨</span>
+    </div>
+    <div class="day">
+      <b>Day 4 — Polish</b>
+      <strong>P1 + Tests</strong>
+      <p>--html export, --pack (ranked LLM pack), --find, optional LLM summary, tests & edge cases.</p>
+      <span class="hours">9h · --pack --html</span>
+    </div>
+    <div class="day" style="border-color: rgba(0,212,170,0.4)">
+      <b>Day 5 — Ship</b>
+      <strong>Package &amp; Launch</strong>
+      <p>PyPI publish, README + GIF, GitHub polish, launch posts drafted. Launch next morning.</p>
+      <span class="hours">8h · pip install peek 🚀</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Why This Will Go Viral</div>
+  <h2>Not a hope — a mechanism.</h2>
+  <p class="lead">Every <code>peek</code> output is a shareable screenshot. Every repo is a new demo. That's a viral loop, not a moment.</p>
+  <div class="cards">
+    <div class="card"><div class="icon">🔁</div><h3>Infinite Demos</h3><p>Peek on <code>django</code> vs <code>requests</code> vs your side project — every map is unique and interesting. Users generate marketing.</p></div>
+    <div class="card"><div class="icon">🤖</div><h3>AI Tailwind</h3><p>"Context engineering" is the 2026 buzzword. Peek's ranking IS context selection — feeds Claude/Cursor the right files.</p></div>
+    <div class="card"><div class="icon">🏔️</div><h3>Empty Pedestal</h3><p>No beautiful local codebase map exists. Sourcegraph is heavy/enterprise; tree/grep are dumb. First polished tool owns the category.</p></div>
+    <div class="card"><div class="icon">💬</div><h3>HN-Optimized</h3><p>"Show HN: peek — htop for codebases (understand any repo in 5 seconds)" — Python + beautiful TUI + "I built this for myself" story = front page.</p></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Launch</div>
+  <h2>Distribution is a checklist.</h2>
+  <p class="lead">500 stars in 24h → GitHub trending → flywheel. The first 48 hours are everything.</p>
+  <div class="launch-grid">
+    <div class="launch-step"><div class="num">1</div><h4>HN Show HN</h4><p>08:00 UTC, Tue–Thu</p><b>200–800 ★</b></div>
+    <div class="launch-step"><div class="num">2</div><h4>Twitter GIF</h4><p>20-sec demo, pin it</p><b>50–200 ★</b></div>
+    <div class="launch-step"><div class="num">3</div><h4>Reddit r/Python</h4><p>10:00 UTC same day</p><b>100–300 ★</b></div>
+    <div class="launch-step"><div class="num">4</div><h4>Trending</h4><p>~500 ★ triggers algo</p><b>500–1500 ★</b></div>
+    <div class="launch-step"><div class="num">5</div><h4>Newsletters</h4><p>PyCoder's Weekly, TLDR</p><b>300–800 ★</b></div>
+    <div class="launch-step"><div class="num">6</div><h4>Product Hunt</h4><p>Day 2–3</p><b>100–300 ★</b></div>
+  </div>
+  <p style="text-align:center; font-size:12px; color:var(--muted);">Conservative with HN front page held 4h: <strong style="color:var(--text)">1,500–3,000 stars week 1</strong> · Without HN: 300–800 → trending in Python → 2k month 1</p>
+</div>
+
+<div class="section">
+  <div class="section-label">Documents</div>
+  <h2>The full pack — 9 files, ~2k lines.</h2>
+  <p class="lead">Everything you need to decide, build, and launch. Read 01 → 05 → 04 → 06 for the critical path (30 min).</p>
+  <div class="docs">
+    <div class="doc"><div class="doc-num">01</div><div><h4>Research Overview</h4><p>Summary, methodology, document map</p><div class="meta">5 min · start here</div></div></div>
+    <div class="doc"><div class="doc-num">02</div><div><h4>Market Trends & Viral Mechanics</h4><p>30+ tools, Python gaps, AI-era pain, distribution</p><div class="meta">12 min</div></div></div>
+    <div class="doc"><div class="doc-num">03</div><div><h4>Candidate Projects</h4><p>15 ideas scored V×F×T×N, ranked, runners-up as features</p><div class="meta">10 min</div></div></div>
+    <div class="doc"><div class="doc-num">04</div><div><h4>Project Details — peek</h4><p>Problem, solution, architecture, MVP, repo structure</p><div class="meta">15 min · before coding</div></div></div>
+    <div class="doc"><div class="doc-num">05</div><div><h4>Why This Will Go Viral</h4><p>Standalone thesis — 7 reasons + math + objections</p><div class="meta">8 min · pitch memo</div></div></div>
+    <div class="doc"><div class="doc-num">06</div><div><h4>Five-Day Build Plan</h4><p>Hour-by-hour, code sketches, EOD checks, scope cuts</p><div class="meta">12 min · day 1 morning</div></div></div>
+    <div class="doc"><div class="doc-num">07</div><div><h4>Competitive Landscape</h4><p>Moat, positioning, comparison table</p><div class="meta">7 min</div></div></div>
+    <div class="doc"><div class="doc-num">08</div><div><h4>Launch Playbook</h4><p>Hour-by-hour HN/Twitter/Reddit/PH checklist + templates</p><div class="meta">10 min · day 5</div></div></div>
+  </div>
+</div>
+
+<div class="cta">
+  <div class="cta-box">
+    <h3>Ready to build <code>peek</code> tomorrow?</h3>
+    <p>Open <code>04_project_details__peek.md</code> + <code>06_five_day_build_plan.md</code> Day 1 and start with <code>scanner.py</code>. The best launch day is Tuesday — if you finish Friday, wait until Tuesday 08:00 UTC.</p>
+    <a class="cta-btn" href="#">📁 All files in D:\auto\lllll\ →</a>
+  </div>
+</div>
+
+<div class="footer">
+  Research Pack · 2026-08-10 · Built from 30+ viral OSS patterns (2022–2026) · Winner: <strong>peek — htop for codebases</strong><br>
+  "Makes you <em>see</em> a codebase the way htop makes you <em>see</em> a system." · <code>pip install peek && peek .</code>
+</div>
