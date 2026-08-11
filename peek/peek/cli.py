@@ -567,6 +567,47 @@ def config_list():
     console.print_json(data=load_config())
 
 
+@app.command("watch")
+def watch_command(
+    path: Path = typer.Argument(Path("."), help="Path to watch"),
+) -> None:
+    """Watch a repo and re-render on changes (polling). Ctrl+C to quit."""
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+    from peek.watch import watch_repo
+    from peek.renderer import render_static
+    from rich.console import Console
+
+    console_w = Console(legacy_windows=False)
+    root = path.resolve()
+    if root.is_file():
+        root = root.parent
+    t0 = time.perf_counter()
+    sr = scan(root)
+    ar = analyze(sr)
+    elapsed = time.perf_counter() - t0
+    render_static(sr, ar, elapsed, console_w)
+    console_w.print("[dim]Watching... Ctrl+C to quit[/]")
+
+    def on_change(nsr, nar) -> None:
+        try:
+            console_w.clear()
+        except Exception:
+            pass
+        render_static(nsr, nar, 0.01, console_w)
+        console_w.print("[dim]Updated[/]")
+
+    watcher = watch_repo(root, on_change)
+    try:
+        import time as _time
+
+        while True:
+            _time.sleep(1)
+    except KeyboardInterrupt:
+        watcher.stop()
+    raise typer.Exit(0)
+
+
 @app.command("wtf")
 def wtf_command(
     path: Path = typer.Argument(None, help="File containing traceback, or omit to read stdin pipe"),
@@ -627,6 +668,7 @@ def main_callback(
     find: Optional[str] = typer.Option(None, "--find", help="Find keyword (alternative to `peek find`)."),
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
     theme_list: bool = typer.Option(False, "--theme-list", help="List available themes and exit"),
+    watch: bool = typer.Option(False, "--watch", "-w", help="Watch mode: auto-rescan on changes (TUI)."),
 ) -> None:
     """peek — htop for codebases. Understand any repo in 5 seconds.
 
@@ -724,6 +766,15 @@ def main_callback(
     if "--llm" in extra:
         llm = True
         extra = [a for a in extra if a != "--llm"]
+    # handle --watch in raw
+    if "--watch" in extra:
+        watch = True
+        extra = [a for a in extra if a != "--watch"]
+    if "-w" in extra and not any(a.startswith("-") and len(a) > 2 for a in extra):
+        # only treat standalone -w; don't confuse combined flags
+        if "-w" in extra:
+            watch = True
+            extra = [a for a in extra if a != "-w"]
 
     # Handle --find QUERY in raw args (alternative to option)
     # If Typer parsed --find already, `find` var is set; else check extra
@@ -948,7 +999,41 @@ def main_callback(
         except Exception:
             pass
 
-    if wants_static:
+    # --watch handling
+    if watch:
+        if wants_static:
+            # static watch: render then polling loop
+            try:
+                from peek.renderer import render_static
+                from peek.watch import watch_repo
+
+                render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
+                console.print("[dim]Watching... Ctrl+C to quit[/]")
+
+                def on_change_w(nsr, nar) -> None:
+                    try:
+                        console.clear()
+                    except Exception:
+                        pass
+                    render_static(nsr, nar, 0.01, console, theme=resolved_theme)
+                    console.print("[dim]Updated[/]")
+
+                watcher_w = watch_repo(path.resolve() if path.exists() else Path.cwd(), on_change_w)
+                try:
+                    import time as _tw
+
+                    while True:
+                        _tw.sleep(1)
+                except KeyboardInterrupt:
+                    watcher_w.stop()
+            except Exception as e:
+                err_console.print(f"[red]Watch failed: {e}[/]")
+            raise typer.Exit(0)
+        # TUI watch: launch TUI with watch enabled
+        # fall through to TUI block with watch=True
+        pass
+
+    if wants_static and not watch:
         try:
             from peek.renderer import render_static
             render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
@@ -965,7 +1050,11 @@ def main_callback(
             from peek.renderer import render_static
             render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
             raise typer.Exit(0)
-        code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme)
+        # pass watch flag through
+        if watch:
+            code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme, watch=True)
+        else:
+            code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme)
         raise typer.Exit(code if isinstance(code, int) else 0)
     except SystemExit:
         raise
