@@ -359,8 +359,9 @@ def test_tui_filter_asyncio_no_crash():
 def test_cli_version_and_help():
     r = runner.invoke(runner, ["--version"]) if False else runner.invoke(__import__("peek.cli", fromlist=["app"]).app, ["--version"])
     from peek.cli import app
+    from peek import __version__
     assert runner.invoke(app, ["--version"]).exit_code == 0
-    assert "v0.1.0" in runner.invoke(app, ["--version"]).output
+    assert f"v{__version__}" in runner.invoke(app, ["--version"]).output
     assert runner.invoke(app, ["--help"]).exit_code == 0
     assert "--theme" in runner.invoke(app, ["--help"]).output
 

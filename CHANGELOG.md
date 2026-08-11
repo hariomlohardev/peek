@@ -2,6 +2,14 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.2.0 — 2026-08-12
+- `wtf`: traceback explainer with scan-aware hints
+- `pack v2`: format md/xml/txt, budget, include/exclude globs
+- `config set/get/list`: persistent theme with validation
+- `watch`: polling + Textual toggle
+- `t` live theme cycling in TUI
+- Viral polish: README hero with wtf/watch, docs sections, GIF refreshed
+
 ## 0.1.0 — 2026-08-11
 
 - Initial release — `htop for codebases`

@@ -539,6 +539,118 @@ def find_command(
     _print_find_result(matches, query, elapsed)
 
 
+config_app = typer.Typer(help="Config: get/set/list")
+app.add_typer(config_app, name="config")
+
+
+@config_app.command("set")
+def config_set(key: str = typer.Argument(...), value: str = typer.Argument(...)):
+    from peek.config import set_config_value
+    try:
+        p = set_config_value(key, value)
+        console.print(f"[green]Set {key}={value!r} at {p}[/]")
+    except ValueError as e:
+        err_console.print(f"[red]{e}[/]")
+        raise typer.Exit(2)
+
+
+@config_app.command("get")
+def config_get(key: str = typer.Argument(...)):
+    from peek.config import load_config
+    console.print(str(load_config().get(key, "")))
+
+
+@config_app.command("list")
+def config_list():
+    from peek.config import load_config, config_path
+    console.print(f"[dim]{config_path()}[/]")
+    console.print_json(data=load_config())
+
+
+@app.command("watch")
+def watch_command(
+    path: Path = typer.Argument(Path("."), help="Path to watch"),
+) -> None:
+    """Watch a repo and re-render on changes (polling). Ctrl+C to quit."""
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+    from peek.watch import watch_repo
+    from peek.renderer import render_static
+    from rich.console import Console
+
+    console_w = Console(legacy_windows=False)
+    root = path.resolve()
+    if root.is_file():
+        root = root.parent
+    t0 = time.perf_counter()
+    sr = scan(root)
+    ar = analyze(sr)
+    elapsed = time.perf_counter() - t0
+    render_static(sr, ar, elapsed, console_w)
+    console_w.print("[dim]Watching... Ctrl+C to quit[/]")
+
+    def on_change(nsr, nar) -> None:
+        try:
+            console_w.clear()
+        except Exception:
+            pass
+        render_static(nsr, nar, 0.01, console_w)
+        console_w.print("[dim]Updated[/]")
+
+    watcher = watch_repo(root, on_change)
+    try:
+        import time as _time
+
+        while True:
+            _time.sleep(1)
+    except KeyboardInterrupt:
+        watcher.stop()
+    raise typer.Exit(0)
+
+
+@app.command("wtf")
+def wtf_command(
+    path: Path = typer.Argument(None, help="File containing traceback, or omit to read stdin pipe"),
+    explain: bool = typer.Option(True, "--explain/--no-explain", help="Add heuristic explain with scan"),
+) -> None:
+    """Explain a Python traceback with scan-aware hints."""
+    import sys
+
+    text = ""
+    if path is not None and str(path) != "None":
+        try:
+            p = Path(path)
+            if p.exists() and p.is_file():
+                text = p.read_text(encoding="utf-8", errors="ignore")
+            else:
+                # path given but not a file — try stdin fallback
+                text = sys.stdin.read()
+        except Exception:
+            text = sys.stdin.read()
+    else:
+        text = sys.stdin.read()
+
+    from peek.wtf import explain_tb, parse_traceback
+
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+
+    info = parse_traceback(text)
+    if not info:
+        err_console.print("[yellow]No traceback found in input.[/]")
+        raise typer.Exit(1)
+    if explain:
+        try:
+            sr = scan(Path.cwd())
+            ar = analyze(sr)
+            console.print(explain_tb(info, sr, ar))
+        except Exception as e:
+            console.print(info.raw)
+            err_console.print(f"[dim]explain failed: {e}[/]")
+    else:
+        console.print(info.raw)
+
+
 @app.callback(invoke_without_command=True)
 def main_callback(
     ctx: typer.Context,
@@ -548,10 +660,15 @@ def main_callback(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file for --html/--pack."),
     pack: bool = typer.Option(False, "--pack", help="LLM pack: concatenate top files for clipboard/LLM."),
     ask: Optional[str] = typer.Option(None, "--ask", help="Filter --pack by keyword (e.g. --ask auth)."),
+    pack_format: str = typer.Option("md", "--format", help="Pack format: md|xml|txt (with --pack)."),
+    pack_budget: int = typer.Option(8000, "--budget", help="Token budget for pack (with --pack)."),
+    pack_include: Optional[str] = typer.Option(None, "--include", help="Include glob for pack (with --pack)."),
+    pack_exclude: Optional[str] = typer.Option(None, "--exclude", help="Exclude glob for pack (with --pack)."),
     llm: bool = typer.Option(False, "--llm", help="Try LLM summary if API key set."),
     find: Optional[str] = typer.Option(None, "--find", help="Find keyword (alternative to `peek find`)."),
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
     theme_list: bool = typer.Option(False, "--theme-list", help="List available themes and exit"),
+    watch: bool = typer.Option(False, "--watch", "-w", help="Watch mode: auto-rescan on changes (TUI)."),
 ) -> None:
     """peek — htop for codebases. Understand any repo in 5 seconds.
 
@@ -649,6 +766,15 @@ def main_callback(
     if "--llm" in extra:
         llm = True
         extra = [a for a in extra if a != "--llm"]
+    # handle --watch in raw
+    if "--watch" in extra:
+        watch = True
+        extra = [a for a in extra if a != "--watch"]
+    if "-w" in extra and not any(a.startswith("-") and len(a) > 2 for a in extra):
+        # only treat standalone -w; don't confuse combined flags
+        if "-w" in extra:
+            watch = True
+            extra = [a for a in extra if a != "-w"]
 
     # Handle --find QUERY in raw args (alternative to option)
     # If Typer parsed --find already, `find` var is set; else check extra
@@ -672,6 +798,78 @@ def main_callback(
                 extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
         except ValueError:
             pass
+
+    # Also handle --format/--budget/--include/--exclude in raw (pack v2)
+    # Typer may have parsed, but we also check extra for robustness and --format=xml style
+    # Use sentinel: if pack_format is default "md" but extra contains override, use extra
+    # Handle --format
+    if "--format" in extra:
+        try:
+            idx = extra.index("--format")
+            if idx + 1 < len(extra):
+                pack_format = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--format"]
+        except ValueError:
+            pass
+    # --format=xml style
+    for a in list(extra):
+        if a.startswith("--format="):
+            pack_format = a.split("=", 1)[1]
+            extra.remove(a)
+    # --budget
+    if "--budget" in extra:
+        try:
+            idx = extra.index("--budget")
+            if idx + 1 < len(extra):
+                try:
+                    pack_budget = int(extra[idx + 1])
+                except Exception:
+                    pass
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--budget"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--budget="):
+            try:
+                pack_budget = int(a.split("=", 1)[1])
+            except Exception:
+                pass
+            extra.remove(a)
+    # --include
+    if "--include" in extra:
+        try:
+            idx = extra.index("--include")
+            if idx + 1 < len(extra):
+                pack_include = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--include"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--include="):
+            pack_include = a.split("=", 1)[1]
+            extra.remove(a)
+    # --exclude
+    if "--exclude" in extra:
+        try:
+            idx = extra.index("--exclude")
+            if idx + 1 < len(extra):
+                pack_exclude = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--exclude"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--exclude="):
+            pack_exclude = a.split("=", 1)[1]
+            extra.remove(a)
+
     if output is None and ("-o" in extra or "--output" in extra):
         # Typer already parsed -o, but check raw
         for flag in ("-o", "--output"):
@@ -764,8 +962,16 @@ def main_callback(
     # --pack
     if pack:
         from peek.pack import build_pack
-        # ask may be provided via --ask
-        packed, included, tokens = build_pack(scan_result, analyzer_result, query=ask)
+        # ask may be provided via --ask, pack_* via --format/--budget/--include/--exclude
+        packed, included, tokens = build_pack(
+            scan_result,
+            analyzer_result,
+            query=ask,
+            budget=pack_budget,
+            format=pack_format,
+            include=pack_include,
+            exclude=pack_exclude,
+        )
         if not packed.strip() or not included:
             err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
             raise typer.Exit(0)
@@ -793,7 +999,41 @@ def main_callback(
         except Exception:
             pass
 
-    if wants_static:
+    # --watch handling
+    if watch:
+        if wants_static:
+            # static watch: render then polling loop
+            try:
+                from peek.renderer import render_static
+                from peek.watch import watch_repo
+
+                render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
+                console.print("[dim]Watching... Ctrl+C to quit[/]")
+
+                def on_change_w(nsr, nar) -> None:
+                    try:
+                        console.clear()
+                    except Exception:
+                        pass
+                    render_static(nsr, nar, 0.01, console, theme=resolved_theme)
+                    console.print("[dim]Updated[/]")
+
+                watcher_w = watch_repo(path.resolve() if path.exists() else Path.cwd(), on_change_w)
+                try:
+                    import time as _tw
+
+                    while True:
+                        _tw.sleep(1)
+                except KeyboardInterrupt:
+                    watcher_w.stop()
+            except Exception as e:
+                err_console.print(f"[red]Watch failed: {e}[/]")
+            raise typer.Exit(0)
+        # TUI watch: launch TUI with watch enabled
+        # fall through to TUI block with watch=True
+        pass
+
+    if wants_static and not watch:
         try:
             from peek.renderer import render_static
             render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
@@ -810,7 +1050,11 @@ def main_callback(
             from peek.renderer import render_static
             render_static(scan_result, analyzer_result, elapsed, console, theme=resolved_theme)
             raise typer.Exit(0)
-        code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme)
+        # pass watch flag through
+        if watch:
+            code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme, watch=True)
+        else:
+            code = run_tui(path, scan_result, analyzer_result, elapsed, theme=resolved_theme)
         raise typer.Exit(code if isinstance(code, int) else 0)
     except SystemExit:
         raise

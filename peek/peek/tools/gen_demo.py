@@ -21,7 +21,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 try:
     from peek import __version__
 except Exception:
-    __version__ = "0.1.0"
+    __version__ = "0.2.0"
 
 try:
     from peek.themes import get_theme, list_themes
@@ -40,7 +40,7 @@ SCENES = [
         "peek — htop for codebases",
         f"peek v{__version__}  •  anthropic-pro  •  10 themes",
         [
-            "  pip install peek && peek .",
+            "  pip install peek-code && peek .",
             "  ─────────────────────────",
             "  5 seconds → map any repo",
             "  where to start • what talks to what",
@@ -57,12 +57,12 @@ SCENES = [
             "  ",
             "  The htop for codebases — understand any repo in 5s.",
             "  ",
-            "  Commands:  scan    scan + stats",
-            "             analyze import graph + ranking",
-            "             find    keyword search",
+            "  Commands:  scan    scan + stats        wtf     traceback hint",
+            "             analyze import graph+rank   watch   live rescan",
+            "             find    keyword search      config  theme persist",
             "  Options:   --no-tui  static  •  --html -o out.html",
-            "             --pack --ask QUERY  •  --theme dracula",
-            "             --theme-list  (10 themes)",
+            "             --pack --ask QUERY --format md/xml/txt  •  --theme dracula",
+            "             --theme-list  (10 themes)  •  t cycle • w watch",
         ],
         None,
     ),
@@ -70,7 +70,7 @@ SCENES = [
         "peek . --no-tui  (static Rich)",
         "$ peek . --no-tui",
         [
-            "  peek  v0.1.0  —  ./peek  (0.12s)",
+            "  peek  v0.2.0  —  ./peek  (0.12s)",
             "  ┌ Languages ──────────────────┐ ┌ Tech Stack ────────┐",
             "  │ Python  ██████████████  68%  │ │ Primary: python  │",
             "  │ Markdown ░░░░░░░░░░░░░   8%  │ │ Frameworks: textual, rich",
@@ -86,7 +86,7 @@ SCENES = [
         'peek find "auth" .',
         '$ peek find "auth" .',
         [
-            "  peek find  v0.1.0  —  query: \"auth\"  (0.04s)",
+            "  peek find  v0.2.0  —  query: \"auth\"  (0.04s)",
             "  ┌ Matches (4 files) ─────────────────────────────┐",
             "  │ 1  peek/peek/auth.py        8.4  filename     │",
             "  │ 2  peek/peek/middleware.py  3.1  content:42   │",
@@ -98,21 +98,49 @@ SCENES = [
     ),
     (
         "peek --pack --ask auth | head",
-        '$ peek --pack --ask "auth" | head -20',
+        '$ peek --pack --ask "auth" --format md | head -20',
         [
-            "  ── pack: 4 files • ~2.1k tokens • query=auth ──",
-            "  # peek/peek/auth.py",
-            "  def check(token): ...",
+            "  ── pack v2: 4 files • ~2.1k tokens • query=auth ──",
+            "  ## peek/peek/auth.py  FILE: auth.py",
+            "  ```python  def check(token): ... ```",
+            "  ## peek/peek/middleware.py  FILE: middleware.py",
+            "  ```python  from .auth import check ```",
             "  # peek/peek/middleware.py",
-            "  from .auth import check",
-            "  # tests/test_auth.py",
-            "  def test_check(): assert check(\"x\")",
+            "  ── --format md/xml/txt --budget 8000 --include \"*.py\" ──",
             "  ── pbcopy / LLM ready ──",
         ],
         None,
     ),
     (
-        "10 themes  •  peek --theme-list",
+        "peek wtf — traceback explainer",
+        "$ cat tb.txt | peek wtf",
+        [
+            "  Traceback (most recent call last):",
+            "    File \"peek/peek/cli.py\", line 42, in main",
+            "    File \"peek/peek/tui.py\", line 128, in _tick",
+            "  ValueError: Unknown theme 'baguette'",
+            "  ── peek wtf hint ──",
+            "  → Start Here: peek/peek/themes.py is ranked #3",
+            "  → check its callers in `peek analyze`",
+            "  No LLM needed • parses Traceback + Error + frames",
+        ],
+        None,
+    ),
+    (
+        "peek watch . — live rescan",
+        "$ peek watch .",
+        [
+            "  Watching  polling 0.8s • debounce 0.4s  (Ctrl+C quit)",
+            "  Updated (3 files changed)  0.04s  •  re-rendered static",
+            "  ── peek --watch → TUI • w toggle watch ON/OFF ──",
+            "  uses watchfiles if installed, else polling fallback",
+            "  Live rescan • re-renders static panels",
+            "  $ peek --watch   # TUI watch + t cycle theme",
+        ],
+        None,
+    ),
+    (
+        "10 themes  •  peek --theme-list  •  t live",
         "$ peek --theme-list",
         [
             "  ■ anthropic-pro  Warm editorial      #D4A27F → #141413",
@@ -120,6 +148,7 @@ SCENES = [
             "  ■ nord           Arctic              #88C0D0 → #2E3440",
             "  ■ tokyo-night    Electric storm      #7AA2F7 → #1A1B26",
             "  »  PEEK_THEME=dracula peek  •  --theme nord --no-tui",
+            "  t → cycle themes live in TUI • w → toggle watch",
         ],
         None,
     ),
