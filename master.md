@@ -1,8 +1,8 @@
 # MASTER — peek final
 
 > **peek v0.1.0 — htop for codebases — final master state**
-> `pip install peek && peek .` — 10 themes, best TUI, all bugs fixed, 72 tests green.
-> Branch: `themes-10` → `master` ready. No push. All local commits.
+> `pip install peek && peek .` — 10 themes, best TUI, all bugs fixed, 74 tests green.
+> Branch: `themes-10` → `master` → `polish-100` ready. No push. All local commits.
 
 <p align="center">
   <img src="peek/assets/themes/anthropic-pro.svg" width="800" alt="peek master — anthropic-pro" />
@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/master-ready-brightgreen" alt="master"/>
-  <img src="https://img.shields.io/badge/tests-72%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-74%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/UI-fixed-success" alt="ui"/>
   <img src="https://img.shields.io/badge/TUI-best%20with%20animations-ff7ed8" alt="tui"/>
@@ -23,9 +23,10 @@
 - **Best TUI** — warm professional (anthropic-pro default) with **subtle + continuous animations**: 220 ms fade, 160 ms list stagger, **live pulse** `◐◑◒◓` every 0.28 s, **rotating tips** every 3 s, **border pulse** every 1.8 s — feels alive, not noisy.
 - **10 themes** — `peek --theme-list` → anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono — same layout, only tokens change, TUI + static + HTML all themed.
 - **All UI fixed** — 3 shipped bugs + 1 TDD-found fixed, CSS now `linear`, `asyncio` import, `/tmp` Win, `SpinnerColumn` API.
-- **Tests: 72 passed, 1 skipped** — TDD: watch fail → minimal green → refactor. 43 before + 14 themes + 29 comprehensive = 72.
+- **Tests: 74 passed, 1 skipped** — TDD: watch fail → minimal green → refactor. 43 before + 14 themes + 29 comprehensive + 2 demo = 74.
 - **Continuous change** — TUI never static: spinner rotates, tip cycles, border breathes, list staggers, panels fade. Static `peek --no-tui` staggers 40/30/30 ms.
-- **Docs + screenshots** — `docs.md` (800 lines) + 10 SVGs in `peek/assets/themes/*.svg` (800×420) — all generated, embedded.
+- **Demo by code** — `peek/assets/demo.gif` (800×450, Pillow, <3 MB, ~15 s) + `demo.svg` + `demo.html` — all code-generated via `python -m peek.tools.gen_demo`.
+- **Docs + screenshots** — `docs.md` + 10 SVGs in `peek/assets/themes/*.svg` (800×420) — all generated, embedded.
 
 ---
 
@@ -113,11 +114,11 @@ echo 'theme = "dracula"' > ~/.peek/config.toml
 
 ---
 
-## Tests — 72 passed, TDD
+## Tests — 74 passed, TDD
 
 ```
 pytest -q
-72 passed, 1 skipped, 8104 warnings
+74 passed, 1 skipped, 8104 warnings
 ```
 
 | Suite | n | Proves |
@@ -127,6 +128,7 @@ pytest -q
 | `test_renderer_pack_find.py` | 12 | render no crash, html, scan-only, tokens, pack basic/query/budget, find, llm fallback, cli import |
 | `test_themes.py` | 14 | 10 registry, tokens 15×hex, case-insensitive, unknown, fallback, resolve precedence, config missing/malformed, render/html per-theme, tui CSS, cli list+unknown, compat |
 | `test_comprehensive_tdd.py` | 29+1 skip | Full integration: scanner edge, analyzer edge, renderer per-theme, pack/find/llm, config XDG, tui `linear` + `asyncio` + `Stylesheet` parse, cli `--version`/`--help`/`scan`/`analyze` `--json`/`--html`/`find`/`pack`/`--no-tui` + themed, `_write_output_safely` `/tmp` win, animations/ascii, `run_tui` fallbacks |
+| `test_demo_assets.py` | 2 | GIF valid (`GIF89a`, <3 MB, >5 KB) + HTML exists (`<html`) |
 
 **TDD:** `test_comprehensive_tdd.py` first run 2 failures (`gitignore` `.git` substring, `SpinnerColumn spinner=`), fixed minimally, re-run green. Added `test_css_parse` for `ease-out` → `linear`, verified via `Stylesheet().add_source`. Warnings only `pathspec` deprecation.
 
@@ -156,8 +158,8 @@ graph LR
 ## How to run master
 
 ```bash
-git checkout themes-10   # master is themes-10
-pytest -q                # 72 passed
+git checkout polish-100  # polish-100 is master + demo
+pytest -q                # 74 passed
 peek --theme-list
 peek --theme dracula --no-tui | head -20
 peek --theme dracula --html -o /tmp/preview.html && start /tmp/preview.html
@@ -167,7 +169,27 @@ cat docs.md              # 800-line full manual
 cat master.md            # this file
 ```
 
-Branch `themes-10` is master-ready. No push per rule. Tag when ready: `git tag v0.1.0 themes-10 && git show --stat HEAD`.
+Branch `polish-100` is master-ready + demo. No push per rule. Tag when ready: `git tag -f v0.1.0 polish-100 && git show --stat HEAD`.
+
+---
+
+## Demo Video (by code)
+
+<p align="center">
+  <img src="peek/assets/demo.gif" width="800" alt="peek demo — code-generated 800x450" />
+</p>
+
+GIF is 800×450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro` (`#D4A27F`→`#141413`). Generated via `python -m peek.tools.gen_demo` (Pillow, no vhs) + `peek/assets/demo.svg` (SMIL) and `peek/assets/demo.html` (themed). Verify: `file peek/assets/demo.gif` → `GIF89a`, `ls -lh` <3 MB, `pytest peek/tests/test_demo_assets.py -v`. Scenes: title → `peek --help` → `peek . --no-tui` → `peek find "auth"` → `peek --pack --ask auth` → `--theme-list` carousel. Also `vhs` fallback: `vhs peek/assets/demo.tape`.
+
+---
+
+## Demo Video (by code)
+
+<p align="center">
+  <img src="peek/assets/demo.gif" width="800" alt="peek demo -- code-generated 800x450" />
+</p>
+
+GIF is 800x450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro` (`#D4A27F`->`#141413`). Generated via `python -m peek.tools.gen_demo` (Pillow, no vhs) + `peek/assets/demo.svg` (SMIL) and `peek/assets/demo.html` (themed). Verify: `file peek/assets/demo.gif` -> `GIF89a`, `ls -lh` <3 MB, `pytest peek/tests/test_demo_assets.py -v`. Scenes: title -> `peek --help` -> `peek . --no-tui` -> `peek find "auth"` -> `peek --pack --ask auth` -> `--theme-list` carousel. Also `vhs` fallback: `vhs peek/assets/demo.tape`.
 
 ---
 
@@ -175,4 +197,4 @@ Branch `themes-10` is master-ready. No push per rule. Tag when ready: `git tag v
 
 All SVG previews in `peek/assets/themes/` — used in `docs.md` and above. Real terminal screenshot: `peek --no-tui` (static) is tweet-ready. HTML export `peek --html -o out.html` is shareable self-contained (embeds `bg`/`accent`).
 
-*Master built 2026-08-11 — 5 days (scanner → analyzer → TUI → P1 → polish) + 10 themes + continuous TUI + 72 TDD tests + docs. Author Hariom Lohar.*
+*Master built 2026-08-11 — 5 days (scanner → analyzer → TUI → P1 → polish) + 10 themes + continuous TUI + demo by code + 74 TDD tests + docs. Branch `polish-100`. Author Hariom Lohar.*
