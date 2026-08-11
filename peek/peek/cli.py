@@ -591,6 +591,10 @@ def main_callback(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file for --html/--pack."),
     pack: bool = typer.Option(False, "--pack", help="LLM pack: concatenate top files for clipboard/LLM."),
     ask: Optional[str] = typer.Option(None, "--ask", help="Filter --pack by keyword (e.g. --ask auth)."),
+    pack_format: str = typer.Option("md", "--format", help="Pack format: md|xml|txt (with --pack)."),
+    pack_budget: int = typer.Option(8000, "--budget", help="Token budget for pack (with --pack)."),
+    pack_include: Optional[str] = typer.Option(None, "--include", help="Include glob for pack (with --pack)."),
+    pack_exclude: Optional[str] = typer.Option(None, "--exclude", help="Exclude glob for pack (with --pack)."),
     llm: bool = typer.Option(False, "--llm", help="Try LLM summary if API key set."),
     find: Optional[str] = typer.Option(None, "--find", help="Find keyword (alternative to `peek find`)."),
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
@@ -715,6 +719,78 @@ def main_callback(
                 extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
         except ValueError:
             pass
+
+    # Also handle --format/--budget/--include/--exclude in raw (pack v2)
+    # Typer may have parsed, but we also check extra for robustness and --format=xml style
+    # Use sentinel: if pack_format is default "md" but extra contains override, use extra
+    # Handle --format
+    if "--format" in extra:
+        try:
+            idx = extra.index("--format")
+            if idx + 1 < len(extra):
+                pack_format = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--format"]
+        except ValueError:
+            pass
+    # --format=xml style
+    for a in list(extra):
+        if a.startswith("--format="):
+            pack_format = a.split("=", 1)[1]
+            extra.remove(a)
+    # --budget
+    if "--budget" in extra:
+        try:
+            idx = extra.index("--budget")
+            if idx + 1 < len(extra):
+                try:
+                    pack_budget = int(extra[idx + 1])
+                except Exception:
+                    pass
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--budget"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--budget="):
+            try:
+                pack_budget = int(a.split("=", 1)[1])
+            except Exception:
+                pass
+            extra.remove(a)
+    # --include
+    if "--include" in extra:
+        try:
+            idx = extra.index("--include")
+            if idx + 1 < len(extra):
+                pack_include = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--include"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--include="):
+            pack_include = a.split("=", 1)[1]
+            extra.remove(a)
+    # --exclude
+    if "--exclude" in extra:
+        try:
+            idx = extra.index("--exclude")
+            if idx + 1 < len(extra):
+                pack_exclude = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                extra = [a for a in extra if a != "--exclude"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--exclude="):
+            pack_exclude = a.split("=", 1)[1]
+            extra.remove(a)
+
     if output is None and ("-o" in extra or "--output" in extra):
         # Typer already parsed -o, but check raw
         for flag in ("-o", "--output"):
@@ -807,8 +883,16 @@ def main_callback(
     # --pack
     if pack:
         from peek.pack import build_pack
-        # ask may be provided via --ask
-        packed, included, tokens = build_pack(scan_result, analyzer_result, query=ask)
+        # ask may be provided via --ask, pack_* via --format/--budget/--include/--exclude
+        packed, included, tokens = build_pack(
+            scan_result,
+            analyzer_result,
+            query=ask,
+            budget=pack_budget,
+            format=pack_format,
+            include=pack_include,
+            exclude=pack_exclude,
+        )
         if not packed.strip() or not included:
             err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
             raise typer.Exit(0)
