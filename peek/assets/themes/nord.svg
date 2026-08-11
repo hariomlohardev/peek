@@ -1,0 +1,42 @@
+<svg width="800" height="420" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>peek — nord</title>
+  <rect width="800" height="420" rx="12" fill="#2E3440"/>
+  <!-- header -->
+  <rect x="16" y="16" width="768" height="48" rx="8" fill="#3B4252" stroke="#4C566A" stroke-width="1"/>
+  <text x="28" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" font-weight="700" fill="#ECEFF4">peek</text>
+  <text x="72" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#4C566A">v0.1.0 — ./demo  0.12s</text>
+  <text x="680" y="36" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#4C566A">nord</text>
+  <!-- stats -->
+  <text x="28" y="84" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#ECEFF4">98 files  •  7,736 LOC  •  452.9 KB  •  18 modules  •  42 edges</text>
+  <!-- left panel: Languages -->
+  <rect x="16" y="96" width="368" height="110" rx="8" fill="#434C5E" stroke="#4C566A" stroke-width="1"/>
+  <text x="28" y="116" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="#ECEFF4">Languages</text>
+  <text x="28" y="138" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#ECEFF4">python   18  18%  ████░░░░░░░░░░</text>
+  <text x="28" y="156" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#ECEFF4">other    60  61%  ██████████████</text>
+  <text x="28" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#4C566A">markdown 16  16%  ███░░░░░░░░░░░</text>
+  <!-- summary -->
+  <rect x="16" y="218" width="368" height="70" rx="8" fill="#4C566A" stroke="#4C566A" stroke-width="1"/>
+  <text x="28" y="238" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="#ECEFF4">Summary</text>
+  <text x="28" y="258" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#ECEFF4">Typer/Click CLI — 18 modules, 7736 LOC.</text>
+  <text x="28" y="272" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">Entry: peek/cli.py • hub: scanner.py</text>
+  <!-- right: Start Here -->
+  <rect x="400" y="96" width="384" height="192" rx="8" fill="#434C5E" stroke="#4C566A" stroke-width="1"/>
+  <text x="414" y="116" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="700" fill="#ECEFF4">Start Here</text>
+  <text x="414" y="138" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">1  peek/scanner.py   9.1  hub</text>
+  <text x="414" y="156" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#ECEFF4">2  peek/cli.py       8.3  entry point</text>
+  <text x="414" y="174" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">3  peek/analyzer.py  7.3  hub</text>
+  <text x="414" y="192" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#88C0D0">4  peek/renderer.py  5.7  hub</text>
+  <text x="414" y="210" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">5  peek/tui.py       2.8  connects</text>
+  <!-- palette strip -->
+  <rect x="16" y="304" width="768" height="48" rx="8" fill="#4C566A" stroke="#4C566A" stroke-width="1"/>
+  <circle cx="36" cy="328" r="10" fill="#88C0D0"/>
+  <circle cx="64" cy="328" r="10" fill="#81A1C1"/>
+  <circle cx="92" cy="328" r="10" fill="#88C0D0"/>
+  <circle cx="120" cy="328" r="10" fill="#B48EAD"/>
+  <circle cx="148" cy="328" r="10" fill="#A3BE8C"/>
+  <circle cx="176" cy="328" r="10" fill="#ECEFF4"/>
+  <circle cx="204" cy="328" r="10" fill="#4C566A"/>
+  <text x="232" y="332" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" fill="#4C566A">accent  accent2  cyan  violet  green  ink  muted</text>
+  <text x="28" y="376" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">peek --theme nord  •  Nord — Frosty arctic, muted blues</text>
+  <text x="28" y="392" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="#4C566A">Tip: peek --theme-list  •  PEEK_THEME=nord peek</text>
+</svg>

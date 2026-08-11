@@ -13,6 +13,14 @@ env/
 .coverage
 htmlcov/
 .tox/
+.pytest_cache
+.hypothesis/
+
+# Ruff / lint
+.ruff_cache/
+
+# Benchmarks
+.benchmarks/
 
 # OS
 .DS_Store
@@ -22,6 +30,14 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
 # Peek cache
 .peek-cache/
+
+# Worktrees (superpowers)
+.claude/worktrees/
+
+# Local env
+.env
