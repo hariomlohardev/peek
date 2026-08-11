@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/pyversions/peek-code" alt="Python"/></a>
-  <img src="https://img.shields.io/badge/tests-72%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-108%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
 </p>
@@ -28,6 +28,9 @@
 - [CLI Reference](#cli-reference)
 - [TUI Guide](#tui-guide)
 - [Pack, Find, LLM](#pack-find-llm)
+- [WTF — Traceback Explainer](#wtf--traceback-explainer)
+- [Watch — Live Rescan](#watch--live-rescan)
+- [Config Set](#config-set)
 - [Config](#config)
 - [Architecture](#architecture)
 - [Testing (TDD)](#testing-tdd)
@@ -64,7 +67,7 @@ uv tool install peek-code
 # dev (with tests + linters)
 git clone https://github.com/hariomlohardev/peek && cd peek
 pip install -e ".[dev]"
-pytest -q  # 74 passed
+pytest -q  # 108 passed, 1 skipped
 ```
 
 Requires **Python 3.11+**. Deps: `typer`, `rich`, `textual`, `pathspec` — all pure Python.
@@ -216,6 +219,16 @@ Commands:
   find <query> [PATH]    Find by filename + content, ranked
     --limit 20 --json --max-files
 
+  wtf [FILE]             Explain traceback (file or stdin pipe) — scan-aware hint
+    --explain/--no-explain  Heuristic explain (default on)
+
+  watch [PATH]           Live rescan on file change (polling 0.8s, debounce 0.4s)
+    peek --watch         TUI watch with w toggle
+
+  config set <k> <v>     Set persistent config (theme validated via get_theme)
+  config get <k>         Get config value
+  config list            List config + path
+
 Examples:
   peek
   peek --no-tui
@@ -251,6 +264,9 @@ peek --theme dracula  # themed TUI
 | `o` | Open highlighted file in `$EDITOR` / `$VISUAL` / `notepad` |
 | `/` | Filter Start Here (fuzzy on `rel` + reasons), `Enter` apply, `Esc` clear |
 | `?` | Help toast (theme + keys) |
+| `t` | Cycle theme live (10) — `t` again for next |
+| `w` | Toggle watch live rescan (polling, debounce) — `w` on/off |
+| `c` | Show config path + theme |
 | `Esc` | Clear filter if visible |
 
 **Filter:** Type `auth`, `cli`, `graph` — list updates live with 12 ms stagger, detail follows first match. No match → placeholder `No files — try filter`.
@@ -293,6 +309,17 @@ peek analyze . --llm
 
 ---
 
+## WTF — Traceback Explainer
+`peek wtf tb.txt` or `cat tb.txt | peek wtf` → parses `Traceback` + `...Error` + frames, maps to `scan` files, hints if in `Start Here` top 5. No LLM needed.
+
+## Watch — Live Rescan
+`peek watch .` → polling every 0.8s, debounce 0.4s, re-renders static; `peek --watch` → TUI with `w` toggle. `watchfiles` used if installed, else polling fallback.
+
+## Config Set
+`peek config set theme dracula` → writes `~/.peek/config.toml`, validates via `get_theme`, `peek config get/list`.
+
+---
+
 ## Config
 
 ```toml
@@ -304,7 +331,7 @@ theme = "dracula"  # any of 10 ids, case-insensitive, _ or - normalized
 
 - Missing / malformed TOML → silently ignored (tolerant), falls back to `anthropic-pro`.
 - `tomllib` (3.11+) with `tomli` fallback.
-- No auto-write; explicit `echo 'theme = "dracula"' > ~/.peek/config.toml`. Future `peek theme set dracula` planned.
+- Persistent via `peek config set theme dracula` (writes `~/.peek/config.toml`, validates via `get_theme`); also `peek config get theme` / `peek config list`. Manual `echo 'theme = "dracula"' > ~/.peek/config.toml` still works.
 - Precedence proof via `test_resolve_precedence` (cli > env > config > default).
 
 ---
@@ -351,7 +378,7 @@ graph LR
 **Iron law:** No production code without a failing test first — watched fail, minimal green, refactor.
 
 ```bash
-pytest -q          # 74 passed, 1 skipped
+pytest -q          # 108 passed, 1 skipped
 pytest -v
 pytest peek/tests/test_comprehensive_tdd.py -v  # 29 passed, 1 skipped in that file alone
 ```
@@ -364,6 +391,11 @@ pytest peek/tests/test_comprehensive_tdd.py -v  # 29 passed, 1 skipped in that f
 | `test_themes.py` | 14 | 10 registry, tokens shape, case-insensitive, unknown raises, fallback, resolve precedence, config missing, toml parse, render/html per-theme, tui CSS, cli list + unknown, backwards compat |
 | `test_comprehensive_tdd.py` | 29 +1 skip | All of above plus CLI integration (`--version`/`--help`/`--theme`/`--theme-list`/`scan`/`analyze` `--json`/`--html`/`find`/`pack`/`--no-tui` + env, `_write_output_safely`, animations/ascii, `run_tui` fallbacks) |
 | `test_demo_assets.py` | 2 | GIF valid (`GIF89a`, <3 MB, >5 KB), HTML exists (`<html`) |
+| `test_wtf.py` | 10 | parse simple/multi/empty/no-exc, find_relevant_files, wtf CLI file/stdin, --no-explain, Exit 1 + help |
+| `test_pack_v2.py` | 8 | pack md/xml/txt, include/exclude globs, budget truncate + token_budget alias, CLI format/include/budget+exclude |
+| `test_config_set.py` | 6 | save_config/set_config_value, get_theme validation, CLI config set/get/list, invalid theme Exit 2 |
+| `test_tui_live.py` | 5 | BINDINGS has t, cycle changes theme, wraps after 10, _css_for_theme linear + dracula tokens, label/tokens update |
+| `test_watch.py` | 5 | debounce, stop idempotent, new-file detection, cli help, w binding |
 
 **TDD story:** Added `test_comprehensive_tdd.py` → first run 2 failures (`gitignore` `.git` substring + `SpinnerColumn(spinner=)` typo) → minimal fixes → green. Added `test_css_parse` for `ease-out` → `linear` → verified via `Stylesheet().add_source`. Added `test_tui_filter_asyncio` for `NameError: asyncio` → added `import asyncio` at top.
 
@@ -394,7 +426,7 @@ Output pristine except `pathspec` deprecation warnings (dep, not our code).
 
 ## Contributing
 
-See `peek/CONTRIBUTING.md`. PRs welcome — add tests per TDD. Branch `polish-100` is latest (from `themes-10` → `main`), local commits only, no push. Run `ruff`, `pytest -q` (74 passed) before PR.
+See `peek/CONTRIBUTING.md`. PRs welcome — add tests per TDD. Branch `polish-100` is latest (from `themes-10` → `main`), local commits only, no push. Run `ruff`, `pytest -q` (108 passed, 1 skipped) before PR.
 
 ## License
 

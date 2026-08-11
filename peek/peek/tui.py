@@ -61,91 +61,9 @@ def _label(theme: Any | None) -> str:
     return "anthropic-pro"
 
 
-def _detail_for(path: Path, graph, reverse_graph, root: Path, theme: Any | None = None) -> RenderableType:
+def _css_for_theme(theme: Any | None) -> str:
     t = _tok(theme)
-    try:
-        imports = graph.get(path, set())
-        imported_by = reverse_graph.get(path, set())
-
-        def _rel(p: Path) -> str:
-            try:
-                return p.relative_to(root).as_posix()
-            except ValueError:
-                return p.name
-
-        lines: list[str] = []
-        if imports:
-            deps = ", ".join(_rel(p) for p in sorted(imports, key=lambda x: x.name)[:5])
-            suffix = f" (+{len(imports)-5} more)" if len(imports) > 5 else ""
-            lines.append(f"[bold {t['ink']}]Imports:[/] [{t['cyan']}]{deps}{suffix}[/]")
-        else:
-            lines.append(f"[dim {t['muted']}]Imports: none[/]")
-        if imported_by:
-            ib = ", ".join(_rel(p) for p in sorted(imported_by, key=lambda x: x.name)[:5])
-            suffix = f" (+{len(imported_by)-5} more)" if len(imported_by) > 5 else ""
-            lines.append(f"[bold {t['ink']}]Imported by:[/] [{t['accent']}]{ib}{suffix}[/]")
-        else:
-            lines.append(f"[dim {t['muted']}]Imported by: none — leaf[/]")
-        try:
-            size = path.stat().st_size
-            lines.append(f"[dim {t['muted']}]Size: {size} bytes · {path.suffix or 'no ext'}[/]")
-        except Exception:
-            pass
-        return Panel(
-            "\n".join(lines),
-            title=f"[bold {t['ink']}]{_rel(path)}[/]",
-            subtitle=f"[{t['muted']}]detail — {_label(theme)}[/]",
-            border_style=t["line"],
-            padding=(0, 1),
-            style=f"on {t['panel']}",
-        )
-    except Exception as e:
-        return Panel(f"[{t['accent2']}]Error: {e}[/]", title="Detail", border_style=t["line"])
-
-
-if TEXTUAL_AVAILABLE:
-
-    class PeekApp(App):  # type: ignore
-        TITLE = "peek — themed — htop for codebases"
-        SUB_TITLE = "10 themes"
-
-        # CSS will be set dynamically in __init__ based on theme
-
-        BINDINGS = [
-            Binding("q", "quit", "Quit"),
-            Binding("o", "open_file", "Open"),
-            Binding("/", "filter", "Filter"),
-            Binding("?", "help", "Help"),
-            Binding("escape", "clear_filter", "Clear", show=False),
-            Binding("j", "cursor_down", "Down", show=False),
-            Binding("k", "cursor_up", "Up", show=False),
-        ]
-
-        def __init__(self, root: Path, scan_result, analyzer_result, elapsed: float, theme: Any | None = None):
-            super().__init__()
-            self.root = root
-            self.scan_result = scan_result
-            self.analyzer_result = analyzer_result
-            self.elapsed = elapsed
-            self._theme = theme
-            self._tokens = _tok(theme)
-            self._label = _label(theme)
-            self._filter = ""
-            self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
-            self.title = f"peek — {root.name}"
-            self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
-            self._pulse_idx = 0
-            self._pulse_frames = ["◐", "◑", "◒", "◓"]
-            self._tip_idx = 0
-            self._tips = [
-                "Tip: / filter • q quit • o open",
-                "Tip: j/k nav • enter details • esc clear",
-                f"Theme: {self._label} • --theme-list for 10",
-                "Tip: peek --no-tui static • --html share",
-            ]
-            t = self._tokens
-            # Dynamic CSS from tokens
-            self.CSS = f"""
+    return f"""
         Screen {{
             background: {t['bg']};
             color: {t['ink']};
@@ -271,6 +189,97 @@ if TEXTUAL_AVAILABLE:
         }}
         """
 
+
+def _detail_for(path: Path, graph, reverse_graph, root: Path, theme: Any | None = None) -> RenderableType:
+    t = _tok(theme)
+    try:
+        imports = graph.get(path, set())
+        imported_by = reverse_graph.get(path, set())
+
+        def _rel(p: Path) -> str:
+            try:
+                return p.relative_to(root).as_posix()
+            except ValueError:
+                return p.name
+
+        lines: list[str] = []
+        if imports:
+            deps = ", ".join(_rel(p) for p in sorted(imports, key=lambda x: x.name)[:5])
+            suffix = f" (+{len(imports)-5} more)" if len(imports) > 5 else ""
+            lines.append(f"[bold {t['ink']}]Imports:[/] [{t['cyan']}]{deps}{suffix}[/]")
+        else:
+            lines.append(f"[dim {t['muted']}]Imports: none[/]")
+        if imported_by:
+            ib = ", ".join(_rel(p) for p in sorted(imported_by, key=lambda x: x.name)[:5])
+            suffix = f" (+{len(imported_by)-5} more)" if len(imported_by) > 5 else ""
+            lines.append(f"[bold {t['ink']}]Imported by:[/] [{t['accent']}]{ib}{suffix}[/]")
+        else:
+            lines.append(f"[dim {t['muted']}]Imported by: none — leaf[/]")
+        try:
+            size = path.stat().st_size
+            lines.append(f"[dim {t['muted']}]Size: {size} bytes · {path.suffix or 'no ext'}[/]")
+        except Exception:
+            pass
+        return Panel(
+            "\n".join(lines),
+            title=f"[bold {t['ink']}]{_rel(path)}[/]",
+            subtitle=f"[{t['muted']}]detail — {_label(theme)}[/]",
+            border_style=t["line"],
+            padding=(0, 1),
+            style=f"on {t['panel']}",
+        )
+    except Exception as e:
+        return Panel(f"[{t['accent2']}]Error: {e}[/]", title="Detail", border_style=t["line"])
+
+
+if TEXTUAL_AVAILABLE:
+
+    class PeekApp(App):  # type: ignore
+        TITLE = "peek — themed — htop for codebases"
+        SUB_TITLE = "10 themes"
+
+        # CSS will be set dynamically in __init__ based on theme
+
+        BINDINGS = [
+            Binding("q", "quit", "Quit"),
+            Binding("o", "open_file", "Open"),
+            Binding("/", "filter", "Filter"),
+            Binding("?", "help", "Help"),
+            Binding("escape", "clear_filter", "Clear", show=False),
+            Binding("j", "cursor_down", "Down", show=False),
+            Binding("k", "cursor_up", "Up", show=False),
+            Binding("t", "cycle_theme", "Theme", show=True),
+            Binding("c", "open_config", "Config", show=False),
+            Binding("w", "toggle_watch", "Watch", show=True),
+        ]
+
+        def __init__(self, root: Path, scan_result, analyzer_result, elapsed: float, theme: Any | None = None, watch: bool = False):
+            super().__init__()
+            self.root = root
+            self.scan_result = scan_result
+            self.analyzer_result = analyzer_result
+            self.elapsed = elapsed
+            self._theme = theme
+            self._tokens = _tok(theme)
+            self._label = _label(theme)
+            self._filter = ""
+            self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
+            self.title = f"peek — {root.name}"
+            self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
+            self._pulse_idx = 0
+            self._pulse_frames = ["◐", "◑", "◒", "◓"]
+            self._tip_idx = 0
+            self._tips = [
+                "Tip: / filter • q quit • o open",
+                "Tip: j/k nav • enter details • esc clear",
+                f"Theme: {self._label} • --theme-list for 10",
+                "Tip: peek --no-tui static • --html share",
+            ]
+            self.CSS = _css_for_theme(theme)
+            self._watcher = None
+            self._watching = False
+            self._watch_init = watch
+
         def compose(self) -> ComposeResult:
             yield Header(show_clock=False)
             # Continuous live pulse — subtle, interesting, always moving
@@ -295,6 +304,8 @@ if TEXTUAL_AVAILABLE:
             self.set_interval(0.28, self._tick_pulse)
             self.set_interval(3.0, self._tick_tip)
             self.set_interval(1.8, self._tick_border)
+            if getattr(self, "_watch_init", False):
+                self.set_timer(0.2, self._start_watch)
 
         def _tick_pulse(self) -> None:
             try:
@@ -514,6 +525,127 @@ if TEXTUAL_AVAILABLE:
         def action_help(self) -> None:
             self.notify(f"{self._label} — q quit · j/k nav · o open · / filter · enter details · esc clear · theme: {self._label}", timeout=4)
 
+        def action_cycle_theme(self) -> None:
+            from peek.themes import list_themes
+
+            themes = list_themes()
+            idx = next((i for i, t in enumerate(themes) if t.id == getattr(self._theme, "id", None)), 0)
+            nxt = themes[(idx + 1) % len(themes)]
+            self._theme = nxt
+            self._tokens = _tok(nxt)
+            self._label = _label(nxt)
+            self.CSS = _css_for_theme(nxt)
+            try:
+                self.query_one("#pulse", Static).update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]} • {self._label} ")
+            except Exception:
+                pass
+            self.notify(f"Theme: {nxt.id}")
+
+        def action_open_config(self) -> None:
+            try:
+                from peek.config import config_path
+
+                p = config_path()
+                self.notify(f"Config: {p} — theme: {self._label}")
+            except Exception as e:
+                self.notify(f"Config: {e}", severity="error")
+
+        def _start_watch(self) -> None:
+            if getattr(self, "_watching", False):
+                return
+            try:
+                from peek.watch import watch_repo
+
+                def on_change(sr, ar) -> None:
+                    def _do() -> None:
+                        self.scan_result = sr
+                        self.analyzer_result = ar
+                        self._all_ranked = list(ar.ranked)
+                        self.sub_title = f"{sr.stats.get('total_files',0)} files · {self.elapsed:.2f}s · {self._label} · watch"
+                        try:
+                            self.query_one("#summary", Static).update(self._summary_renderable())
+                            self.query_one("#tech", Static).update(self._tech_renderable())
+                            self.query_one("#graph", Static).update(self._graph_renderable())
+                            self.query_one("#langs", Static).update(self._languages_renderable())
+                            lv = self.query_one("#ranked-list", ListView)
+
+                            async def _rebuild() -> None:
+                                await lv.clear()
+                                q = self._filter.lower()
+                                if q:
+                                    filtered = [r for r in self._all_ranked if q in r.rel.as_posix().lower() or any(q in rs.lower() for rs in r.reasons)]
+                                else:
+                                    filtered = self._all_ranked
+                                items = self._make_list_items(filtered)
+                                await lv.extend(items)
+                                lv.index = 0 if filtered else None
+                                for idx, it in enumerate(items):
+                                    try:
+                                        it.add_class("in")
+                                    except Exception:
+                                        pass
+                                title = self.query_one("#right-title", Label)
+                                title.update(f" Start Here  ·  {len(filtered)}/{len(self._all_ranked)} watch · {self._label}" if q else f" Start Here  ·  {len(filtered)} ranked · {self._label} · watch")
+                                if filtered:
+                                    detail = self.query_one("#detail", Static)
+                                    detail.update(_detail_for(filtered[0].path, ar.graph, ar.reverse_graph, self.root, self._theme))
+
+                            self.run_worker(_rebuild(), exclusive=True)
+                            self.notify("Watch: updated", timeout=2)
+                        except Exception:
+                            pass
+                        try:
+                            self.query_one("#pulse", Static).update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]}  •  {self._label}  •  watch ON ")
+                        except Exception:
+                            pass
+
+                    try:
+                        self.call_from_thread(_do)
+                    except Exception:
+                        try:
+                            _do()
+                        except Exception:
+                            pass
+
+                self._watcher = watch_repo(self.root, on_change)
+                self._watching = True
+                self.notify("Watch: ON", timeout=2)
+                try:
+                    self.query_one("#pulse", Static).update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]}  •  {self._label}  •  watch ON ")
+                except Exception:
+                    pass
+            except Exception as e:
+                self.notify(f"Watch failed: {e}", severity="error")
+
+        def _stop_watch(self) -> None:
+            if not getattr(self, "_watching", False):
+                return
+            try:
+                if getattr(self, "_watcher", None):
+                    self._watcher.stop()
+            except Exception:
+                pass
+            self._watcher = None
+            self._watching = False
+            self.notify("Watch: OFF", timeout=2)
+            try:
+                self.query_one("#pulse", Static).update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]}  •  {self._label} ")
+            except Exception:
+                pass
+
+        def action_toggle_watch(self) -> None:
+            if getattr(self, "_watching", False):
+                self._stop_watch()
+            else:
+                self._start_watch()
+
+        def on_unmount(self) -> None:
+            try:
+                if getattr(self, "_watching", False) and getattr(self, "_watcher", None):
+                    self._watcher.stop()
+            except Exception:
+                pass
+
         @on(ListView.Highlighted)
         def on_highlighted(self, event: ListView.Highlighted) -> None:
             item = event.item
@@ -574,7 +706,7 @@ else:
             raise RuntimeError("Textual not installed — run `pip install textual`")
 
 
-def run_tui(root: Path | str, scan_result=None, analyzer_result=None, elapsed: float = 0.0, theme: Any | None = None) -> int:
+def run_tui(root: Path | str, scan_result=None, analyzer_result=None, elapsed: float = 0.0, theme: Any | None = None, watch: bool = False) -> int:
     from pathlib import Path as _P
     import time
 
@@ -621,5 +753,5 @@ def run_tui(root: Path | str, scan_result=None, analyzer_result=None, elapsed: f
         render_static(scan_result, analyzer_result, elapsed, console, theme=theme)
         return 0
 
-    app = PeekApp(root, scan_result, analyzer_result, elapsed, theme=theme)
+    app = PeekApp(root, scan_result, analyzer_result, elapsed, theme=theme, watch=watch)
     return app.run() or 0
