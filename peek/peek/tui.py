@@ -134,6 +134,15 @@ if TEXTUAL_AVAILABLE:
             self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
             self.title = f"peek — {root.name}"
             self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
+            self._pulse_idx = 0
+            self._pulse_frames = ["◐", "◑", "◒", "◓"]
+            self._tip_idx = 0
+            self._tips = [
+                "Tip: / filter • q quit • o open",
+                "Tip: j/k nav • enter details • esc clear",
+                f"Theme: {self._label} • --theme-list for 10",
+                "Tip: peek --no-tui static • --html share",
+            ]
             t = self._tokens
             # Dynamic CSS from tokens
             self.CSS = f"""
@@ -150,6 +159,15 @@ if TEXTUAL_AVAILABLE:
         }}
         HeaderTitle {{
             color: {t['ink']};
+        }}
+        #pulse {{
+            dock: top;
+            height: 1;
+            width: 100%;
+            background: {t['bg2']};
+            color: {t['accent']};
+            text-align: center;
+            opacity: 0.9;
         }}
         #main {{
             layout: horizontal;
@@ -180,6 +198,9 @@ if TEXTUAL_AVAILABLE:
         }}
         #right.in {{
             opacity: 1;
+        }}
+        #right.pulse {{
+            border: solid {t['accent']};
         }}
         #right-title {{
             width: 100%;
@@ -252,6 +273,8 @@ if TEXTUAL_AVAILABLE:
 
         def compose(self) -> ComposeResult:
             yield Header(show_clock=False)
+            # Continuous live pulse — subtle, interesting, always moving
+            yield Static(f" {self._pulse_frames[0]}  {self._tips[0]}  •  {self._label} ", id="pulse")
             yield Input(placeholder="Filter — try 'auth' — Enter to apply, Esc to clear", id="filter-input")
             with Horizontal(id="main"):
                 with VerticalScroll(id="left"):
@@ -268,6 +291,38 @@ if TEXTUAL_AVAILABLE:
         def on_mount(self) -> None:
             self.set_timer(0.05, self._reveal_panels)
             self.set_timer(0.12, self._stagger_list)
+            # Continuous — interesting but not noisy
+            self.set_interval(0.28, self._tick_pulse)
+            self.set_interval(3.0, self._tick_tip)
+            self.set_interval(1.8, self._tick_border)
+
+        def _tick_pulse(self) -> None:
+            try:
+                self._pulse_idx = (self._pulse_idx + 1) % len(self._pulse_frames)
+                pulse = self.query_one("#pulse", Static)
+                # keep tip stable, only spinner rotates
+                tip = self._tips[self._tip_idx % len(self._tips)]
+                pulse.update(f" {self._pulse_frames[self._pulse_idx]}  {tip}  •  {self._label} ")
+            except Exception:
+                pass
+
+        def _tick_tip(self) -> None:
+            try:
+                self._tip_idx = (self._tip_idx + 1) % len(self._tips)
+                pulse = self.query_one("#pulse", Static)
+                pulse.update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]}  •  {self._label} ")
+            except Exception:
+                pass
+
+        def _tick_border(self) -> None:
+            try:
+                right = self.query_one("#right")
+                if "pulse" in right.classes:
+                    right.remove_class("pulse")
+                else:
+                    right.add_class("pulse")
+            except Exception:
+                pass
 
         def _reveal_panels(self) -> None:
             try:
