@@ -63,7 +63,7 @@ def anthropic_header(root: Path, elapsed: float, version: str = "0.1.0", theme: 
 def scan_progress(console: Console, label: str = "Scanning", theme: Any | None = None):
     t = _tok(theme)
     return Progress(
-        SpinnerColumn(style=t["accent"], spinner="dots"),
+        SpinnerColumn(spinner_name="dots", style=t["accent"]),
         TextColumn(f"[bold {t['ink']}]{label}[/]"),
         TextColumn(f"[dim {t['muted']}]{{task.fields[detail]}}[/]"),
         console=console,
