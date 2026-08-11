@@ -5,11 +5,11 @@
 
 <h1 align="center">peek — htop for codebases</h1>
 
-<p align="center"><strong>Understand any codebase in 5 seconds.</strong> <code>pip install peek && peek .</code></p>
+<p align="center"><strong>Understand any codebase in 5 seconds.</strong> <code>pip install peek-code && peek .</code></p>
 
 <p align="center">
-  <a href="https://pypi.org/project/peek/"><img src="https://img.shields.io/pypi/v/peek?label=pypi" alt="PyPI"/></a>
-  <a href="https://pypi.org/project/peek/"><img src="https://img.shields.io/pypi/pyversions/peek" alt="Python"/></a>
+  <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
+  <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/pyversions/peek-code" alt="Python"/></a>
   <img src="https://img.shields.io/badge/tests-74%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
@@ -22,8 +22,8 @@
 ## Install
 
 ```bash
-pip install peek
-pipx install peek          # or: uv tool install peek
+pip install peek-code
+pipx install peek-code          # or: uv tool install peek-code
 pip install -e "peek[dev]" # dev — pyproject is at peek/pyproject.toml
 ```
 Requires Python 3.11+. Deps: `typer`, `rich`, `textual`, `pathspec`.
@@ -91,7 +91,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `p
 
 ## Why peek?
 
-Every output is a screenshot. Every repo is a new demo. `pip install peek` is zero friction — unlike `gitingest` (no ranking) or `pydeps` (no TUI).
+Every output is a screenshot. Every repo is a new demo. `pip install peek-code` is zero friction — unlike `gitingest` (no ranking) or `pydeps` (no TUI).
 
 ## License
 
