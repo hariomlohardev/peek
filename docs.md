@@ -1,15 +1,15 @@
 # peek — htop for codebases — Documentation
 
 > **Understand any codebase in 5 seconds.**  
-> `pip install peek && peek .` — Python-native, Rich + Textual, works offline, never crashes.
+> `pip install peek-code && peek .` — Python-native, Rich + Textual, works offline, never crashes.
 
 <p align="center">
   <img src="peek/assets/themes/anthropic-pro.svg" width="800" alt="peek anthropic-pro preview" />
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/peek/"><img src="https://img.shields.io/pypi/v/peek?label=pypi" alt="PyPI"/></a>
-  <a href="https://pypi.org/project/peek/"><img src="https://img.shields.io/pypi/pyversions/peek" alt="Python"/></a>
+  <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
+  <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/pyversions/peek-code" alt="Python"/></a>
   <img src="https://img.shields.io/badge/tests-72%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
@@ -56,10 +56,10 @@ Every output is a **screenshot**: `peek --no-tui` is tweet-ready, `peek --html` 
 ## Install
 
 ```bash
-pip install peek
+pip install peek-code
 # or isolated
-pipx install peek
-uv tool install peek
+pipx install peek-code
+uv tool install peek-code
 
 # dev (with tests + linters)
 git clone https://github.com/hariomlohardev/peek && cd peek
