@@ -5,6 +5,7 @@ Supports 10 themes. CSS templated from theme tokens.
 
 from __future__ import annotations
 
+import asyncio
 import os
 import subprocess
 import sys
