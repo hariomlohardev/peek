@@ -163,7 +163,7 @@ if TEXTUAL_AVAILABLE:
             padding-right: 1;
             background: {t['bg']};
             opacity: 0;
-            transition: opacity 220ms ease-out;
+            transition: opacity 220ms linear;
         }}
         #left.in {{
             opacity: 1;
@@ -175,7 +175,7 @@ if TEXTUAL_AVAILABLE:
             border: solid {t['line']};
             background: {t['surface']};
             opacity: 0;
-            transition: opacity 220ms ease-out 60ms;
+            transition: opacity 220ms linear 60ms;
         }}
         #right.in {{
             opacity: 1;
@@ -197,7 +197,7 @@ if TEXTUAL_AVAILABLE:
             border: solid {t['line']};
             background: {t['panel']};
             opacity: 0;
-            transition: opacity 180ms ease-out;
+            transition: opacity 180ms linear;
         }}
         #detail.in {{
             opacity: 1;
@@ -211,7 +211,7 @@ if TEXTUAL_AVAILABLE:
             background: {t['surface']};
             border-bottom: solid {t['line']};
             opacity: 0;
-            transition: opacity 160ms ease-out, background 120ms ease-out;
+            transition: opacity 160ms linear, background 120ms linear;
         }}
         ListView > ListItem.in {{
             opacity: 1;
