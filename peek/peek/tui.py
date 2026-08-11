@@ -61,91 +61,9 @@ def _label(theme: Any | None) -> str:
     return "anthropic-pro"
 
 
-def _detail_for(path: Path, graph, reverse_graph, root: Path, theme: Any | None = None) -> RenderableType:
+def _css_for_theme(theme: Any | None) -> str:
     t = _tok(theme)
-    try:
-        imports = graph.get(path, set())
-        imported_by = reverse_graph.get(path, set())
-
-        def _rel(p: Path) -> str:
-            try:
-                return p.relative_to(root).as_posix()
-            except ValueError:
-                return p.name
-
-        lines: list[str] = []
-        if imports:
-            deps = ", ".join(_rel(p) for p in sorted(imports, key=lambda x: x.name)[:5])
-            suffix = f" (+{len(imports)-5} more)" if len(imports) > 5 else ""
-            lines.append(f"[bold {t['ink']}]Imports:[/] [{t['cyan']}]{deps}{suffix}[/]")
-        else:
-            lines.append(f"[dim {t['muted']}]Imports: none[/]")
-        if imported_by:
-            ib = ", ".join(_rel(p) for p in sorted(imported_by, key=lambda x: x.name)[:5])
-            suffix = f" (+{len(imported_by)-5} more)" if len(imported_by) > 5 else ""
-            lines.append(f"[bold {t['ink']}]Imported by:[/] [{t['accent']}]{ib}{suffix}[/]")
-        else:
-            lines.append(f"[dim {t['muted']}]Imported by: none — leaf[/]")
-        try:
-            size = path.stat().st_size
-            lines.append(f"[dim {t['muted']}]Size: {size} bytes · {path.suffix or 'no ext'}[/]")
-        except Exception:
-            pass
-        return Panel(
-            "\n".join(lines),
-            title=f"[bold {t['ink']}]{_rel(path)}[/]",
-            subtitle=f"[{t['muted']}]detail — {_label(theme)}[/]",
-            border_style=t["line"],
-            padding=(0, 1),
-            style=f"on {t['panel']}",
-        )
-    except Exception as e:
-        return Panel(f"[{t['accent2']}]Error: {e}[/]", title="Detail", border_style=t["line"])
-
-
-if TEXTUAL_AVAILABLE:
-
-    class PeekApp(App):  # type: ignore
-        TITLE = "peek — themed — htop for codebases"
-        SUB_TITLE = "10 themes"
-
-        # CSS will be set dynamically in __init__ based on theme
-
-        BINDINGS = [
-            Binding("q", "quit", "Quit"),
-            Binding("o", "open_file", "Open"),
-            Binding("/", "filter", "Filter"),
-            Binding("?", "help", "Help"),
-            Binding("escape", "clear_filter", "Clear", show=False),
-            Binding("j", "cursor_down", "Down", show=False),
-            Binding("k", "cursor_up", "Up", show=False),
-        ]
-
-        def __init__(self, root: Path, scan_result, analyzer_result, elapsed: float, theme: Any | None = None):
-            super().__init__()
-            self.root = root
-            self.scan_result = scan_result
-            self.analyzer_result = analyzer_result
-            self.elapsed = elapsed
-            self._theme = theme
-            self._tokens = _tok(theme)
-            self._label = _label(theme)
-            self._filter = ""
-            self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
-            self.title = f"peek — {root.name}"
-            self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
-            self._pulse_idx = 0
-            self._pulse_frames = ["◐", "◑", "◒", "◓"]
-            self._tip_idx = 0
-            self._tips = [
-                "Tip: / filter • q quit • o open",
-                "Tip: j/k nav • enter details • esc clear",
-                f"Theme: {self._label} • --theme-list for 10",
-                "Tip: peek --no-tui static • --html share",
-            ]
-            t = self._tokens
-            # Dynamic CSS from tokens
-            self.CSS = f"""
+    return f"""
         Screen {{
             background: {t['bg']};
             color: {t['ink']};
@@ -270,6 +188,93 @@ if TEXTUAL_AVAILABLE:
             border-top: solid {t['line']};
         }}
         """
+
+
+def _detail_for(path: Path, graph, reverse_graph, root: Path, theme: Any | None = None) -> RenderableType:
+    t = _tok(theme)
+    try:
+        imports = graph.get(path, set())
+        imported_by = reverse_graph.get(path, set())
+
+        def _rel(p: Path) -> str:
+            try:
+                return p.relative_to(root).as_posix()
+            except ValueError:
+                return p.name
+
+        lines: list[str] = []
+        if imports:
+            deps = ", ".join(_rel(p) for p in sorted(imports, key=lambda x: x.name)[:5])
+            suffix = f" (+{len(imports)-5} more)" if len(imports) > 5 else ""
+            lines.append(f"[bold {t['ink']}]Imports:[/] [{t['cyan']}]{deps}{suffix}[/]")
+        else:
+            lines.append(f"[dim {t['muted']}]Imports: none[/]")
+        if imported_by:
+            ib = ", ".join(_rel(p) for p in sorted(imported_by, key=lambda x: x.name)[:5])
+            suffix = f" (+{len(imported_by)-5} more)" if len(imported_by) > 5 else ""
+            lines.append(f"[bold {t['ink']}]Imported by:[/] [{t['accent']}]{ib}{suffix}[/]")
+        else:
+            lines.append(f"[dim {t['muted']}]Imported by: none — leaf[/]")
+        try:
+            size = path.stat().st_size
+            lines.append(f"[dim {t['muted']}]Size: {size} bytes · {path.suffix or 'no ext'}[/]")
+        except Exception:
+            pass
+        return Panel(
+            "\n".join(lines),
+            title=f"[bold {t['ink']}]{_rel(path)}[/]",
+            subtitle=f"[{t['muted']}]detail — {_label(theme)}[/]",
+            border_style=t["line"],
+            padding=(0, 1),
+            style=f"on {t['panel']}",
+        )
+    except Exception as e:
+        return Panel(f"[{t['accent2']}]Error: {e}[/]", title="Detail", border_style=t["line"])
+
+
+if TEXTUAL_AVAILABLE:
+
+    class PeekApp(App):  # type: ignore
+        TITLE = "peek — themed — htop for codebases"
+        SUB_TITLE = "10 themes"
+
+        # CSS will be set dynamically in __init__ based on theme
+
+        BINDINGS = [
+            Binding("q", "quit", "Quit"),
+            Binding("o", "open_file", "Open"),
+            Binding("/", "filter", "Filter"),
+            Binding("?", "help", "Help"),
+            Binding("escape", "clear_filter", "Clear", show=False),
+            Binding("j", "cursor_down", "Down", show=False),
+            Binding("k", "cursor_up", "Up", show=False),
+            Binding("t", "cycle_theme", "Theme", show=True),
+            Binding("c", "open_config", "Config", show=False),
+        ]
+
+        def __init__(self, root: Path, scan_result, analyzer_result, elapsed: float, theme: Any | None = None):
+            super().__init__()
+            self.root = root
+            self.scan_result = scan_result
+            self.analyzer_result = analyzer_result
+            self.elapsed = elapsed
+            self._theme = theme
+            self._tokens = _tok(theme)
+            self._label = _label(theme)
+            self._filter = ""
+            self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
+            self.title = f"peek — {root.name}"
+            self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
+            self._pulse_idx = 0
+            self._pulse_frames = ["◐", "◑", "◒", "◓"]
+            self._tip_idx = 0
+            self._tips = [
+                "Tip: / filter • q quit • o open",
+                "Tip: j/k nav • enter details • esc clear",
+                f"Theme: {self._label} • --theme-list for 10",
+                "Tip: peek --no-tui static • --html share",
+            ]
+            self.CSS = _css_for_theme(theme)
 
         def compose(self) -> ComposeResult:
             yield Header(show_clock=False)
@@ -513,6 +518,31 @@ if TEXTUAL_AVAILABLE:
 
         def action_help(self) -> None:
             self.notify(f"{self._label} — q quit · j/k nav · o open · / filter · enter details · esc clear · theme: {self._label}", timeout=4)
+
+        def action_cycle_theme(self) -> None:
+            from peek.themes import list_themes
+
+            themes = list_themes()
+            idx = next((i for i, t in enumerate(themes) if t.id == getattr(self._theme, "id", None)), 0)
+            nxt = themes[(idx + 1) % len(themes)]
+            self._theme = nxt
+            self._tokens = _tok(nxt)
+            self._label = _label(nxt)
+            self.CSS = _css_for_theme(nxt)
+            try:
+                self.query_one("#pulse", Static).update(f" {self._pulse_frames[self._pulse_idx]}  {self._tips[self._tip_idx]} • {self._label} ")
+            except Exception:
+                pass
+            self.notify(f"Theme: {nxt.id}")
+
+        def action_open_config(self) -> None:
+            try:
+                from peek.config import config_path
+
+                p = config_path()
+                self.notify(f"Config: {p} — theme: {self._label}")
+            except Exception as e:
+                self.notify(f"Config: {e}", severity="error")
 
         @on(ListView.Highlighted)
         def on_highlighted(self, event: ListView.Highlighted) -> None:
