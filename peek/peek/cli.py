@@ -59,7 +59,7 @@ def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning
             import threading
 
             with Progress(
-                SpinnerColumn(style=_theme_accent(theme), spinner="dots"),
+                SpinnerColumn(spinner_name="dots", style=_theme_accent(theme)),
                 TextColumn(f"[bold {ANTHRO_CLI['ink']}]{label}[/] [dim {ANTHRO_CLI['muted']}]{{task.fields[path]}}[/]"),
                 console=err_console,
                 transient=True,
