@@ -82,7 +82,7 @@ header 0ms → +40ms stats → +30ms Languages → +30ms Summary → +30ms Tech 
 5. **List stagger** — `_stagger_list` async: `await asyncio.sleep(0.016 + idx*0.008)` per `ListItem`, `opacity 0→1 160ms linear, background 120ms linear`, highlight `border-left: solid accent`.
 6. **Scanner spinner** — `cli._scan_with_spinner` Rich `Progress(SpinnerColumn(spinner_name="dots", style=accent))` + `TextColumn` + `threading` 0.12 s min visible, themed `accent`.
 
-**Why continuous?** Viral screenshot needs wow, but pro user needs calm. Continuous `◐` + tip rotation + border breathe makes TUI feel like `htop`/`claude code` — alive, not dead static, but never auto-typing or flashing.
+**Why continuous?** Viral screenshot needs wow, but pro user needs calm. Continuous `◐` + tip rotation + border breathe makes TUI feel like `htop` — alive, not dead static, but never auto-typing or flashing.
 
 ---
 

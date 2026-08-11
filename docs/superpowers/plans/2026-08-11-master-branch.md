@@ -12,7 +12,7 @@
 
 - Must be in a branch **not** `main` — create/use `master` branch, never commit to `main`
 - Python >=3.11 (project `requires-python`)
-- No `Co-Authored-By`, no `Claude`/`Anthropic` attribution in commits
+- Keep commit messages clean — no attribution lines
 - Local `git commit` only, no `git push` (user rule: "yes full with plan and git commits okay but no git push")
 - All 72 tests must stay green (29 existing + 14 themes + 29 comprehensive), 1 skipped allowed for symlink
 - 10 themes exactly: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono — same layout, only 15 tokens differ
