@@ -28,6 +28,9 @@
 - [CLI Reference](#cli-reference)
 - [TUI Guide](#tui-guide)
 - [Pack, Find, LLM](#pack-find-llm)
+- [WTF — Traceback Explainer](#wtf--traceback-explainer)
+- [Watch — Live Rescan](#watch--live-rescan)
+- [Config Set](#config-set)
 - [Config](#config)
 - [Architecture](#architecture)
 - [Testing (TDD)](#testing-tdd)
@@ -216,6 +219,16 @@ Commands:
   find <query> [PATH]    Find by filename + content, ranked
     --limit 20 --json --max-files
 
+  wtf [FILE]             Explain traceback (file or stdin pipe) — scan-aware hint
+    --explain/--no-explain  Heuristic explain (default on)
+
+  watch [PATH]           Live rescan on file change (polling 0.8s, debounce 0.4s)
+    peek --watch         TUI watch with w toggle
+
+  config set <k> <v>     Set persistent config (theme validated via get_theme)
+  config get <k>         Get config value
+  config list            List config + path
+
 Examples:
   peek
   peek --no-tui
@@ -251,6 +264,9 @@ peek --theme dracula  # themed TUI
 | `o` | Open highlighted file in `$EDITOR` / `$VISUAL` / `notepad` |
 | `/` | Filter Start Here (fuzzy on `rel` + reasons), `Enter` apply, `Esc` clear |
 | `?` | Help toast (theme + keys) |
+| `t` | Cycle theme live (10) — `t` again for next |
+| `w` | Toggle watch live rescan (polling, debounce) — `w` on/off |
+| `c` | Show config path + theme |
 | `Esc` | Clear filter if visible |
 
 **Filter:** Type `auth`, `cli`, `graph` — list updates live with 12 ms stagger, detail follows first match. No match → placeholder `No files — try filter`.
@@ -293,6 +309,17 @@ peek analyze . --llm
 
 ---
 
+## WTF — Traceback Explainer
+`peek wtf tb.txt` or `cat tb.txt | peek wtf` → parses `Traceback` + `...Error` + frames, maps to `scan` files, hints if in `Start Here` top 5. No LLM needed.
+
+## Watch — Live Rescan
+`peek watch .` → polling every 0.8s, debounce 0.4s, re-renders static; `peek --watch` → TUI with `w` toggle. `watchfiles` used if installed, else polling fallback.
+
+## Config Set
+`peek config set theme dracula` → writes `~/.peek/config.toml`, validates via `get_theme`, `peek config get/list`.
+
+---
+
 ## Config
 
 ```toml
@@ -304,7 +331,7 @@ theme = "dracula"  # any of 10 ids, case-insensitive, _ or - normalized
 
 - Missing / malformed TOML → silently ignored (tolerant), falls back to `anthropic-pro`.
 - `tomllib` (3.11+) with `tomli` fallback.
-- No auto-write; explicit `echo 'theme = "dracula"' > ~/.peek/config.toml`. Future `peek theme set dracula` planned.
+- Persistent via `peek config set theme dracula` (writes `~/.peek/config.toml`, validates via `get_theme`); also `peek config get theme` / `peek config list`. Manual `echo 'theme = "dracula"' > ~/.peek/config.toml` still works.
 - Precedence proof via `test_resolve_precedence` (cli > env > config > default).
 
 ---
