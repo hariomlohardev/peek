@@ -1,5 +1,5 @@
 [project]
-name = "peek"
+name = "peek-code"
 version = "0.1.0"
 description = "The htop for codebases — understand any repo in 5 seconds"
 readme = "README.md"
