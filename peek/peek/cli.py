@@ -539,6 +539,49 @@ def find_command(
     _print_find_result(matches, query, elapsed)
 
 
+@app.command("wtf")
+def wtf_command(
+    path: Path = typer.Argument(None, help="File containing traceback, or omit to read stdin pipe"),
+    explain: bool = typer.Option(True, "--explain/--no-explain", help="Add heuristic explain with scan"),
+) -> None:
+    """Explain a Python traceback with scan-aware hints."""
+    import sys
+
+    text = ""
+    if path is not None and str(path) != "None":
+        try:
+            p = Path(path)
+            if p.exists() and p.is_file():
+                text = p.read_text(encoding="utf-8", errors="ignore")
+            else:
+                # path given but not a file — try stdin fallback
+                text = sys.stdin.read()
+        except Exception:
+            text = sys.stdin.read()
+    else:
+        text = sys.stdin.read()
+
+    from peek.wtf import explain_tb, parse_traceback
+
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+
+    info = parse_traceback(text)
+    if not info:
+        err_console.print("[yellow]No traceback found in input.[/]")
+        raise typer.Exit(1)
+    if explain:
+        try:
+            sr = scan(Path.cwd())
+            ar = analyze(sr)
+            console.print(explain_tb(info, sr, ar))
+        except Exception as e:
+            console.print(info.raw)
+            err_console.print(f"[dim]explain failed: {e}[/]")
+    else:
+        console.print(info.raw)
+
+
 @app.callback(invoke_without_command=True)
 def main_callback(
     ctx: typer.Context,
