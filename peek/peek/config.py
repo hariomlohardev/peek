@@ -31,3 +31,25 @@ def load_config() -> dict:
         return data if isinstance(data, dict) else {}
     except Exception:
         return {}
+
+
+def save_config(data: dict) -> Path:
+    p = config_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for k,v in data.items():
+        if isinstance(v, str):
+            lines.append(f'{k} = "{v}"')
+        else:
+            lines.append(f'{k} = {v}')
+    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return p
+
+
+def set_config_value(key: str, value: str) -> Path:
+    if key == "theme":
+        from peek.themes import get_theme
+        get_theme(value)  # validates, raises ValueError if unknown
+    data = load_config()
+    data[key] = value
+    return save_config(data)

@@ -539,6 +539,34 @@ def find_command(
     _print_find_result(matches, query, elapsed)
 
 
+config_app = typer.Typer(help="Config: get/set/list")
+app.add_typer(config_app, name="config")
+
+
+@config_app.command("set")
+def config_set(key: str = typer.Argument(...), value: str = typer.Argument(...)):
+    from peek.config import set_config_value
+    try:
+        p = set_config_value(key, value)
+        console.print(f"[green]Set {key}={value!r} at {p}[/]")
+    except ValueError as e:
+        err_console.print(f"[red]{e}[/]")
+        raise typer.Exit(2)
+
+
+@config_app.command("get")
+def config_get(key: str = typer.Argument(...)):
+    from peek.config import load_config
+    console.print(str(load_config().get(key, "")))
+
+
+@config_app.command("list")
+def config_list():
+    from peek.config import load_config, config_path
+    console.print(f"[dim]{config_path()}[/]")
+    console.print_json(data=load_config())
+
+
 @app.command("wtf")
 def wtf_command(
     path: Path = typer.Argument(None, help="File containing traceback, or omit to read stdin pipe"),
