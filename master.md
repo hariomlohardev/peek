@@ -2,7 +2,7 @@
 
 > **peek v0.1.0 — htop for codebases — final master state**
 > `pip install peek && peek .` — 10 themes, best TUI, all bugs fixed, 74 tests green.
-> Branch: `themes-10` → `master` → `polish-100` ready. No push. All local commits.
+> Branch: `polish-100` (from `themes-10` → `main`) ready. No push. All local commits.
 
 <p align="center">
   <img src="peek/assets/themes/anthropic-pro.svg" width="800" alt="peek master — anthropic-pro" />
@@ -180,16 +180,6 @@ Branch `polish-100` is master-ready + demo. No push per rule. Tag when ready: `g
 </p>
 
 GIF is 800×450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro` (`#D4A27F`→`#141413`). Generated via `python -m peek.tools.gen_demo` (Pillow, no vhs) + `peek/assets/demo.svg` (SMIL) and `peek/assets/demo.html` (themed). Verify: `file peek/assets/demo.gif` → `GIF89a`, `ls -lh` <3 MB, `pytest peek/tests/test_demo_assets.py -v`. Scenes: title → `peek --help` → `peek . --no-tui` → `peek find "auth"` → `peek --pack --ask auth` → `--theme-list` carousel. Also `vhs` fallback: `vhs peek/assets/demo.tape`.
-
----
-
-## Demo Video (by code)
-
-<p align="center">
-  <img src="peek/assets/demo.gif" width="800" alt="peek demo -- code-generated 800x450" />
-</p>
-
-GIF is 800x450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro` (`#D4A27F`->`#141413`). Generated via `python -m peek.tools.gen_demo` (Pillow, no vhs) + `peek/assets/demo.svg` (SMIL) and `peek/assets/demo.html` (themed). Verify: `file peek/assets/demo.gif` -> `GIF89a`, `ls -lh` <3 MB, `pytest peek/tests/test_demo_assets.py -v`. Scenes: title -> `peek --help` -> `peek . --no-tui` -> `peek find "auth"` -> `peek --pack --ask auth` -> `--theme-list` carousel. Also `vhs` fallback: `vhs peek/assets/demo.tape`.
 
 ---
 

@@ -384,7 +384,7 @@ Output pristine except `pathspec` deprecation warnings (dep, not our code).
 
 ## Contributing
 
-See `peek/CONTRIBUTING.md`. PRs welcome — add tests per TDD. Branch `polish-100` is latest (from `master`→`themes-10`), local commits only, no push. Run `ruff`, `pytest -q` (74 passed) before PR.
+See `peek/CONTRIBUTING.md`. PRs welcome — add tests per TDD. Branch `polish-100` is latest (from `themes-10` → `main`), local commits only, no push. Run `ruff`, `pytest -q` (74 passed) before PR.
 
 ## License
 
@@ -392,4 +392,4 @@ MIT — `peek/LICENSE`. Author **Hariom Lohar** — hariomlohar.new@gmail.com �
 
 ---
 
-*Docs generated 2026-08-11 on branch `themes-10` (commits `5fb8e0d` + fixes). Theme previews in `peek/assets/themes/*.svg` (800×420, bg/accent/cyan per theme). For the 5-day build story see `06_five_day_build_plan.md` and `08_launch_playbook.md`.*
+*Docs generated 2026-08-11 on branch `polish-100`. Theme previews in `peek/assets/themes/*.svg` (800×420). For the 5-day build story see `docs/research/06_five_day_build_plan.md` and `docs/research/08_launch_playbook.md`.*

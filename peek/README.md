@@ -166,7 +166,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome — add tests for new featur
 
 ## Launch
 
-This is `v0.1.0` — built in 5 days (scanner → analyzer → TUI → P1 → polish). See [`08_launch_playbook.md`](../08_launch_playbook.md) for HN/Twitter/Reddit/Product Hunt checklist. Launch window: **Tue–Thu 08:00 UTC**.
+This is `v0.1.0` — built in 5 days (scanner → analyzer → TUI → P1 → polish). See [`08_launch_playbook.md`](https://github.com/hariomlohardev/peek/blob/main/docs/research/08_launch_playbook.md) for HN/Twitter/Reddit/Product Hunt checklist. Launch window: **Tue–Thu 08:00 UTC**.
 
 ## Author
 
