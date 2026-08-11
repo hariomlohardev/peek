@@ -1,3 +1,8 @@
+# MASTER — Archived (merged into docs.md)
+
+> **Archived:** This was the final master state doc on branch `polish-100` (2026-08-11). Its unique **TUI continuous animations** section has been merged into [`docs.md`](../docs.md#tui-guide). Kept here for history — do not edit. For current docs see `docs.md` and `README.md`.
+
+---
 # MASTER — peek final
 
 > **peek v0.1.0 — htop for codebases — final master state**
@@ -5,7 +10,7 @@
 > Branch: `polish-100` (from `themes-10` → `main`) ready. No push. All local commits.
 
 <p align="center">
-  <img src="peek/assets/themes/anthropic-pro.svg" width="800" alt="peek master — anthropic-pro" />
+  <img src="../../peek/assets/themes/anthropic-pro.svg" width="800" alt="peek master — anthropic-pro" />
 </p>
 
 <p align="center">
@@ -99,18 +104,18 @@ echo 'theme = "dracula"' > ~/.peek/config.toml
 
 | ID | Accent → Bg | Label | Preview |
 |----|-------------|-------|---------|
-| anthropic-pro | `#D4A27F` → `#141413` | Warm editorial (default) | ![anthropic-pro](peek/assets/themes/anthropic-pro.svg) |
-| cinematic | `#FFE600` → `#070A14` | Neon viral | ![cinematic](peek/assets/themes/cinematic.svg) |
-| dracula | `#BD93F9` → `#282A36` | Purple haze | ![dracula](peek/assets/themes/dracula.svg) |
-| nord | `#88C0D0` → `#2E3440` | Arctic | ![nord](peek/assets/themes/nord.svg) |
-| catppuccin-mocha | `#CBA6F7` → `#1E1E2E` | Pastel cozy | ![catppuccin-mocha](peek/assets/themes/catppuccin-mocha.svg) |
-| tokyo-night | `#7AA2F7` → `#1A1B26` | Electric storm | ![tokyo-night](peek/assets/themes/tokyo-night.svg) |
-| solarized-dark | `#268BD2` → `#002B36` | Teal classic | ![solarized-dark](peek/assets/themes/solarized-dark.svg) |
-| github-dark | `#58A6FF` → `#0D1117` | Familiar | ![github-dark](peek/assets/themes/github-dark.svg) |
-| monokai | `#F92672` → `#272822` | Hot pink | ![monokai](peek/assets/themes/monokai.svg) |
-| minimal-mono | `#E5E5E5` → `#111111` | Grayscale | ![minimal-mono](peek/assets/themes/minimal-mono.svg) |
+| anthropic-pro | `#D4A27F` → `#141413` | Warm editorial (default) | ![anthropic-pro](../../peek/assets/themes/anthropic-pro.svg) |
+| cinematic | `#FFE600` → `#070A14` | Neon viral | ![cinematic](../../peek/assets/themes/cinematic.svg) |
+| dracula | `#BD93F9` → `#282A36` | Purple haze | ![dracula](../../peek/assets/themes/dracula.svg) |
+| nord | `#88C0D0` → `#2E3440` | Arctic | ![nord](../../peek/assets/themes/nord.svg) |
+| catppuccin-mocha | `#CBA6F7` → `#1E1E2E` | Pastel cozy | ![catppuccin-mocha](../../peek/assets/themes/catppuccin-mocha.svg) |
+| tokyo-night | `#7AA2F7` → `#1A1B26` | Electric storm | ![tokyo-night](../../peek/assets/themes/tokyo-night.svg) |
+| solarized-dark | `#268BD2` → `#002B36` | Teal classic | ![solarized-dark](../../peek/assets/themes/solarized-dark.svg) |
+| github-dark | `#58A6FF` → `#0D1117` | Familiar | ![github-dark](../../peek/assets/themes/github-dark.svg) |
+| monokai | `#F92672` → `#272822` | Hot pink | ![monokai](../../peek/assets/themes/monokai.svg) |
+| minimal-mono | `#E5E5E5` → `#111111` | Grayscale | ![minimal-mono](../../peek/assets/themes/minimal-mono.svg) |
 
-`peek/assets/themes/*.svg` are 800×420 generated previews (real layout). Generate new: `pytest peek/tests/test_gen_previews.py -v` (removed after gen, committed SVGs).
+`peek/assets/themes/*.svg` are 800×420 generated previews (real layout).
 
 ---
 
@@ -127,10 +132,8 @@ pytest -q
 | `test_analyzer.py` | 9 | graph, relative, circular, syntax error, non-python, empty, frameworks, entry bonus, BOM |
 | `test_renderer_pack_find.py` | 12 | render no crash, html, scan-only, tokens, pack basic/query/budget, find, llm fallback, cli import |
 | `test_themes.py` | 14 | 10 registry, tokens 15×hex, case-insensitive, unknown, fallback, resolve precedence, config missing/malformed, render/html per-theme, tui CSS, cli list+unknown, compat |
-| `test_comprehensive_tdd.py` | 29+1 skip | Full integration: scanner edge, analyzer edge, renderer per-theme, pack/find/llm, config XDG, tui `linear` + `asyncio` + `Stylesheet` parse, cli `--version`/`--help`/`scan`/`analyze` `--json`/`--html`/`find`/`pack`/`--no-tui` + themed, `_write_output_safely` `/tmp` win, animations/ascii, `run_tui` fallbacks |
-| `test_demo_assets.py` | 2 | GIF valid (`GIF89a`, <3 MB, >5 KB) + HTML exists (`<html`) |
-
-**TDD:** `test_comprehensive_tdd.py` first run 2 failures (`gitignore` `.git` substring, `SpinnerColumn spinner=`), fixed minimally, re-run green. Added `test_css_parse` for `ease-out` → `linear`, verified via `Stylesheet().add_source`. Warnings only `pathspec` deprecation.
+| `test_comprehensive_tdd.py` | 29+1 skip | Full integration |
+| `test_demo_assets.py` | 2 | GIF valid + HTML exists |
 
 ---
 
@@ -151,40 +154,37 @@ graph LR
   CONFIG[config.py] --> THEMES
 ```
 
-`themes.py` owns all colors, `config.py` tolerant TOML, `renderer/tui` pure-arg `theme`, `cli` threads `resolved_theme` everywhere, `tui` continuous intervals, `scanner/analyzer` never crash.
-
 ---
 
 ## How to run master
 
 ```bash
-git checkout polish-100  # polish-100 is master + demo
+git checkout polish-100
 pytest -q                # 74 passed
 peek --theme-list
 peek --theme dracula --no-tui | head -20
 peek --theme dracula --html -o /tmp/preview.html && start /tmp/preview.html
 peek                     # TUI — watch pulse ◐ rotate + tips cycle + border breathe, q to quit
 PEEK_THEME=nord peek
-cat docs.md              # 800-line full manual
-cat master.md            # this file
+cat docs.md              # full manual
 ```
 
-Branch `polish-100` is master-ready + demo. No push per rule. Tag when ready: `git tag -f v0.1.0 polish-100 && git show --stat HEAD`.
+Branch `polish-100` is master-ready + demo. No push per rule.
 
 ---
 
 ## Demo Video (by code)
 
 <p align="center">
-  <img src="peek/assets/demo.gif" width="800" alt="peek demo — code-generated 800x450" />
+  <img src="../../peek/assets/demo.gif" width="800" alt="peek demo — code-generated 800x450" />
 </p>
 
-GIF is 800×450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro` (`#D4A27F`→`#141413`). Generated via `python -m peek.tools.gen_demo` (Pillow, no vhs) + `peek/assets/demo.svg` (SMIL) and `peek/assets/demo.html` (themed). Verify: `file peek/assets/demo.gif` → `GIF89a`, `ls -lh` <3 MB, `pytest peek/tests/test_demo_assets.py -v`. Scenes: title → `peek --help` → `peek . --no-tui` → `peek find "auth"` → `peek --pack --ask auth` → `--theme-list` carousel. Also `vhs` fallback: `vhs peek/assets/demo.tape`.
+GIF is 800×450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed `anthropic-pro`.
 
 ---
 
 ## Screenshots
 
-All SVG previews in `peek/assets/themes/` — used in `docs.md` and above. Real terminal screenshot: `peek --no-tui` (static) is tweet-ready. HTML export `peek --html -o out.html` is shareable self-contained (embeds `bg`/`accent`).
+All SVG previews in `peek/assets/themes/`.
 
-*Master built 2026-08-11 — 5 days (scanner → analyzer → TUI → P1 → polish) + 10 themes + continuous TUI + demo by code + 74 TDD tests + docs. Branch `polish-100`. Author Hariom Lohar.*
+*Archived from `master.md` 2026-08-11 — see `docs.md#tui-guide` for current. Branch `polish-100`. Author Hariom Lohar.*

@@ -255,7 +255,17 @@ peek --theme dracula  # themed TUI
 
 **Filter:** Type `auth`, `cli`, `graph` — list updates live with 12 ms stagger, detail follows first match. No match → placeholder `No files — try filter`.
 
-**Animations:** Panels fade `opacity 0→1 220ms linear` (right `+60ms` delay), detail `180ms`, list items `160ms` + `12ms` stagger, spinner `dots` in theme `accent`. All `linear` (Textual valid, not `ease-out`).
+**Animations — Subtle + Continuous:**
+- **Static (`peek --no-tui`):** Staggered reveal when TTY — `header 0ms → +40ms stats → +30ms Languages → +30ms Summary → +30ms Tech → +30ms Ranked → +30ms Graph → +20ms Largest → tip` (`render_static` `animate=True` only when `is_terminal`).
+- **TUI 3 continuous loops** (all `linear`):
+  1. **Live pulse** `◐◑◒◓` in `#pulse` dock top, `set_interval(0.28s, _tick_pulse)` — accent colored, always moving.
+  2. **Rotating tips** `Tip: / filter…` / `j/k nav…` / `Theme: X…`, `set_interval(3.0s, _tick_tip)` — footer/pulse never static.
+  3. **Border breathe** `set_interval(1.8s, _tick_border)` toggles `#right.pulse` → `border: solid accent` ↔ `line`.
+- **Panel fade:** `left/right/detail` `opacity 0→1 220ms linear` (`right +60ms` delay), `left.in` etc.
+- **List stagger:** `_stagger_list` `await asyncio.sleep(0.016 + idx*0.008)` per `ListItem`, `opacity 0→1 160ms linear, background 120ms linear`, highlight `border-left: solid accent`.
+- **Scanner spinner:** `cli._scan_with_spinner` Rich `Progress(SpinnerColumn(spinner_name="dots", style=accent))` + `threading` 0.12 s min visible, themed `accent`. All `linear` (not `ease-out`).
+
+**Why continuous?** Viral wow needs motion, pro user needs calm — `◐` + tip + border makes TUI feel like `htop` — alive, not flashy.
 
 **Fallbacks:** No `textual` installed → static Rich + hint `pip install textual`. Not a tty (`isatty` false) → static. `asyncio` imported at top — filter no longer `NameError`.
 
