@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -29,6 +30,32 @@ def test_get_theme_case_insensitive():
     assert get_theme("DRACULA").id == "dracula"
     assert get_theme("catppuccin_mocha").id == "catppuccin-mocha"
     assert get_theme("  nord  ").id == "nord"
+
+
+def test_theme_list_sorted():
+    """`peek --theme-list` order is by id, case-insensitive and stable."""
+    ids = [th.id for th in list_themes()]
+
+    assert ids == sorted(ids, key=str.lower)
+    assert len(ids) == len(set(ids))
+    # Stable across calls: no dependence on dict iteration or set ordering.
+    assert ids == [th.id for th in list_themes()]
+
+
+def test_theme_list_sorted_ignores_case(monkeypatch):
+    """A capitalised id sorts into place rather than jumping to the front.
+
+    Every id in THEMES is lowercase today, so this registers one that is not
+    -- otherwise the case-insensitive key is untested and a later plain
+    sorted() would pass.
+    """
+    odd = "Solarized-Light"
+    monkeypatch.setitem(THEMES, odd, replace(THEMES["solarized-dark"], id=odd))
+
+    ids = [th.id for th in list_themes()]
+
+    assert ids.index("solarized-dark") + 1 == ids.index(odd)
+    assert ids[0] == "anthropic-pro"  # not the capitalised one
 
 
 def test_get_theme_unknown_raises():
