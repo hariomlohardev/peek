@@ -191,6 +191,7 @@ def _count_loc(path: Path, language: str) -> int:
 
 
 def _language_for(path: Path) -> str:
+    """Return the detected language for a file based on its extension."""
     ext = path.suffix.lower()
     if ext in EXT_TO_LANG:
         return EXT_TO_LANG[ext]
