@@ -44,10 +44,16 @@ class ScanResult:
 
     @property
     def total_files(self) -> int:
+        """Number of files scanned, or 0 if the scan recorded no stats."""
         return self.stats.get("total_files", 0)
 
     @property
     def total_loc(self) -> int:
+        """Total lines of code across scanned files, or 0 if none were recorded.
+
+        Counts what ``_count_loc`` counts: non-blank lines, with comments also
+        dropped for Python only.
+        """
         return self.stats.get("total_loc", 0)
 
 
@@ -191,6 +197,12 @@ def _count_loc(path: Path, language: str) -> int:
 
 
 def _language_for(path: Path) -> str:
+    """Name the language of ``path`` from its extension, or ``"other"``.
+
+    Falls back to the filename for the build files that carry no extension --
+    ``Dockerfile``, ``Dockerfile.prod``, ``Makefile``, ``GNUmakefile`` -- which
+    an extension lookup alone would file under "other".
+    """
     ext = path.suffix.lower()
     if ext in EXT_TO_LANG:
         return EXT_TO_LANG[ext]
