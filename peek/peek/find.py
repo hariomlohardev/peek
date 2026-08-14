@@ -1,8 +1,11 @@
-"""Find — keyword search over codebase.
+"""Find — keyword search + semantic BM25 over codebase.
 
 Used by `peek find <query> [PATH]` and `peek --find <query>`.
 
 Ranks by analyzer score + keyword match strength.
+If query contains spaces (intent), tries semantic BM25 via peek.embeddings.
+
+Never crashes.
 """
 
 from __future__ import annotations
@@ -24,6 +27,73 @@ def find_matches(
     try:
         if not query or not query.strip():
             return []
+        # Semantic path: if query is multi-word (intent), try embeddings.search
+        if " " in query.strip():
+            try:
+                from peek.embeddings import build_index, search
+
+                idx = build_index(scan_result)
+                hits = search(idx, query, k=limit)
+                # Filter to positive semantic hits only (search may pad zeros for test_bm25_fallback)
+                hits = [h for h in hits if getattr(h, "score", 0) > 0]
+                if hits:
+                    # Map analyzer scores for tie-break / reason
+                    score_map: dict[Path, float] = {}
+                    if analyzer_result and getattr(analyzer_result, "ranked", None):
+                        for r in analyzer_result.ranked:
+                            score_map[r.path] = r.score
+                    # Map rel and loc for completeness
+                    loc_map: dict[Path, int] = {}
+                    if scan_result and getattr(scan_result, "files", None):
+                        for f in scan_result.files:
+                            try:
+                                loc_map[f.path] = f.loc
+                            except Exception:
+                                pass
+                    out: list[dict] = []
+                    for h in hits:
+                        # Build preview from chunk (first 3 lines)
+                        preview: list[str] = []
+                        try:
+                            lines = h.chunk.splitlines()
+                            for li, line in enumerate(lines[:3], start=h.lineno):
+                                snippet = line.strip()[:120]
+                                if len(line.strip()) > 120:
+                                    snippet += "…"
+                                if snippet:
+                                    preview.append(f"{li:>4}: {snippet}")
+                        except Exception:
+                            preview = []
+                        # Combine semantic score with analyzer base (weighted)
+                        base = score_map.get(h.file, 0.0) * 0.1
+                        total = float(h.score) * 10.0 + base
+                        reason = "semantic"
+                        if h.file in score_map:
+                            reason += f" • ranked {score_map[h.file]:.1f}"
+                        out.append(
+                            {
+                                "path": h.file,
+                                "rel": h.rel,
+                                "score": round(float(total), 2),
+                                "reason": reason,
+                                "preview": preview,
+                                "loc": loc_map.get(h.file, 0),
+                                "analyzer_score": round(float(score_map.get(h.file, 0.0)), 2),
+                            }
+                        )
+                    # Deduplicate by path (keep highest scored chunk per file)
+                    dedup: dict[Path, dict] = {}
+                    for m in out:
+                        p = m["path"]
+                        if p not in dedup or m["score"] > dedup[p]["score"]:
+                            dedup[p] = m
+                    deduped = list(dedup.values())
+                    deduped.sort(key=lambda x: (x["score"], x["analyzer_score"]), reverse=True)
+                    if deduped:
+                        return deduped[:limit]
+                # if no hits, fall through to keyword
+            except Exception:
+                pass
         q = query.lower().strip()
         # Map path -> analyzer score
         score_map: dict[Path, float] = {}

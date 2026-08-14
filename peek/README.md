@@ -10,9 +10,10 @@
 <p align="center">
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/pyversions/peek-code" alt="Python"/></a>
-  <img src="https://img.shields.io/badge/tests-108%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-113%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
+  <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 </p>
 
 <p align="center"><em>5 seconds → languages, stack, Start Here, graph. Every output is a screenshot.</em></p>
@@ -99,11 +100,27 @@ Warm clay `anthropic-pro` → neon `cinematic` → `dracula` → `nord`. 15 toke
 ```bash
 git clone https://github.com/hariomlohardev/peek && cd peek
 pip install -e "peek[dev]"
-pytest -q          # 108 passed, 1 skipped
+pytest -q          # 113 passed, 1 skipped
 peek --no-tui && peek  # static + TUI
 ```
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `v2`.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `v3`.
+
+## Contributing — Good First Issues
+
+New to open source? Start here — **20 `good first issue`s, each ~30 min, one file, copy-paste steps:**
+
+<a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
+
+**Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+
+- **Beginner (30 min):** docstrings, typo fixes, `--help` examples, `peek --version` test — pick any, no setup beyond `pip install -e peek[dev]`
+- **Intermediate (60-90 min):** `tiktoken` tokens, `peek diff`, `peek serve`, symbol index
+- **Complex (1-2 days):** `peek-mcp` for Claude Code, polyglot `tree-sitter`, semantic embeddings, `peek-vscode`
+
+Every issue has **exact file**, **acceptance checkboxes**, and `pytest -q` gate. PRs with `good first issue` label get priority review.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for `ruff` + `pytest` workflow. Branch `v3` is the big upshift (polyglot + semantic + MCP).
 
 ## Why peek?
 

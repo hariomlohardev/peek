@@ -13,8 +13,9 @@
   <a href="https://github.com/hariomlohardev/peek/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hariomlohardev/peek" alt="License"/></a>
   <a href="https://github.com/hariomlohardev/peek"><img src="https://img.shields.io/github/stars/hariomlohardev/peek?style=social" alt="Stars"/></a>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
-  <img src="https://img.shields.io/badge/tests-74%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-113%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
+  <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 </p>
 
 <p align="center">
@@ -132,13 +133,29 @@ peek --theme-list
 ```bash
 git clone https://github.com/hariomlohardev/peek && cd peek
 pip install -e "peek[dev]"
-pytest -q          # 74 passed
+pytest -q          # 113 passed, 1 skipped
 peek --no-tui
-peek              # TUI — q to quit
+peek              # TUI — q to quit, peek . also works
 python -m peek.tools.gen_demo
 ```
 
-See [`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `polish-100` is latest, local commits only.
+See [`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `v3` is the big upshift.
+
+## Contributing — Good First Issues
+
+**Want to contribute?** We have **35 open issues** tailored for every level — and they rank high on GitHub's `good first issue` search:
+
+<a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a> <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/help%20wanted?label=help%20wanted" alt="Help Wanted"/></a>
+
+**Browse all:** https://github.com/hariomlohardev/peek/issues
+
+- **20 Good First Issues (30 min, beginner):** One file, copy-paste steps, `good first issue` + `help wanted` labels — e.g., docstrings, `peek wtf --help` example, `peek --version` test. Perfect for first PR!
+- **10 Intermediate (60-90 min):** `tiktoken` tokens, `peek diff`, `peek serve`, symbol index — needs a bit of design.
+- **5 Complex (1-2 days):** `peek-mcp` for Claude Code, polyglot `tree-sitter`, `peek-vscode` — for experienced contributors.
+
+Every issue has **exact file**, **acceptance checkboxes**, and **time estimate**. PRs with `good first issue` get priority review and will be featured in release notes.
+
+See [`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md) for the full workflow. Branch `v3` is where the big upshift lands (polyglot + semantic + MCP + graph).
 
 ## Why peek?
 
