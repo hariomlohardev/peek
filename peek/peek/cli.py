@@ -132,13 +132,18 @@ class _PeekGroup(TyperGroup):
             known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
+            # Options like --help, --theme, --no-tui etc. should not be treated as subcommand
+            if is_option:
+                ctx.args = rest
+                ctx._protected_args = []
+                return ctx.args
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
             is_path = False
             if first in (".", ".."):
                 is_path = True
             elif first.startswith(("./", "../", "/", "\\")):
                 is_path = True
-            elif not is_known_cmd and not is_option:
+            elif not is_known_cmd:
                 # Treat as path only if it looks like a path (contains . or / or \ or exists)
                 # This keeps `peek myrepo` (existing dir) working, but `peek typo123` still errors as unknown command
                 if "." in first or "/" in first or "\\" in first or Path(first).exists():
