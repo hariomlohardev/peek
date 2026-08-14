@@ -115,7 +115,10 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-import click as _click
+try:
+    import click as _click
+except ImportError:
+    from typer import _click  # typer 0.27+ vendors click
 from typer.core import TyperGroup
 
 class _PeekGroup(TyperGroup):
