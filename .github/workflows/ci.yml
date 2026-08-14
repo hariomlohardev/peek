@@ -42,8 +42,7 @@ jobs:
       - name: Build
         run: |
           pip install build twine
-          cd peek && python -m build
-          twine check peek/dist/*
+          cd peek && python -m build && twine check dist/*
       - name: Check bad labels
         run: |
           python -c "import pathlib; txt=pathlib.Path('peek/README.md').read_text(); assert 'good first issue' in txt.lower() or 'Good First Issues' in txt, 'README must mention good first issues'"
