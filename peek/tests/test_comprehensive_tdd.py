@@ -363,7 +363,9 @@ def test_cli_version_and_help():
     assert runner.invoke(app, ["--version"]).exit_code == 0
     assert f"v{__version__}" in runner.invoke(app, ["--version"]).output
     assert runner.invoke(app, ["--help"]).exit_code == 0
-    assert "--theme" in runner.invoke(app, ["--help"]).output
+    # Robust for CI (GITHUB_ACTIONS) where Rich may render --theme as two lines: "--theme" + newline + "TEXT"
+    help_out = runner.invoke(app, ["--help"]).output.lower()
+    assert "theme" in help_out
 
 
 def test_cli_theme_list_and_unknown():
@@ -416,7 +418,8 @@ def test_cli_find_and_pack():
         r = runner.invoke(app, ["--pack", "-o", str(out), "--ask", "auth"])
         # may need path arg? main_callback defaults to cwd, but should still work via --pack with cwd having files? use direct pack via analyze
         # Alternative: test build_pack already covers, just check cli --help has --pack
-        assert "--pack" in runner.invoke(app, ["--help"]).output
+        help_out2 = runner.invoke(app, ["--help"]).output.lower()
+        assert "pack" in help_out2
 
 
 def test_cli_no_tui_and_theme_variants():
