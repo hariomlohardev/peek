@@ -1,6 +1,6 @@
 [project]
 name = "peek-code"
-version = "0.2.1"
+version = "0.3.0"
 description = "The htop for codebases — understand any repo in 5 seconds"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -69,3 +69,4 @@ source = ["peek"]
 [project.optional-dependencies]
 dev = ["pytest>=7", "pytest-cov", "ruff", "pyperclip", "Pillow>=10"]
 llm = ["openai", "anthropic"]
+mcp = ["mcp>=1.0"]

@@ -10,9 +10,9 @@
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="0.0s" repeatCount="indefinite" />
     <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek — htop for codebases</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">peek v0.2.0  •  anthropic-pro  •  10 themes</text>
+    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">peek v0.3.0  •  anthropic-pro  •  10 themes</text>
     <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  pip install peek-code &amp;&amp; peek .</tspan><tspan x="18" dy="15">  ─────────────────────────</tspan><tspan x="18" dy="15">  5 seconds → map any repo</tspan><tspan x="18" dy="15">  where to start • what talks to what</tspan><tspan x="18" dy="15"></tspan><tspan x="18" dy="15">  ▶  peek --help  →  peek . --no-tui  →  peek find "auth"</tspan></text>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  pip install peek-code &amp;&amp; peek .</tspan><tspan x="18" dy="15">  ─────────────────────────</tspan><tspan x="18" dy="15">  5 seconds → map any repo (polyglot)</tspan><tspan x="18" dy="15">  where to start • what talks to what</tspan><tspan x="18" dy="15"></tspan><tspan x="18" dy="15">  ▶  peek --help  →  peek . --no-tui  →  peek graph --format svg</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="2.2s" repeatCount="indefinite" />
@@ -20,7 +20,7 @@
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
     <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek --help</text>
     <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  Usage: peek [PATH] [OPTIONS] COMMAND</tspan><tspan x="18" dy="15">  </tspan><tspan x="18" dy="15">  The htop for codebases — understand any repo in 5s.</tspan><tspan x="18" dy="15">  </tspan><tspan x="18" dy="15">  Commands:  scan    scan + stats        wtf     traceback hint</tspan><tspan x="18" dy="15">             analyze import graph+rank   watch   live rescan</tspan><tspan x="18" dy="15">             find    keyword search      config  theme persist</tspan></text>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  Usage: peek [PATH] [OPTIONS] COMMAND</tspan><tspan x="18" dy="15">  </tspan><tspan x="18" dy="15">  The htop for codebases — understand any repo in 5s.</tspan><tspan x="18" dy="15">  </tspan><tspan x="18" dy="15">  Commands:  scan    scan + stats        wtf     traceback hint</tspan><tspan x="18" dy="15">             analyze import graph+rank   watch   live rescan</tspan><tspan x="18" dy="15">             find    keyword/semantic    config  theme persist</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="4.4s" repeatCount="indefinite" />
@@ -28,26 +28,34 @@
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
     <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek . --no-tui</text>
     <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  peek  v0.2.0  —  ./peek  (0.12s)</tspan><tspan x="18" dy="15">  ┌ Languages ──────────────────┐ ┌ Tech Stack ────────┐</tspan><tspan x="18" dy="15">  │ Python  ██████████████  68%  │ │ Primary: python  │</tspan><tspan x="18" dy="15">  │ Markdown ░░░░░░░░░░░░░   8%  │ │ Frameworks: textual, rich</tspan><tspan x="18" dy="15">  └─────────────────────────────┘ └────────────────────┘</tspan><tspan x="18" dy="15">  ┌ Start Here ⭐ (ranked) ─────────────────────────┐</tspan><tspan x="18" dy="15">  │ 1  peek/peek/cli.py        9.2  entry • hub     │</tspan></text>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  peek  v0.3.0  —  ./peek  (0.12s)</tspan><tspan x="18" dy="15">  ┌ Languages ──────────────────┐ ┌ Tech Stack ────────┐</tspan><tspan x="18" dy="15">  │ Python  ██████████████  68%  │ │ Primary: python  │</tspan><tspan x="18" dy="15">  │ JavaScript ░░░░░░░░░░░  12%  │ │ Frameworks: textual, rich</tspan><tspan x="18" dy="15">  └─────────────────────────────┘ └────────────────────┘</tspan><tspan x="18" dy="15">  ┌ Start Here ⭐ (ranked) ─────────────────────────┐</tspan><tspan x="18" dy="15">  │ 1  peek/peek/cli.py        9.2  entry • hub     │</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="6.6000000000000005s" repeatCount="indefinite" />
-    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek find "auth" .</text>
+    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek find "auth token" --semantic</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek find "auth" .</text>
+    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek find "auth token" --semantic</text>
     <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  peek find  v0.2.0  —  query: "auth"  (0.04s)</tspan><tspan x="18" dy="15">  ┌ Matches (4 files) ─────────────────────────────┐</tspan><tspan x="18" dy="15">  │ 1  peek/peek/auth.py        8.4  filename     │</tspan><tspan x="18" dy="15">  │ 2  peek/peek/middleware.py  3.1  content:42   │</tspan><tspan x="18" dy="15">  │ 3  tests/test_auth.py       2.8  content:7    │</tspan><tspan x="18" dy="15">  └────────────────────────────────────────────────┘</tspan><tspan x="18" dy="15">  Preview: middleware.py:42  if not auth_ok: raise</tspan></text>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  peek find  v0.3.0  —  query: "auth token"  (semantic, 0.04s)</tspan><tspan x="18" dy="15">  ┌ Matches (3 files, BM25 + fastembed) ───────────┐</tspan><tspan x="18" dy="15">  │ 1  peek/peek/auth.py        12.4  semantic    │</tspan><tspan x="18" dy="15">  │ 2  peek/peek/middleware.py   4.1  semantic • ranked 9.2 │</tspan><tspan x="18" dy="15">  │ 3  tests/test_auth.py        3.2  semantic    │</tspan><tspan x="18" dy="15">  └────────────────────────────────────────────────┘</tspan><tspan x="18" dy="15">  Preview: auth.py:42  def validate_token(token): ...</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="8.8s" repeatCount="indefinite" />
-    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek --pack --ask auth | head</text>
+    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek graph --format svg</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek --pack --ask "auth" --format md | head -20</text>
+    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek graph --format svg -o graph.svg</text>
     <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
-    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  ── pack v2: 4 files • ~2.1k tokens • query=auth ──</tspan><tspan x="18" dy="15">  ## peek/peek/auth.py  FILE: auth.py</tspan><tspan x="18" dy="15">  ```python  def check(token): ... ```</tspan><tspan x="18" dy="15">  ## peek/peek/middleware.py  FILE: middleware.py</tspan><tspan x="18" dy="15">  ```python  from .auth import check ```</tspan><tspan x="18" dy="15">  # peek/peek/middleware.py</tspan><tspan x="18" dy="15">  ── --format md/xml/txt --budget 8000 --include "*.py" ──</tspan></text>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  digraph G { rankdir=LR; // polyglot: py + JS/TS</tspan><tspan x="18" dy="15">    "peek/peek/cli.py" -&gt; "peek/peek/analyzer.py";</tspan><tspan x="18" dy="15">    "peek/peek/app.js" -&gt; "peek/peek/utils.js";</tspan><tspan x="18" dy="15">    "src/main.ts" -&gt; "src/lib/index.ts";</tspan><tspan x="18" dy="15">  }</tspan><tspan x="18" dy="15">  → DOT/SVG/HTML via peek/graph.py (dot -Tsvg if installed)</tspan><tspan x="18" dy="15">  polyglot edges: Python AST + JS/TS import/require regex</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="11.0s" repeatCount="indefinite" />
+    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek --pack --ask "auth token" --semantic</text>
+    <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
+    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek --pack --ask "auth token" --semantic --format md | head -20</text>
+    <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  ── pack v3: 4 files • ~2.1k tokens • query=auth token (semantic) ──</tspan><tspan x="18" dy="15">  ## peek/peek/auth.py  FILE: auth.py</tspan><tspan x="18" dy="15">  ```python  def check(token): ... ```</tspan><tspan x="18" dy="15">  ## peek/peek/middleware.py  FILE: middleware.py</tspan><tspan x="18" dy="15">  ```python  from .auth import check ```</tspan><tspan x="18" dy="15">  ── --format md/xml/txt --budget 8000 --include "*.py" ──</tspan><tspan x="18" dy="15">  ── --clip → pyperclip, --dry-run table, --diff HEAD ──</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="13.200000000000001s" repeatCount="indefinite" />
     <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek wtf — traceback explainer</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
     <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ cat tb.txt | peek wtf</text>
@@ -55,7 +63,7 @@
     <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  Traceback (most recent call last):</tspan><tspan x="18" dy="15">    File "peek/peek/cli.py", line 42, in main</tspan><tspan x="18" dy="15">    File "peek/peek/tui.py", line 128, in _tick</tspan><tspan x="18" dy="15">  ValueError: Unknown theme 'baguette'</tspan><tspan x="18" dy="15">  ── peek wtf hint ──</tspan><tspan x="18" dy="15">  → Start Here: peek/peek/themes.py is ranked #3</tspan><tspan x="18" dy="15">  → check its callers in `peek analyze`</tspan></text>
   </g>
   <g opacity="0">
-    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="13.200000000000001s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="15.400000000000002s" repeatCount="indefinite" />
     <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek watch . — live rescan</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
     <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek watch .</text>
@@ -63,7 +71,15 @@
     <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  Watching  polling 0.8s • debounce 0.4s  (Ctrl+C quit)</tspan><tspan x="18" dy="15">  Updated (3 files changed)  0.04s  •  re-rendered static</tspan><tspan x="18" dy="15">  ── peek --watch → TUI • w toggle watch ON/OFF ──</tspan><tspan x="18" dy="15">  uses watchfiles if installed, else polling fallback</tspan><tspan x="18" dy="15">  Live rescan • re-renders static panels</tspan><tspan x="18" dy="15">  $ peek --watch   # TUI watch + t cycle theme</tspan></text>
   </g>
   <g opacity="0">
-    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="15.400000000000002s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="17.6s" repeatCount="indefinite" />
+    <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">peek mcp — MCP server</text>
+    <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
+    <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek mcp</text>
+    <rect x="12" y="64" width="776" height="350" rx="8" fill="#2A2A27" stroke="#3A3936"/>
+    <text x="18" y="80" font-family="monospace" font-size="11" fill="#E8E6E3"><tspan x="18" dy="15">  MCP server (stdio) for Claude Code • no hard dep</tspan><tspan x="18" dy="15">  Tools: peek_scan, peek_analyze, peek_find,</tspan><tspan x="18" dy="15">         peek_graph, peek_pack</tspan><tspan x="18" dy="15">  $ cat &gt; ~/.config/claude/config.json</tspan><tspan x="18" dy="15">    {"mcpServers": {"peek": {"command": "peek",</tspan><tspan x="18" dy="15">      "args": ["mcp"]}}}</tspan><tspan x="18" dy="15">  → Claude: peek analyze . → peek find "auth token"</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.92;1" dur="2.2s" begin="19.8s" repeatCount="indefinite" />
     <text x="26" y="20" font-family="monospace" font-size="11" fill="#E8E6E3">10 themes  •  peek --theme-list  •  t live</text>
     <rect x="12" y="36" width="776" height="22" rx="6" fill="#2A2A27" stroke="#3A3936"/>
     <text x="18" y="52" font-family="monospace" font-size="12" fill="#D4A27F">$ peek --theme-list</text>
