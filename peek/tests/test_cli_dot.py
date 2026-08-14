@@ -34,3 +34,29 @@ def test_peek_unknown_command_still_fails():
     r = runner.invoke(app, ["nonexistentcmd123"])
     assert r.exit_code != 0
     assert "No such command" in r.output
+
+
+def test_version_flag_prints_version_and_exits_zero():
+    """`peek --version` prints "peek v<version>" and exits cleanly."""
+    from typer.testing import CliRunner
+    from peek import __version__
+    from peek.cli import app
+
+    r = CliRunner().invoke(app, ["--version"])
+
+    assert r.exit_code == 0
+    assert "peek v" in r.output
+    assert __version__ in r.output
+
+
+def test_version_short_flag_matches():
+    """-V is documented as the alias, so it must agree with --version."""
+    from typer.testing import CliRunner
+    from peek.cli import app
+
+    long_form = CliRunner().invoke(app, ["--version"])
+    short_form = CliRunner().invoke(app, ["-V"])
+
+    assert short_form.exit_code == 0
+    assert short_form.output == long_form.output
+
