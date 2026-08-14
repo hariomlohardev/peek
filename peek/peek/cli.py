@@ -176,6 +176,22 @@ err_console = Console(stderr=True, legacy_windows=False)
 # Helpers — pretty printing
 # ---------------------------------------------------------------------------
 
+def _warn_no_files(path: Path) -> None:
+    """Report an empty scan, and point at the next thing to try.
+
+    "No files found" reads like a failure the user caused. Usually it is not:
+    the directory is genuinely empty, or everything in it is ignored. Naming
+    both causes and offering `peek --help` gives them somewhere to go, which a
+    bare statement does not.
+
+    Shared by `scan` and `analyze` so the two cannot drift apart.
+    """
+    err_console.print(
+        f"[yellow]No files found in[/] [bold]{path}[/] (empty or all ignored). "
+        "[dim]Try:[/] [bold]peek --help[/]"
+    )
+
+
 def _format_bytes(n: int) -> str:
     if n < 1024:
         return f"{n} B"
@@ -454,7 +470,7 @@ def scan_command(
         return
 
     if result.total_files == 0:
-        err_console.print(f"[yellow]No files found in[/] [bold]{path}[/] (empty or all ignored).")
+        _warn_no_files(path)
     _print_scan_result(path, result, elapsed)
 
 
@@ -543,7 +559,7 @@ def analyze_command(
         return
 
     if scan_result.total_files == 0:
-        err_console.print(f"[yellow]No files found in[/] [bold]{path}[/] (empty or all ignored).")
+        _warn_no_files(path)
     _print_analyze_result(scan_result, result, elapsed)
 
 
