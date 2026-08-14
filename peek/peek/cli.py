@@ -115,11 +115,58 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+import click as _click
+from typer.core import TyperGroup
+
+class _PeekGroup(TyperGroup):
+    def parse_args(self, ctx, args):
+        if not args and self.no_args_is_help and not ctx.resilient_parsing:
+            raise _click.exceptions.NoArgsIsHelpError(ctx)
+        # Use click.Command parse to get leftover args (options already parsed)
+        rest = _click.Command.parse_args(self, ctx, args)
+        if rest:
+            first = rest[0]
+            known = {"scan", "analyze", "find", "watch", "wtf", "config"}
+            is_option = first.startswith("-")
+            is_known_cmd = first in known
+            # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
+            is_path = False
+            if first in (".", ".."):
+                is_path = True
+            elif first.startswith(("./", "../", "/", "\\")):
+                is_path = True
+            elif not is_known_cmd and not is_option:
+                # Treat as path only if it looks like a path (contains . or / or \ or exists)
+                # This keeps `peek myrepo` (existing dir) working, but `peek typo123` still errors as unknown command
+                if "." in first or "/" in first or "\\" in first or Path(first).exists():
+                    is_path = True
+            if is_path and not is_known_cmd:
+                ctx.args = rest
+                ctx._protected_args = []
+                return ctx.args
+            ctx._protected_args, ctx.args = rest[:1], rest[1:]
+        return ctx.args
+
+    def get_command(self, ctx, cmd_name):
+        # Fallback: if somehow a path slipped to get_command, don't error
+        if cmd_name in (".", ".."):
+            return None
+        if cmd_name.startswith(("./", "../", "/", "\\")):
+            return None
+        try:
+            if Path(cmd_name).exists():
+                return None
+        except Exception:
+            pass
+        return super().get_command(ctx, cmd_name)
+
 app = typer.Typer(
     name="peek",
     help="The htop for codebases — understand any repo in 5 seconds.",
     add_completion=False,
     no_args_is_help=False,
+    cls=_PeekGroup,
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
 )
 console = Console(legacy_windows=False)
 err_console = Console(stderr=True, legacy_windows=False)
@@ -651,7 +698,7 @@ def wtf_command(
         console.print(info.raw)
 
 
-@app.callback(invoke_without_command=True)
+@app.callback(invoke_without_command=True, context_settings={"allow_extra_args": True, "ignore_unknown_options": True})
 def main_callback(
     ctx: typer.Context,
     version: bool = typer.Option(False, "--version", "-V", help="Show version and exit."),
