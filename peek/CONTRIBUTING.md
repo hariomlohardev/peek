@@ -2,6 +2,16 @@
 
 Thanks for wanting to contribute! `peek` is a small, fast, zero-config codebase — we keep the bar high for simplicity.
 
+> **New here?** Start with a **Good First Issue** — 20 issues, each ~30 min, one file, copy-paste steps. They rank high on GitHub search and get priority review:
+>
+> <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
+>
+> **Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+>
+> - **20 Good First Issue (30 min):** docstrings, `peek wtf --help` example, `peek --version` test — perfect for first PR
+> - **10 Intermediate (60-90 min):** `tiktoken`, `peek diff`, `peek serve`
+> - **5 Complex (1-2 days):** `peek-mcp`, polyglot, `peek-vscode`
+
 ## Quick Start
 
 ```bash

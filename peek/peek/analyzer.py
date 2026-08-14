@@ -6,12 +6,15 @@ Day 2 scope:
 - PageRank-lite (5 iterations) + in-degree + entry bonus -> RankedFile
 - Heuristic summarize() -> one-liner English summary
 
+v3 Day 1 — Polyglot: also handles javascript/typescript via regex import extraction.
+
 Never crashes: skips SyntaxError, handles huge files, namespace packages, circular imports.
 """
 
 from __future__ import annotations
 
 import ast
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -50,6 +53,13 @@ class AnalyzerResult:
     external_imports: set[str]
     stats: dict  # passthrough from ScanResult + graph stats
 
+
+# ---------------------------------------------------------------------------
+# Polyglot regexes (JS/TS) — no hard dep, fallback to regex
+# ---------------------------------------------------------------------------
+
+JS_IMPORT_RE = re.compile(r"""import\s+(?:.*?\s+from\s+)?['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\)""")
+JS_EXPORT_RE = re.compile(r"""export\s+(?:default\s+)?(?:function|class|const|let|var)\s+(\w+)""")
 
 # ---------------------------------------------------------------------------
 # Module index building
@@ -232,64 +242,115 @@ def _resolve_local_import(import_name: str, index: dict[str, Path]) -> Path | No
 def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]], set[str], dict[str, Path]]:
     """Build import graph.
 
+    Polyglot: handles python + javascript + typescript.
     Returns (graph, external_imports, module_index)
-    - graph: dict absolute Path -> set[absolute Path] (only python nodes)
-    - external_imports: set of import names not resolved locally
+    - graph: dict absolute Path -> set[absolute Path] (python + js/ts nodes)
+    - external_imports: set of import names not resolved locally (python only)
     """
     index = _build_module_index(files, root)
 
-    # Init graph nodes for python files only
+    # Path -> FileInfo for JS/TS resolution (absolute resolved paths)
+    path_to_file: dict[Path, FileInfo] = {f.path.resolve(): f for f in files}
+
+    # Init graph nodes for python + js/ts files
     graph: dict[Path, set[Path]] = {}
     for f in files:
         if f.language == "python" and f.path.suffix.lower() in (".py", ".pyi"):
+            graph[f.path] = set()
+        elif f.language in ("javascript", "typescript"):
             graph[f.path] = set()
 
     external: set[str] = set()
 
     for f in files:
-        if f.language != "python" or f.path.suffix.lower() not in (".py", ".pyi"):
-            continue
-        rel = f.rel
-        is_init = rel.name == "__init__.py"
-        mod = _module_name_for(rel, is_init)
-        raw_imports, _ = _extract_raw_imports(f.path, mod, is_init)
-        node = f.path
-        if node not in graph:
-            graph[node] = set()
-        for imp in raw_imports:
-            target = _resolve_local_import(imp, index)
-            if target is not None:
-                if target == node:
-                    # self-import (e.g., `from . import utils` where base resolves to self) — ignore
-                    continue
-                # Only add edge if target is in graph (i.e., scanned python file)
-                # If target is __init__.py for a package but graph has that file, add it
-                if target in graph:
-                    graph[node].add(target)
+        # --- Python ---
+        if f.language == "python" and f.path.suffix.lower() in (".py", ".pyi"):
+            rel = f.rel
+            is_init = rel.name == "__init__.py"
+            mod = _module_name_for(rel, is_init)
+            raw_imports, _ = _extract_raw_imports(f.path, mod, is_init)
+            node = f.path
+            if node not in graph:
+                graph[node] = set()
+            for imp in raw_imports:
+                target = _resolve_local_import(imp, index)
+                if target is not None:
+                    if target == node:
+                        continue
+                    if target in graph:
+                        graph[node].add(target)
+                    else:
+                        graph.setdefault(target, set())
+                        graph[node].add(target)
                 else:
-                    # Target might be a file not in graph due to language filter? Check existence
-                    # But we have index, so it is a scanned python file; ensure node exists
-                    # If not, add it as node then edge
-                    graph.setdefault(target, set())
-                    graph[node].add(target)
-            else:
-                # Not local -> external hint
-                # Keep only top-level package name for brevity
-                top = imp.split(".")[0]
-                if top and not top.startswith("_"):
-                    # Skip stdlib — keep external focused on deps/frameworks
-                    is_stdlib = False
-                    try:
-                        if hasattr(sys, "stdlib_module_names"):
-                            is_stdlib = top in sys.stdlib_module_names
-                        else:
-                            # fallback minimal stdlib set for older py
-                            _stdlib_fallback = {"os","sys","ast","pathlib","dataclasses","typing","collections","json","re","io","time","datetime","functools","itertools","math","random","hashlib","subprocess","shutil","glob","fnmatch","importlib","inspect","textwrap","string","enum","abc","copy","pickle","struct","socket","threading","asyncio","unittest","http","urllib","email","html","xml","csv","logging","argparse","difflib","tempfile","traceback","warnings","weakref","types","queue","contextlib","select","selectors","signal","stat","uuid","zlib","gzip","zipfile","tarfile","platform","getpass","pwd","grp","site","codecs","unicodedata","operator","heapq","bisect","array","decimal","fractions","numbers","itertools"}
-                            is_stdlib = top in _stdlib_fallback
-                    except Exception:
+                    top = imp.split(".")[0]
+                    if top and not top.startswith("_"):
                         is_stdlib = False
-                    if not is_stdlib:
-                        external.add(top)
+                        try:
+                            if hasattr(sys, "stdlib_module_names"):
+                                is_stdlib = top in sys.stdlib_module_names
+                            else:
+                                _stdlib_fallback = {"os","sys","ast","pathlib","dataclasses","typing","collections","json","re","io","time","datetime","functools","itertools","math","random","hashlib","subprocess","shutil","glob","fnmatch","importlib","inspect","textwrap","string","enum","abc","copy","pickle","struct","socket","threading","asyncio","unittest","http","urllib","email","html","xml","csv","logging","argparse","difflib","tempfile","traceback","warnings","weakref","types","queue","contextlib","select","selectors","signal","stat","uuid","zlib","gzip","zipfile","tarfile","platform","getpass","pwd","grp","site","codecs","unicodedata","operator","heapq","bisect","array","decimal","fractions","numbers","itertools"}
+                                is_stdlib = top in _stdlib_fallback
+                        except Exception:
+                            is_stdlib = False
+                        if not is_stdlib:
+                            external.add(top)
+        # --- JS / TS ---
+        elif f.language in ("javascript", "typescript"):
+            try:
+                try:
+                    text = f.path.read_text(encoding="utf-8-sig", errors="ignore")
+                except Exception:
+                    text = f.path.read_text(encoding="utf-8", errors="ignore")
+                if not text.strip():
+                    continue
+                if text.startswith("﻿"):
+                    text = text.lstrip("﻿")
+                for m in JS_IMPORT_RE.finditer(text):
+                    imp = m.group(1) or m.group(2)
+                    if not imp:
+                        continue
+                    if imp.startswith("."):
+                        # Relative import — resolve to local file
+                        try:
+                            target = (f.path.parent / imp).resolve()
+                        except Exception:
+                            continue
+                        # Try candidate extensions as per brief
+                        for ext in ["", ".js", ".ts", ".jsx", ".tsx", "/index.js", "/index.ts"]:
+                            try:
+                                cand = Path(str(target) + ext)
+                                # cand may already be resolved; normalize via resolve where possible
+                                # path_to_file keys are resolved, so check resolved cand if exists
+                                # If cand exists on disk and is in scanned files, add edge
+                                if cand in path_to_file:
+                                    graph[f.path].add(cand)
+                                    break
+                                # Also try resolved cand
+                                try:
+                                    rcand = cand.resolve()
+                                    if rcand in path_to_file:
+                                        graph[f.path].add(rcand)
+                                        break
+                                except Exception:
+                                    pass
+                                # Also handle case where target already had extension and ext=="" gave us the file
+                                # Try with exact target if it is a file
+                                if ext == "" and target in path_to_file:
+                                    graph[f.path].add(target)
+                                    break
+                                try:
+                                    if ext == "" and target.resolve() in path_to_file:
+                                        graph[f.path].add(target.resolve())
+                                        break
+                                except Exception:
+                                    pass
+                            except Exception:
+                                continue
+                    # non-relative (e.g., 'react') is external — ignored for graph edges
+            except Exception:
+                continue
     return graph, external, index
 
 

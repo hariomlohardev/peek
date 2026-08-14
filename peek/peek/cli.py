@@ -126,7 +126,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
@@ -586,6 +586,69 @@ def find_command(
     _print_find_result(matches, query, elapsed)
 
 
+@app.command("graph")
+def graph_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    format: str = typer.Option("dot", "--format", help="dot|svg|html"),
+    output: Path = typer.Option(None, "--output", "-o"),
+):
+    from peek.scanner import scan; from peek.analyzer import analyze
+    from peek.graph import export_graph
+    sr = scan(path.resolve()); ar = analyze(sr)
+    try:
+        out = export_graph(ar, format=format)
+    except ValueError as e:
+        err_console.print(f"[red]{e}[/]")
+        raise typer.Exit(2)
+    if output:
+        p = Path(output)
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        p.write_text(out, encoding="utf-8")
+        console.print(f"[green]Graph written to {output}[/]")
+    else:
+        # raw output — avoid Rich markup stripping brackets in DOT
+        try:
+            console.print(out, markup=False)
+        except TypeError:
+            # fallback for older Rich
+            import sys
+            sys.stdout.write(out)
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+
+
+@app.command("index")
+def index_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo/directory to index"),
+    rebuild: bool = typer.Option(False, "--rebuild", help="Force rebuild even if cached"),
+):
+    """Build semantic index (BM25 + optional fastembed)."""
+    import json
+
+    from peek.embeddings import build_index
+    from peek.scanner import scan
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    sr = scan(root)
+    idx = build_index(sr)
+    cache_dir = root / ".peek"
+    try:
+        cache_dir.mkdir(exist_ok=True)
+    except Exception:
+        pass
+    payload = {"chunks": len(idx.get("chunks", [])), "files": len(sr.files)}
+    try:
+        (cache_dir / "index.json").write_text(json.dumps(payload), encoding="utf-8")
+    except Exception:
+        pass
+    console.print(f"[green]Indexed {len(idx.get('chunks', []))} chunks[/] at {cache_dir}")
+
+
 config_app = typer.Typer(help="Config: get/set/list")
 app.add_typer(config_app, name="config")
 
@@ -716,6 +779,10 @@ def main_callback(
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
     theme_list: bool = typer.Option(False, "--theme-list", help="List available themes and exit"),
     watch: bool = typer.Option(False, "--watch", "-w", help="Watch mode: auto-rescan on changes (TUI)."),
+    clip: bool = typer.Option(False, "--clip", help="Copy pack to clipboard (with --pack)."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Dry-run: show table instead of pack (with --pack)."),
+    diff: Optional[str] = typer.Option(None, "--diff", help="Pack only diff files (with --pack). e.g. --diff HEAD or --diff main"),
+    staged: bool = typer.Option(False, "--staged", help="Pack only staged files (with --pack)."),
 ) -> None:
     """peek — htop for codebases. Understand any repo in 5 seconds.
 
@@ -917,6 +984,32 @@ def main_callback(
             pack_exclude = a.split("=", 1)[1]
             extra.remove(a)
 
+    # Also handle --clip/--dry-run/--staged and --diff for pack v3.0 (when Typer didn't parse due to allow_extra_args)
+    if "--clip" in extra:
+        clip = True
+        extra = [a for a in extra if a != "--clip"]
+    if "--dry-run" in extra:
+        dry_run = True
+        extra = [a for a in extra if a != "--dry-run"]
+    if "--staged" in extra:
+        staged = True
+        extra = [a for a in extra if a != "--staged"]
+    if "--diff" in extra:
+        try:
+            idx = extra.index("--diff")
+            if idx + 1 < len(extra) and not extra[idx + 1].startswith("-"):
+                diff = extra[idx + 1]
+                extra = [a for i, a in enumerate(extra) if i not in (idx, idx + 1)]
+            else:
+                diff = "HEAD"
+                extra = [a for a in extra if a != "--diff"]
+        except ValueError:
+            pass
+    for a in list(extra):
+        if a.startswith("--diff="):
+            diff = a.split("=", 1)[1]
+            extra.remove(a)
+
     if output is None and ("-o" in extra or "--output" in extra):
         # Typer already parsed -o, but check raw
         for flag in ("-o", "--output"):
@@ -1010,6 +1103,7 @@ def main_callback(
     if pack:
         from peek.pack import build_pack
         # ask may be provided via --ask, pack_* via --format/--budget/--include/--exclude
+        # v3: also dry_run, diff, staged, clip + https:// URL fetch via query
         packed, included, tokens = build_pack(
             scan_result,
             analyzer_result,
@@ -1018,23 +1112,42 @@ def main_callback(
             format=pack_format,
             include=pack_include,
             exclude=pack_exclude,
+            dry_run=dry_run,
+            diff=diff,
+            staged=staged,
+            clip=clip,
         )
-        if not packed.strip() or not included:
+        # For dry_run, even 0 files produces a table, so don't treat as "no files"
+        if not dry_run and (not packed.strip() or not included):
+            err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
+            raise typer.Exit(0)
+        if dry_run and not packed.strip():
             err_console.print(f"[yellow]No files for pack (query={ask!r} yielded no matches).[/]")
             raise typer.Exit(0)
         if output:
             actual = _write_output_safely(output, packed)
-            console.print(f"[green]Pack written to[/] [bold]{actual}[/] • {len(included)} files • ~{tokens} tokens")
+            if dry_run:
+                console.print(f"[green]Dry-run table written to[/] [bold]{actual}[/] • {len(included)} files • ~{tokens} tokens")
+            else:
+                console.print(f"[green]Pack written to[/] [bold]{actual}[/] • {len(included)} files • ~{tokens} tokens")
+            if clip:
+                err_console.print(f"[dim]— copied to clipboard • {len(included)} files • ~{tokens} tokens —[/]")
         else:
             # Write to stdout (so `peek --pack | pbcopy` works)
-            # Use sys.stdout directly to avoid Rich markup
+            # For dry-run, show table as well
+            # Use sys.stdout directly to avoid Rich markup for md pack
             try:
                 sys.stdout.write(packed)
                 sys.stdout.flush()
             except Exception:
                 console.print(packed)
             # Also hint
-            err_console.print(f"\n[dim]— pack: {len(included)} files • ~{tokens} tokens • query={ask or 'none'} —[/]")
+            if dry_run:
+                err_console.print(f"\n[dim]— dry-run: {len(included)} files • ~{tokens} tokens • query={ask or 'none'} —[/]")
+            else:
+                err_console.print(f"\n[dim]— pack: {len(included)} files • ~{tokens} tokens • query={ask or 'none'} —[/]")
+            if clip:
+                err_console.print(f"[dim]— copied to clipboard —[/]")
         raise typer.Exit(0)
 
     # --no-tui or not a tty → static render
