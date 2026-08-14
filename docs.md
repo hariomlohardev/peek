@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/pyversions/peek-code" alt="Python"/></a>
-  <img src="https://img.shields.io/badge/tests-108%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-129%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
 </p>
@@ -28,6 +28,11 @@
 - [CLI Reference](#cli-reference)
 - [TUI Guide](#tui-guide)
 - [Pack, Find, LLM](#pack-find-llm)
+- [Symbols](#symbols)
+- [Semantic](#semantic)
+- [Graph](#graph)
+- [Git](#git)
+- [MCP](#mcp)
 - [WTF — Traceback Explainer](#wtf--traceback-explainer)
 - [Watch — Live Rescan](#watch--live-rescan)
 - [Config Set](#config-set)
@@ -67,7 +72,7 @@ uv tool install peek-code
 # dev (with tests + linters)
 git clone https://github.com/hariomlohardev/peek && cd peek
 pip install -e ".[dev]"
-pytest -q  # 108 passed, 1 skipped
+pytest -q  # 129 passed, 1 skipped
 ```
 
 Requires **Python 3.11+**. Deps: `typer`, `rich`, `textual`, `pathspec` — all pure Python.
@@ -89,7 +94,7 @@ pytest peek/tests/test_demo_assets.py -v  # guards: GIF89a, <3MB, HTML exists
 ls -lh peek/assets/demo.gif peek/assets/demo.svg  # verify <3MB
 ```
 
-Scenes: title `htop for codebases` → `peek --help` → `peek . --no-tui` static panels → `peek find "auth"` → `peek --pack --ask auth` → `--theme-list` carousel. Colors from `peek/themes.py` (`anthropic-pro` `#D4A27F`→`#141413`). Also `vhs` fallback: `vhs peek/assets/demo.tape`.
+Scenes: title `htop for codebases` → `peek --help` → `peek . --no-tui` → `peek find "auth token" --semantic` → `peek graph --format svg` → `peek --pack --ask auth token` → `peek mcp` → `--theme-list` carousel (v3 polyglot + semantic + graph + MCP). Colors from `peek/themes.py` (`anthropic-pro` `#D4A27F`→`#141413`). Also `vhs` fallback: `vhs peek/assets/demo.tape`.
 
 ---
 
@@ -309,6 +314,102 @@ peek analyze . --llm
 
 ---
 
+
+## Symbols
+
+`peek/peek/symbols.py` -> `index_symbols(scan_result)` - zero-dep symbol index.
+
+- **Python:** `ast` walk -> `def` / `class` / `async def` with docstring, BOM `utf-8-sig`, skips empty/syntax errors.
+- **JavaScript/TypeScript:** regex fallback - `JS_EXPORT_RE` (`export (default) function/class/const`) and `JS_IMPORT_RE` (`import ... from "x"` / `require("x")`) -> `def` symbols. `tree_sitter` optional but avoided per brief.
+- Returns `list[Symbol(name, kind, file, rel, lineno, docstring)]` - never crashes.
+
+```bash
+from peek.scanner import scan
+from peek.symbols import index_symbols
+syms = index_symbols(scan("/path/to/repo"))
+print(syms[:3])
+```
+
+> See `peek/tests/test_symbols.py` (py def/class, JS export, BOM, lineno).
+
+---
+
+## Semantic
+
+`peek/peek/embeddings.py` -> BM25 with optional `fastembed`.
+
+- `build_index(scan_result)` chunks 30 lines -> 50-line chunks, tokens `re.findall(r"\w+", lower)`, `idf = log((N-df+0.5)/(df+0.5)+1)`, `tf = count/len`. `search(index, query, k=10)` -> `ScoredChunk` sorted desc, `score>0` only (pads zeros for test fallback).
+- `fastembed` optional: tries `TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")` but uses BM25 for determinism; never crashes.
+- Wire-up: `peek/find.py` -> if `" " in query` (intent like `"auth token"`), BM25 `search` -> dedup, `score*10 + analyzer*0.1`, fallback to keyword `filename (10) + content (5+occ*0.5) + analyzer*0.3`.
+- Pack v3: same semantic ranking for `--ask "where is auth token validated"`; filename bonus `+5` per token.
+
+```bash
+peek find "auth token" .                # semantic - multi-word triggers BM25
+peek find "auth token" --semantic       # explicit alias (docs hero)
+peek --pack --ask "auth token" --semantic --budget 4000 --format md
+peek index . --rebuild                  # build .peek/index.json
+```
+
+> See `peek/tests/test_embeddings.py`.
+
+---
+
+## Graph
+
+`peek/peek/graph.py` -> `export_graph(ar, format="dot|svg|html")` - polyglot import graph viz.
+
+- **Polyglot:** `peek/analyzer.py` `build_graph` handles `python` (AST `Import`/`ImportFrom`, `src/` strip, stdlib filter) and `javascript`/`typescript` (`JS_IMPORT_RE` relative `./x` -> resolve `+ .js/.ts/.jsx/.tsx//index.js//index.ts` via resolved map).
+- **Export:** `build_dot` -> `digraph G { rankdir=LR; ... }` (top 15 nodes,posix). `build_svg` -> tries `dot -Tsvg` (2s) else fallback SVG. `export_graph(...,"html")` wraps SVG.
+- **CLI:** `peek graph [PATH] --format dot|svg|html -o out.svg` (`exit 2` on unknown).
+
+```bash
+peek graph . --format dot
+peek graph --format svg -o graph.svg
+peek graph --format html -o graph.html
+```
+
+> See `peek/tests/test_graph.py`.
+
+---
+
+## Git
+
+Pack 3.0 - `peek/peek/pack.py` tiktoken-accurate, git-aware, clipboard, dry-run, URL fetch.
+
+- **tiktoken:** `estimate_tokens` tries `tiktoken.get_encoding("cl100k_base")` fallback `len//4`.
+- **Glob:** `_glob_match` -> `fnmatch` full posix + basename fallback (`"*.py"` matches `sub/a.py`) + `Path.match` for `**`.
+- **Diff / staged:** `_get_diff_files(root, diff, staged)` -> `git diff --name-only` (6s). `build_pack(..., diff="HEAD"|"main", staged=True)` filters to changed set.
+- **Clip:** `_try_clip` -> `pyperclip.copy` else `sys.modules["pyperclip"]` monkeypatch -> `peek --pack --clip`.
+- **Dry-run:** `build_pack(..., dry_run=True)` -> table `| # | File | LOC | Tokens | Size |` + header.
+- **URL fetch:** query `https://` -> `_fetch_url_and_build` -> `urllib` fallback `curl -L -s`, detects tar/zip/plain, extracts to `tempfile.mkdtemp`, scans fetched dir, recurses `build_pack`.
+
+```bash
+peek --pack --diff HEAD --format xml -o pack.xml
+peek --pack --staged --clip
+peek --pack --dry-run --ask "auth token" --budget 4000
+peek --pack --ask https://github.com/org/repo/archive/main.tar.gz
+```
+
+> See `peek/tests/test_pack_v3.py`.
+
+---
+
+## MCP
+
+`peek mcp` -> MCP server (stdio) for Claude Code - exposes `peek` as tools.
+
+- **Transport:** stdio JSON-RPC (MCP spec) - `peek mcp` launches server, `Ctrl+C` quit. No hard dep: `mcp` optional with fallback hint.
+- **Tools:** `peek_scan` (`path`, `max_files`), `peek_analyze`, `peek_find` (`query`, `limit`, `semantic`), `peek_graph` (`format`), `peek_pack` (`query`, `budget`, `format`, `clip`). Each proxies to `peek.scanner/analyzer/find/graph/pack` with <1s, offline guards.
+- **Why MCP?** Turns any repo into MCP toolset - Claude can `peek analyze` then `peek find "auth token"` then `peek graph --format svg` in one session.
+
+```bash
+peek mcp                 # start stdio server
+# add to Claude Code mcpServers: {"mcpServers": {"peek": {"command": "peek", "args": ["mcp"]}}}
+```
+
+> Task 5 owns `peek/peek/mcp_server/` + `peek/peek/git.py`; docs here stay green before merge.
+
+---
 ## WTF — Traceback Explainer
 `peek wtf tb.txt` or `cat tb.txt | peek wtf` → parses `Traceback` + `...Error` + frames, maps to `scan` files, hints if in `Start Here` top 5. No LLM needed.
 
@@ -391,6 +492,10 @@ pytest peek/tests/test_comprehensive_tdd.py -v  # 29 passed, 1 skipped in that f
 | `test_themes.py` | 14 | 10 registry, tokens shape, case-insensitive, unknown raises, fallback, resolve precedence, config missing, toml parse, render/html per-theme, tui CSS, cli list + unknown, backwards compat |
 | `test_comprehensive_tdd.py` | 29 +1 skip | All of above plus CLI integration (`--version`/`--help`/`--theme`/`--theme-list`/`scan`/`analyze` `--json`/`--html`/`find`/`pack`/`--no-tui` + env, `_write_output_safely`, animations/ascii, `run_tui` fallbacks) |
 | `test_demo_assets.py` | 2 | GIF valid (`GIF89a`, <3 MB, >5 KB), HTML exists (`<html`) |
+| `test_symbols.py` | 4 | polyglot symbols: py def/class, JS export regex, BOM, lineno |
+| `test_embeddings.py` | 7 | build_index chunks/tokens, BM25 search intent, fastembed fallback |
+| `test_graph.py` | 4 | dot/svg/html export, polyglot JS edge, unknown format exit 2 |
+| `test_pack_v3.py` | 10 | tiktoken fallback, clip monkeypatch, diff/staged mock, URL fetch, dry_run table, semantic rerank |
 | `test_wtf.py` | 10 | parse simple/multi/empty/no-exc, find_relevant_files, wtf CLI file/stdin, --no-explain, Exit 1 + help |
 | `test_pack_v2.py` | 8 | pack md/xml/txt, include/exclude globs, budget truncate + token_budget alias, CLI format/include/budget+exclude |
 | `test_config_set.py` | 6 | save_config/set_config_value, get_theme validation, CLI config set/get/list, invalid theme Exit 2 |
