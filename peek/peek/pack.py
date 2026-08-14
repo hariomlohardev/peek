@@ -4,6 +4,7 @@ Builds a concatenated prompt from ranked files, within token budget.
 Used by `peek --pack` and `peek --pack --ask "query"`.
 
 v2: token-smart, format md/xml/txt, include/exclude globs, budget.
+v3: semantic ranking via BM25 when query contains spaces or index available.
 
 MVP: top N ranked files, token estimate len//4, header per file, query filter.
 Falls back to scan files if no analyzer ranked.
@@ -12,6 +13,7 @@ Falls back to scan files if no analyzer ranked.
 from __future__ import annotations
 
 import fnmatch
+import re
 from pathlib import Path
 
 
@@ -152,27 +154,96 @@ def build_pack(
 
         # Filter by query if provided
         if query:
-            q = query.lower()
-            filtered: list[Path] = []
-            for p in candidates:
-                rel = rel_map.get(p, p.name)
-                rel_str = rel.as_posix() if isinstance(rel, Path) else str(rel)
-                if q in rel_str.lower():
-                    filtered.append(p)
-                    continue
-                # Check file content (first 500KB already guarded)
-                try:
+            # Try semantic search first (BM25) when index available
+            semantic_done = False
+            try:
+                from peek.embeddings import build_index, search
+
+                idx = build_index(scan_result)
+                hits = search(idx, query, k=max_files * 4 if max_files else 20)
+                if hits:
+                    # Map file -> best semantic score (dedup chunks)
+                    file_to_score: dict[Path, float] = {}
+                    for h in hits:
+                        try:
+                            # Respect include/exclude already applied to candidates via rel_map
+                            # Only consider files that are in candidates set (filtered)
+                            if h.file not in set(candidates):
+                                # Also check resolved equality
+                                # hits may have resolved paths, candidates may be unresolved — normalize
+                                found = False
+                                for c in candidates:
+                                    try:
+                                        if c.resolve() == h.file.resolve():
+                                            # use candidate path as key
+                                            if c not in file_to_score or h.score > file_to_score[c]:
+                                                file_to_score[c] = h.score
+                                            found = True
+                                            break
+                                    except Exception:
+                                        continue
+                                if not found:
+                                    continue
+                            else:
+                                if h.file not in file_to_score or h.score > file_to_score[h.file]:
+                                    file_to_score[h.file] = h.score
+                        except Exception:
+                            continue
+                    # Boost filename matches (so auth.py ranks for "auth" even if content lacks token)
                     try:
-                        text = p.read_text(encoding="utf-8-sig", errors="ignore")
+                        q_tokens = re.findall(r"\w+", query.lower())
+                        for p in list(candidates):
+                            rel = rel_map.get(p, p.name)
+                            rel_str = rel.as_posix() if isinstance(rel, Path) else str(rel)
+                            rel_low = rel_str.lower()
+                            fname_bonus = 0.0
+                            for tok in q_tokens:
+                                if tok in rel_low:
+                                    fname_bonus += 5.0
+                            if fname_bonus > 0:
+                                file_to_score[p] = file_to_score.get(p, 0.0) + fname_bonus
                     except Exception:
-                        text = p.read_text(encoding="utf-8", errors="ignore")
-                    if q in text.lower():
+                        pass
+                    if file_to_score:
+                        # Rank candidates by semantic + filename score desc
+                        ranked = sorted(candidates, key=lambda p: file_to_score.get(p, -1), reverse=True)
+                        # Keep only those with score >0
+                        filtered_sem = [p for p in ranked if file_to_score.get(p, 0) > 0]
+                        if filtered_sem:
+                            candidates = filtered_sem
+                            semantic_done = True
+                        else:
+                            # semantic produced no positive after boost -> fallback
+                            semantic_done = False
+                    else:
+                        semantic_done = False
+                else:
+                    semantic_done = False
+            except Exception:
+                semantic_done = False
+
+            if not semantic_done:
+                q = query.lower()
+                filtered: list[Path] = []
+                for p in candidates:
+                    rel = rel_map.get(p, p.name)
+                    rel_str = rel.as_posix() if isinstance(rel, Path) else str(rel)
+                    if q in rel_str.lower():
                         filtered.append(p)
-                except Exception:
-                    continue
-            candidates = filtered
-            if not candidates:
-                return "", [], 0
+                        continue
+                    # Check file content (first 500KB already guarded)
+                    try:
+                        try:
+                            text = p.read_text(encoding="utf-8-sig", errors="ignore")
+                        except Exception:
+                            text = p.read_text(encoding="utf-8", errors="ignore")
+                        if q in text.lower():
+                            filtered.append(p)
+                    except Exception:
+                        continue
+                candidates = filtered
+                if not candidates:
+                    return "", [], 0
 
         # Trim to max_files
         candidates = candidates[:max_files]
