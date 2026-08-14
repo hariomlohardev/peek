@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main, v3]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e peek[dev]
+      - name: Lint (ruff)
+        run: ruff check peek --output-format=github
+      - name: Test (pytest)
+        run: pytest -q --tb=short
+      - name: Check demo assets
+        run: pytest peek/tests/test_demo_assets.py -v
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build
+        run: |
+          pip install build twine
+          cd peek && python -m build
+          twine check peek/dist/*
+      - name: Check bad labels
+        run: |
+          python -c "import pathlib; txt=pathlib.Path('peek/README.md').read_text(); assert 'good first issue' in txt.lower() or 'Good First Issues' in txt, 'README must mention good first issues'"
+
+  label-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure good first issue PRs are small
+        run: |
+          echo "Good first issue PRs should be <= 200 lines changed"
+          # This is a soft check — we just log, not fail
+          gh pr view ${{ github.event.pull_request.number }} --json additions,deletions --jq '"\(.additions) additions, \(.deletions) deletions"'
+        env:
+          GH_TOKEN: ${{ github.token }}

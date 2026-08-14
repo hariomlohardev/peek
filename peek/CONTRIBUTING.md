@@ -34,18 +34,49 @@ peek            # TUI (q to quit)
 
 ```
 peek/peek/
-  scanner.py    — walk + .gitignore + LOC + tech stack + entry
-  analyzer.py   — AST graph + PageRank + ranking + summary
-  renderer.py   — Rich static panels + build_html
+  scanner.py      — walk + .gitignore + LOC + tech stack + entry
+  analyzer.py     — AST graph + PageRank + ranking + summary (now polyglot JS/TS)
+  symbols.py      — symbol index (def/class) via ast + JS regex
+  embeddings.py   — BM25 + fastembed semantic index for find/pack
+  graph.py        — DOT/SVG/HTML export (peek graph)
+  git.py          — git log/diff/hot/blame (peek diff/log/hot)
+  renderer.py     — Rich static panels + build_html
   _ascii_graph.py — one-liner graph
-  tui.py        — Textual PeekApp (HEADER, ListView, filter, open)
-  pack.py       — --pack (token budget, --ask)
-  find.py       — find (filename + content, ranked)
-  llm.py        — optional LLM summary
-  cli.py        — Typer app (scan, analyze, find, peek [PATH])
-tests/
-  test_scanner.py, test_analyzer.py, test_renderer_pack_find.py
+  tui.py          — Textual PeekApp (HEADER, ListView, filter, open, t/w/c)
+  pack.py         — --pack (token budget, --ask, --format, --clip, --diff)
+  find.py         — find (keyword + semantic)
+  wtf.py          — wtf traceback explainer
+  watch.py        — watch_repo polling + watchfiles
+  mcp_server.py   — MCP stdio for Claude Code (peek mcp)
+  llm.py          — optional LLM summary
+  config.py       — themes + .peek.toml (peek config)
+  themes.py       — 10 themes (15 tokens)
+  cli.py          — Typer app (scan, analyze, find, graph, watch, wtf, config, mcp, index, diff, hot)
+  tools/gen_demo.py — Pillow demo GIF (800×450)
+peek/tests/
+  test_scanner.py, test_analyzer.py, test_renderer_pack_find.py, test_themes.py,
+  test_comprehensive_tdd.py, test_demo_assets.py, test_cli_dot.py,
+  test_symbols.py, test_embeddings.py, test_graph.py, test_pack_v3.py,
+  test_mcp.py, test_git.py, test_tui_live.py, test_watch.py, test_wtf.py
+.github/
+  workflows/ci.yml, release.yml — CI + PyPI publish
+  ISSUE_TEMPLATE/ — bug_report, feature_request, good_first_issue
+  pull_request_template.md
+  CODEOWNERS
 ```
+
+## Workflows & Automation
+
+- **CI** (`.github/workflows/ci.yml`): runs on `push`/`PR` to `main`/`v3` — `ruff check`, `pytest -q` (3× Python 3.11-3.13, Ubuntu + Windows), `twine check`, demo asset check. Must be green to merge.
+- **Release** (`.github/workflows/release.yml`): on `git tag v*` — builds `peek/dist` and publishes to PyPI + GitHub Release (via `pypa/gh-action-pypi-publish`).
+- **Issue templates:** `bug_report`, `feature_request`, `good_first_issue` (with `good first issue` + `help wanted` labels) — use them so issues rank.
+- **PR template:** `.github/pull_request_template.md` — fill What/Why/How/Tests/Screenshots.
+
+## Good First Issue Workflow (for maintainers)
+
+1. Label `good first issue` + `help wanted` → appears in https://github.com/search?q=label%3A%22good+first+issue%22+language%3Apython
+2. Keep to **one file, 30 min, copy-paste steps**, with `### Files` + `### Acceptance` checkboxes.
+3. PRs with `good first issue` get priority review (48h) and are featured in release notes.
 
 ## Guidelines
 
