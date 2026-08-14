@@ -123,6 +123,9 @@ from typer.core import TyperGroup
 
 class _PeekGroup(TyperGroup):
     def parse_args(self, ctx, args):
+        # Let Click handle --help / --version normally (eager options)
+        if any(a in ("--help", "-h", "--version", "-V") for a in args):
+            return super().parse_args(ctx, args)
         if not args and self.no_args_is_help and not ctx.resilient_parsing:
             raise _click.exceptions.NoArgsIsHelpError(ctx)
         # Use click.Command parse to get leftover args (options already parsed)
