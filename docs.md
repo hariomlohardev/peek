@@ -300,6 +300,7 @@ peek --pack                     # stdout → | pbcopy / clip / xclip
 peek --pack --ask "auth"        # only files matching auth (filename + content + analyzer bonus)
 peek --pack -o pack.txt         # to file via safe writer
 peek --pack --ask "nope" -o out.txt  # no match → graceful yellow warning
+peek --pack --exclude "*.min.js" --budget 4000
 
 # Find — ranked filename (10) + exact (5) + content (min5+occ*0.5 capped8) + analyzer*0.3, preview 3 lines
 peek find "auth" .
