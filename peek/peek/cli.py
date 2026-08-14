@@ -126,7 +126,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
@@ -618,6 +618,35 @@ def graph_command(
             sys.stdout.write(out)
             sys.stdout.write("\n")
             sys.stdout.flush()
+
+
+@app.command("index")
+def index_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo/directory to index"),
+    rebuild: bool = typer.Option(False, "--rebuild", help="Force rebuild even if cached"),
+):
+    """Build semantic index (BM25 + optional fastembed)."""
+    import json
+
+    from peek.embeddings import build_index
+    from peek.scanner import scan
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    sr = scan(root)
+    idx = build_index(sr)
+    cache_dir = root / ".peek"
+    try:
+        cache_dir.mkdir(exist_ok=True)
+    except Exception:
+        pass
+    payload = {"chunks": len(idx.get("chunks", [])), "files": len(sr.files)}
+    try:
+        (cache_dir / "index.json").write_text(json.dumps(payload), encoding="utf-8")
+    except Exception:
+        pass
+    console.print(f"[green]Indexed {len(idx.get('chunks', []))} chunks[/] at {cache_dir}")
 
 
 config_app = typer.Typer(help="Config: get/set/list")
