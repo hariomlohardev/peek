@@ -126,7 +126,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
@@ -584,6 +584,40 @@ def find_command(
         return
 
     _print_find_result(matches, query, elapsed)
+
+
+@app.command("graph")
+def graph_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    format: str = typer.Option("dot", "--format", help="dot|svg|html"),
+    output: Path = typer.Option(None, "--output", "-o"),
+):
+    from peek.scanner import scan; from peek.analyzer import analyze
+    from peek.graph import export_graph
+    sr = scan(path.resolve()); ar = analyze(sr)
+    try:
+        out = export_graph(ar, format=format)
+    except ValueError as e:
+        err_console.print(f"[red]{e}[/]")
+        raise typer.Exit(2)
+    if output:
+        p = Path(output)
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        p.write_text(out, encoding="utf-8")
+        console.print(f"[green]Graph written to {output}[/]")
+    else:
+        # raw output — avoid Rich markup stripping brackets in DOT
+        try:
+            console.print(out, markup=False)
+        except TypeError:
+            # fallback for older Rich
+            import sys
+            sys.stdout.write(out)
+            sys.stdout.write("\n")
+            sys.stdout.flush()
 
 
 config_app = typer.Typer(help="Config: get/set/list")
