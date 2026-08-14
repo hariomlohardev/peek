@@ -284,7 +284,18 @@ def get_theme(name: str | None) -> Theme:
 
 
 def list_themes() -> list[Theme]:
-    return [THEMES[k] for k in sorted(THEMES)]
+    """Every registered theme, ordered by id, case-insensitively.
+
+    Plain ``sorted()`` orders by codepoint, which puts every capitalised id
+    ahead of every lowercase one -- a theme registered as ``"Solarized-Light"``
+    would jump to the top of ``peek --theme-list`` rather than sit next to
+    ``solarized-dark``. Every id in ``THEMES`` is lowercase today, so this
+    changes nothing now and keeps the order sensible when one is not.
+
+    The raw id breaks ties, so ids differing only in case have a stable order
+    rather than one decided by dict insertion.
+    """
+    return [THEMES[k] for k in sorted(THEMES, key=lambda k: (k.lower(), k))]
 
 
 def resolve_theme(cli_opt: str | None) -> Theme:
