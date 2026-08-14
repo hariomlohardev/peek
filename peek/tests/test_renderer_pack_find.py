@@ -168,3 +168,67 @@ def test_cli_scan_and_analyze_import():
     # Ensure CLI import doesn't crash
     from peek.cli import app
     assert app is not None
+
+
+def _sleep_recorder(monkeypatch):
+    """Replace renderer's time.sleep and return the list it records into."""
+    calls: list[float] = []
+    monkeypatch.setattr("peek.renderer.time.sleep", calls.append)
+    return calls
+
+
+def test_render_static_no_animate(monkeypatch):
+    """A non-TTY console must not pay the staggered-reveal sleeps.
+
+    render_static resolves `animate` from `console.is_terminal` when the caller
+    leaves it None, so a redirected stdout -- pytest, a pipe, CI -- should take
+    the plain path. The stagger totals ~0.25s per call and is what makes the
+    reveal flake when it does run under a test runner.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _w(root / "a.py", "x=1\n")
+        sr = scan(root)
+        ar = analyze(sr)
+        calls = _sleep_recorder(monkeypatch)
+        console = Console(file=io.StringIO(), width=80)  # is_terminal False
+
+        render_static(sr, ar, 0.01, console)
+
+        assert console.is_terminal is False
+        assert calls == []
+
+
+def test_render_static_animate_false_never_sleeps(monkeypatch):
+    """An explicit animate=False overrides a real TTY."""
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _w(root / "a.py", "x=1\n")
+        sr = scan(root)
+        ar = analyze(sr)
+        calls = _sleep_recorder(monkeypatch)
+        console = Console(file=io.StringIO(), force_terminal=True, legacy_windows=False, width=80)
+
+        render_static(sr, ar, 0.01, console, animate=False)
+
+        assert calls == []
+
+
+def test_render_static_animates_on_a_terminal(monkeypatch):
+    """The control: without this the two tests above would pass on a no-op.
+
+    Pins that the sleeps are reachable at all, so a future change that drops
+    the stagger entirely is visible here rather than silently green.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _w(root / "a.py", "x=1\n")
+        sr = scan(root)
+        ar = analyze(sr)
+        calls = _sleep_recorder(monkeypatch)
+        console = Console(file=io.StringIO(), force_terminal=True, legacy_windows=False, width=80)
+
+        render_static(sr, ar, 0.01, console, animate=True)
+
+        assert calls, "a TTY render should stagger"
+        assert all(d <= 0.05 for d in calls), f"unexpectedly long stagger: {calls}"
