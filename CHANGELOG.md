@@ -2,6 +2,11 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.2.1 — 2026-08-14
+- fix: `peek .` now works — TyperGroup parse_args correctly routes path vs subcommand (fixes "No such command '.'")
+- `peek myrepo` (existing dir) works, typos still error as unknown command
+- tests: add `test_cli_dot` (5) — 113 passed, 1 skipped
+
 ## 0.2.0 — 2026-08-12
 - `wtf`: traceback explainer with scan-aware hints
 - `pack v2`: format md/xml/txt, budget, include/exclude globs
