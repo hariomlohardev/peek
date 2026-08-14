@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Q&A — Ask Anything
+    url: https://github.com/hariomlohardev/peek/discussions/categories/q-a
+    about: Ask the community for help (install, TUI, themes, pack, wtf)
+  - name: Ideas — Feature Requests (Discussion)
+    url: https://github.com/hariomlohardev/peek/discussions/categories/ideas
+    about: Share and vote on ideas before filing an issue
+  - name: Show and Tell — Share Your Map
+    url: https://github.com/hariomlohardev/peek/discussions/categories/show-and-tell
+    about: Show off a repo you mapped with peek
