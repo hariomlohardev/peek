@@ -2,6 +2,15 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.3.0 — 2026-08-14
+- `polyglot` graph — Python AST + JavaScript/TypeScript `import`/`require` regex (`peek/analyzer.py` `JS_IMPORT_RE`), no hard dep, `symbols` index `peek/symbols.py` (AST + `JS_EXPORT_RE`, BOM-tolerant)
+- `peek graph --format svg` — `peek/graph.py` `export_graph` DOT/SVG/HTML (`build_dot` top15, `build_svg` `dot -Tsvg` or fallback), `peek graph --format dot|svg|html -o out.svg` (`exit 2` on unknown)
+- `semantic` — `peek/embeddings.py` BM25 (`build_index` 30→50 chunks, `idf*tf`) + optional `fastembed` (`sentence-transformers/all-MiniLM-L6-v2`), `peek find "auth token" --semantic` and `peek --pack --ask "auth token" --semantic` + `peek index --rebuild` (`.peek/index.json`)
+- `pack 3.0` — `tiktoken` `cl100k_base` accurate (`estimate_tokens`), `--clip` (`pyperclip`), `--dry-run` table, `--diff HEAD`/`--staged` (`git diff --name-only`), URL fetch `https://...tar.gz` (`urllib`→`curl`, tar/zip/plain, `tempfile.mkdtemp`), `--format md/xml/txt --budget --include/--exclude`
+- `peek mcp` — MCP server (stdio) for Claude Code: exposes `scan`/`analyze`/`find`/`graph`/`pack` via `mcp` lib optional (Task 5, fallback hint)
+- Viral polish: README hero with `polyglot` + `semantic` + `peek graph --format svg` + `peek find "auth token" --semantic` + `peek mcp`, `pip install peek-code`, docs sections `Symbols`/`Semantic`/`Graph`/`Git`/`MCP`, GIF regenerated (800×450, <3MB, 10 scenes)
+- Tests: 129 passed, 1 skipped (added `test_symbols`/`test_embeddings`/`test_graph`/`test_pack_v3`)
+
 ## 0.2.1 — 2026-08-14
 - fix: `peek .` now works — TyperGroup parse_args correctly routes path vs subcommand (fixes "No such command '.'")
 - `peek myrepo` (existing dir) works, typos still error as unknown command
