@@ -126,7 +126,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
@@ -759,6 +759,192 @@ def wtf_command(
             err_console.print(f"[dim]explain failed: {e}[/]")
     else:
         console.print(info.raw)
+
+
+@app.command("mcp")
+def mcp_command() -> None:
+    """Start MCP stdio server — exposes peek_scan, peek_rank, peek_pack, peek_find, peek_graph, peek_explain."""
+    from peek.mcp_server import main as mcp_main
+
+    mcp_main()
+
+
+@app.command("log")
+def log_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo (default '.')"),
+    n: int = typer.Option(20, "--n", "-n", help="Number of commits to show"),
+    since: Optional[str] = typer.Option(None, "--since", help="Show commits since date (e.g. '1 week ago')"),
+    author: Optional[str] = typer.Option(None, "--author", help="Filter by author"),
+    no_oneline: bool = typer.Option(False, "--no-oneline", help="Disable oneline"),
+    json_output: bool = typer.Option(False, "--json", help="JSON output"),
+) -> None:
+    """Show git log — time machine for the repo."""
+    from peek.git import git_log
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    try:
+        n = int(n)
+    except Exception:
+        n = 20
+    out = git_log(root, n=n, since=since, author=author, oneline=not no_oneline)
+    if json_output:
+        lines = [l for l in out.splitlines() if l.strip()]
+        console.print_json(data={"root": str(root), "commits": lines[:n]})
+        return
+    if not out or not out.strip():
+        err_console.print(f"[yellow]No git log for[/] [bold]{root}[/] (not a git repo or no commits).")
+        return
+    # Rich panel
+    console.print(Panel(out.strip(), title=f"[bold]git log[/]  [dim]({root} • -{n})[/]", box=box.ROUNDED, border_style="cyan", padding=(0, 1)))
+
+
+@app.command("diff")
+def diff_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    base: str = typer.Option("HEAD", "--base", "-b", help="Base to diff against (e.g. HEAD, HEAD~1)"),
+    staged: bool = typer.Option(False, "--staged", help="Show staged only (git diff --staged)"),
+    json_output: bool = typer.Option(False, "--json", help="JSON output"),
+) -> None:
+    """Show changed files — `git diff --name-only`."""
+    from peek.git import git_diff
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    files = git_diff(root, base=base, staged=staged)
+    if json_output:
+        console.print_json(data={"root": str(root), "base": base, "staged": staged, "files": files})
+        return
+    if not files:
+        console.print(f"[dim]No changes vs {base} in[/] [bold]{root}[/] [dim] (or not a git repo)[/]")
+        return
+    t = Table(box=box.SIMPLE_HEAD, show_header=True, header_style="bold cyan", padding=(0, 1))
+    t.add_column("#", style="dim", width=3, justify="right")
+    t.add_column("Changed File", style="white")
+    for i, f in enumerate(files[:50], 1):
+        t.add_row(str(i), f)
+    suffix = f" (+{len(files)-50} more)" if len(files) > 50 else ""
+    console.print(Panel(t, title=f"[bold]git diff[/]  [dim]({base} • {len(files)} files{suffix})[/]", box=box.ROUNDED, border_style="yellow", padding=(0, 1)))
+
+
+@app.command("hot")
+def hot_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    n: int = typer.Option(50, "--n", "-n", help="Commits to scan for churn"),
+    limit: int = typer.Option(10, "--limit", "-l", help="Top N hot files"),
+    json_output: bool = typer.Option(False, "--json", help="JSON output"),
+) -> None:
+    """Hot files — most churned via `git log --numstat`."""
+    from peek.git import git_hot
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    try:
+        n = int(n)
+    except Exception:
+        n = 50
+    try:
+        limit = int(limit)
+    except Exception:
+        limit = 10
+    hot = git_hot(root, n=n, limit=limit)
+    if json_output:
+        console.print_json(data={"root": str(root), "n": n, "hot": hot})
+        return
+    if not hot:
+        err_console.print(f"[yellow]No churn data for[/] [bold]{root}[/] (not a git repo or no history).")
+        return
+    t = Table(box=box.SIMPLE_HEAD, show_header=True, header_style="bold yellow", padding=(0, 1))
+    t.add_column("#", style="dim", width=3, justify="right")
+    t.add_column("File", style="white", overflow="fold")
+    t.add_column("Churn", justify="right", style="green")
+    t.add_column("Commits", justify="right", style="cyan")
+    t.add_column("Added", justify="right", style="dim")
+    t.add_column("Deleted", justify="right", style="dim")
+    for i, h in enumerate(hot, 1):
+        t.add_row(str(i), h.get("file", "?"), str(h.get("churn", 0)), str(h.get("commits", 0)), str(h.get("added", 0)), str(h.get("deleted", 0)))
+    console.print(Panel(t, title=f"[bold]Hot files[/]  [dim](churn over last {n} commits)[/]", box=box.ROUNDED, border_style="magenta", padding=(0, 1)))
+
+
+@app.command("blame")
+def blame_command(
+    file: Path = typer.Argument(..., help="File to blame (relative to repo, e.g. peek/scanner.py)"),
+    path: Path = typer.Option(Path("."), "--path", "-p", help="Repo path (default '.')"),
+    json_output: bool = typer.Option(False, "--json", help="JSON output"),
+) -> None:
+    """Git blame — who changed each line."""
+    from peek.git import git_blame
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    # file may be absolute or relative; pass as is
+    out = git_blame(root, file)
+    if json_output:
+        console.print_json(data={"root": str(root), "file": str(file), "blame": out[:8000]})
+        return
+    if not out or not out.strip():
+        err_console.print(f"[yellow]No blame for[/] [bold]{file}[/] in [bold]{root}[/] (not a git repo or file not tracked).")
+        return
+    # Show first 80 lines to avoid flooding
+    lines = out.splitlines()
+    preview = "\n".join(lines[:80])
+    if len(lines) > 80:
+        preview += f"\n… (+{len(lines)-80} more lines)"
+    console.print(Panel(preview, title=f"[bold]git blame[/]  [dim]{file} • {len(lines)} lines[/]", box=box.ROUNDED, border_style="white", padding=(0, 1)))
+
+
+# Git sub-app for `peek git log/diff/hot/blame` alias (mirrors top-level)
+git_app = typer.Typer(help="Git time machine — log/diff/hot/blame (alias for peek log/diff/hot/blame)")
+app.add_typer(git_app, name="git")
+
+
+@git_app.command("log")
+def git_log_cmd(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    n: int = typer.Option(20, "--n", "-n", help="Number of commits"),
+    since: Optional[str] = typer.Option(None, "--since", help="Since date"),
+    author: Optional[str] = typer.Option(None, "--author", help="Author"),
+    no_oneline: bool = typer.Option(False, "--no-oneline", help="Disable oneline"),
+    json_output: bool = typer.Option(False, "--json", help="JSON"),
+):
+    """Alias for `peek log` via `peek git log`."""
+    log_command(path, n, since, author, no_oneline, json_output)
+
+
+@git_app.command("diff")
+def git_diff_cmd(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    base: str = typer.Option("HEAD", "--base", "-b", help="Base"),
+    staged: bool = typer.Option(False, "--staged", help="Staged only"),
+    json_output: bool = typer.Option(False, "--json", help="JSON"),
+):
+    """Alias for `peek diff` via `peek git diff`."""
+    diff_command(path, base, staged, json_output)
+
+
+@git_app.command("hot")
+def git_hot_cmd(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    n: int = typer.Option(50, "--n", "-n", help="Commits to scan"),
+    limit: int = typer.Option(10, "--limit", "-l", help="Top N"),
+    json_output: bool = typer.Option(False, "--json", help="JSON"),
+):
+    """Alias for `peek hot` via `peek git hot`."""
+    hot_command(path, n, limit, json_output)
+
+
+@git_app.command("blame")
+def git_blame_cmd(
+    file: Path = typer.Argument(..., help="File to blame"),
+    path: Path = typer.Option(Path("."), "--path", "-p", help="Repo path"),
+    json_output: bool = typer.Option(False, "--json", help="JSON"),
+):
+    """Alias for `peek blame` via `peek git blame`."""
+    blame_command(file, path, json_output)
 
 
 @app.callback(invoke_without_command=True, context_settings={"allow_extra_args": True, "ignore_unknown_options": True})
