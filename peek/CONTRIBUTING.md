@@ -86,6 +86,30 @@ peek/tests/
 - **Beautiful** — every `peek --no-tui` output should be screenshot-ready (test in 80x24 and 120x40)
 - **No push in PRs** — don't `git push` to upstream; fork it
 
+## Who We Welcome (and What We Don’t)
+
+**We love beginners who want to learn!** :wave: :sparkles:
+
+If you’re new to open source, picking a `good first issue`, reading the code, trying, asking questions in the issue or [Q&A Discussions](https://github.com/hariomlohardev/peek/discussions/categories/q-a), and learning as you go — **you are exactly who we built this for**. We’ll review with extra care, explain the “why” behind suggestions, and celebrate your first PR. You don’t need to be an expert — you just need to be curious and willing to understand the change you submit. :pray: :hugs:
+
+**What we don’t allow is spam.** :no_entry:
+
+- Copy-pasting an AI answer (Claude, ChatGPT, Copilot, etc.) without understanding it, without testing `pytest -q` + `ruff check`, and without being able to explain the `What/Why/How` in your own words.
+- Mass-filing low-effort AI-generated PRs just to collect `good first issue` counts.
+
+A PR — human or AI-assisted — must:
+
+- [ ] **Pass tests** (`pytest -q` green) and `ruff check` clean
+- [ ] **Follow the PR template** (`What/Why/How/Tests/Screenshots/Checklist`)
+- [ ] **Be explainable** — you can answer “why did you choose this regex / why this file?” in review
+- [ ] **Be one focused change** (one file, one issue, ~30 min as the issue says)
+
+If a PR is clearly low-effort AI spam (fails tests, doesn’t match the issue’s `### Files` + `### Acceptance`, or the author can’t explain it), we’ll **close it with a kind note and a link back to this section**, and ask you to try again the human way. Repeated spam may lead to a temporary ban — not because we don’t like AI, but because we want every `good first issue` to stay a real learning opportunity for the next beginner. :recycle:
+
+**Using AI as a helper is fine** — like a spell-checker — as long as *you* are the author who understands, tests, and owns the change. If you used AI, just say so in the PR (“Used Copilot for the regex, then tested with `pytest -k go -v`”), and be ready to discuss it.
+
+Thanks for keeping `peek` a place where beginners can actually learn! :heart: :rocket:
+
 ## Reporting Issues
 
 - Use GitHub Issues: https://github.com/hariomlohardev/peek/issues
