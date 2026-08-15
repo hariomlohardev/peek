@@ -41,3 +41,6 @@ Thumbs.db
 
 # Local env
 .env
+
+# Scripts - local helpers for issue creation, not part of repo
+scripts/
