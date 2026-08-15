@@ -397,18 +397,47 @@ peek --pack --ask https://github.com/org/repo/archive/main.tar.gz
 
 ## MCP
 
-`peek mcp` -> MCP server (stdio) for Claude Code - exposes `peek` as tools.
+`peek mcp` starts a Model Context Protocol (MCP) stdio server, exposing `peek`'s code analysis capabilities as tools for AI agents like Claude Code, Cursor, or Muse.
 
-- **Transport:** stdio JSON-RPC (MCP spec) - `peek mcp` launches server, `Ctrl+C` quit. No hard dep: `mcp` optional with fallback hint.
-- **Tools:** `peek_scan` (`path`, `max_files`), `peek_analyze`, `peek_find` (`query`, `limit`, `semantic`), `peek_graph` (`format`), `peek_pack` (`query`, `budget`, `format`, `clip`). Each proxies to `peek.scanner/analyzer/find/graph/pack` with <1s, offline guards.
-- **Why MCP?** Turns any repo into MCP toolset - Claude can `peek analyze` then `peek find "auth token"` then `peek graph --format svg` in one session.
+### Quick Start / Installation
+
+Register the MCP server with Muse:
 
 ```bash
-peek mcp                 # start stdio server
-# add to Claude Code mcpServers: {"mcpServers": {"peek": {"command": "peek", "args": ["mcp"]}}}
+Muse mcp add peek -- python -m peek.mcp_server
 ```
 
-> Task 5 owns `peek/peek/mcp_server/` + `peek/peek/git.py`; docs here stay green before merge.
+Or configure it manually in your client's settings (e.g., `mcpServers` configuration for Claude Code):
+
+```json
+{
+  "mcpServers": {
+    "peek": {
+      "command": "python",
+      "args": ["-m", "peek.mcp_server"]
+    }
+  }
+}
+```
+
+Alternatively, if `peek` is installed in your path, you can run:
+
+```bash
+peek mcp
+```
+
+### Tools Reference
+
+The server exposes the following tools:
+
+| Tool Name | Description | Arguments |
+|:---|:---|:---|
+| `peek_scan` | Scan repository — file stats, languages, tech stack, entry candidates. | `path` (string, optional, default: `.`) |
+| `peek_rank` | Ranked Start Here — import graph PageRank + in-degree + entry bonus. | `path` (string, optional, default: `.`) |
+| `peek_pack` | Pack ranked files for LLM context within token budget. | `path` (string, optional)<br/>`query` (string, optional): Keyword or URL filter<br/>`budget` (integer, optional): Token budget (default: 8000)<br/>`format` (string, optional): `md`, `xml`, or `txt` |
+| `peek_find` | Find files by keyword — filename + content + semantic BM25. | `query` (string, required): Search intent/keyword<br/>`path` (string, optional)<br/>`limit` (integer, optional): Max results |
+| `peek_graph` | Export import graph as DOT/SVG/HTML. | `path` (string, optional)<br/>`format` (string, optional): `dot`, `svg`, or `html` |
+| `peek_explain` | Explain a Python traceback with scan-aware hints. | `traceback` (string, optional): Traceback text<br/>`path` (string, optional): Context path<br/>`file` (string, optional): File containing traceback |
 
 ---
 ## WTF — Traceback Explainer
