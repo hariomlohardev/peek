@@ -17,6 +17,8 @@ import fnmatch
 import re
 from pathlib import Path
 
+from peek.scanner import _is_binary
+
 
 def estimate_tokens(text: str) -> int:
     """Token estimate: try tiktoken cl100k_base, fallback len//4."""
@@ -624,6 +626,8 @@ def build_pack(
                         continue
                     # Check file content (first 500KB already guarded)
                     try:
+                        if _is_binary(p):
+                            continue
                         try:
                             text = p.read_text(encoding="utf-8-sig", errors="ignore")
                         except Exception:
@@ -659,6 +663,8 @@ def build_pack(
         for p in candidates:
             try:
                 # Skip binary / huge
+                if _is_binary(p):
+                    continue
                 if p.suffix.lower() in (".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".bin"):
                     continue
                 try:
