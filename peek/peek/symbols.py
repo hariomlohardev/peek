@@ -24,13 +24,6 @@ class Symbol:
 JS_IMPORT_RE = re.compile(r"""import\s+(?:.*?\s+from\s+)?['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\)""")
 JS_EXPORT_RE = re.compile(r"""export\s+(?:default\s+)?(?:function|class|const|let|var)\s+(\w+)""")
 
-# Go — declarations are always at column 0, so anchoring to the line start is
-# what keeps closures (`f := func() {}`) and commented-out code out of the index.
-# Covers plain funcs, methods with a receiver, and generic type parameters:
-#   func Foo(...)            func (s *Server) Start(...)      func Map[T any](...)
-GO_FUNC_RE = re.compile(r"^func\s+(?:\([^)]*\)\s*)?([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)?\(", re.MULTILINE)
-GO_TYPE_RE = re.compile(r"^type\s+([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)?(?:struct|interface)\b", re.MULTILINE)
-
 
 def index_symbols(scan_result) -> list[Symbol]:
     """Index symbols from ScanResult.
@@ -101,9 +94,4 @@ def index_symbols(scan_result) -> list[Symbol]:
                 for m in JS_EXPORT_RE.finditer(text):
                     lineno = text[: m.start()].count("\n") + 1
                     out.append(Symbol(m.group(1), "def", f.path, f.rel, lineno))
-        elif f.language == "go":
-            for regex, kind in ((GO_FUNC_RE, "def"), (GO_TYPE_RE, "class")):
-                for m in regex.finditer(text):
-                    lineno = text[: m.start()].count("\n") + 1
-                    out.append(Symbol(m.group(1), kind, f.path, f.rel, lineno))
     return out
