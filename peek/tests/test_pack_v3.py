@@ -270,3 +270,26 @@ def test_pack_url_fetch(monkeypatch):
             assert "hello" in r.output.lower() or "pack" in r.output.lower() or r.output.strip() != ""
         finally:
             os.chdir(old)
+
+
+def test_pack_skips_binary(tmp_path):
+    """build_pack skips binary files containing null bytes without crashing."""
+    from peek.analyzer import analyze
+    from peek.pack import build_pack
+    from peek.scanner import scan
+
+    (tmp_path / "app.py").write_text("print('hello world')\n", encoding="utf-8")
+    (tmp_path / "data.dat").write_bytes(b"some\x00binary\x00data\x00bytes")
+    (tmp_path / "data.bin").write_bytes(b"\x00\x00\x00header")
+
+    sr = scan(tmp_path)
+    ar = analyze(sr)
+    out, files, toks = build_pack(sr, ar)
+
+    included_names = [f.name for f in files]
+    assert "app.py" in included_names
+    assert "data.dat" not in included_names
+    assert "data.bin" not in included_names
+    assert "data.dat" not in out
+    assert "data.bin" not in out
+
