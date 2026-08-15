@@ -5,7 +5,7 @@
 
 <h1 align="center">peek — htop for codebases</h1>
 
-<p align="center"><strong>Understand any codebase in 5 seconds.</strong> <code>pip install peek-code && peek .</code></p>
+<p align="center"><strong>Understand any codebase in 5 seconds.</strong> <code>pip install peek && peek .</code></p>
 
 <p align="center">
   <a href="https://pypi.org/project/peek-code/"><img src="https://img.shields.io/pypi/v/peek-code?label=pypi" alt="PyPI"/></a>
@@ -28,10 +28,10 @@
 ## Install
 
 ```bash
-pip install peek-code
+pip install peek
 # or
-pipx install peek-code
-uv tool install peek-code
+pipx install peek
+uv tool install peek
 
 # dev (with tests + demo generator)
 pip install -e "peek[dev]"
@@ -165,7 +165,7 @@ See [`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md) for the full workflow. Branch
 | `pydeps` / `import-linter` | No summary, no entry detection |
 | `tree` / `tokei` / `onefetch` | No graph, no ranking |
 
-**Moat:** Every output is a screenshot. Every repo is a new demo. `pip install peek-code` is zero friction.
+**Moat:** Every output is a screenshot. Every repo is a new demo. `pip install peek` is zero friction.
 
 ## Author
 
