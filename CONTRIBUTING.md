@@ -26,6 +26,8 @@ riff check peek    # lint
 4. `pytest -q && ruff check` must pass
 5. PR with `Closes #123` — we’ll review in 48h, `good first issue` PRs get priority :rocket:
 
+**Who we welcome:** Beginners who want to learn are *exactly* who we built `good first issue` for — we’ll review with extra care and explain the why. What we don’t allow is spam: copy-pasting AI without understanding, without `pytest -q`, and without being able to explain `What/Why/How` in your own words. PRs must be explainable and pass tests; AI as a helper (like spell-check) is fine as long as *you* own the change. See [`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md) for the full policy.
+
 **Need help?** Ask in [Q&A Discussions](https://github.com/hariomlohardev/peek/discussions/categories/q-a) or the issue itself — no question too small! :pray:
 
 Built by [Hariom Lohar](https://hariomlohardev.github.io/) — `peek` is for everyone. :heart:

@@ -28,6 +28,7 @@
 - [ ] Commit messages are clean (no `Co-Authored-By`)
 - [ ] Branch is `fix/thing` or `feat/thing` from `main`
 - [ ] `good first issue` label added if this is a first PR (we’ll add it!)
+- [ ] I understand this PR and can explain the What/Why/How in my own words — AI as a helper is okay, but I own this change (see `peek/CONTRIBUTING.md` “Who We Welcome”)
 
 Thanks for contributing! :tada: :heart:
 
