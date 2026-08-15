@@ -12,7 +12,7 @@ import ast
 import fnmatch
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import pathspec
 
@@ -262,8 +262,47 @@ def _load_ignore_spec(root: Path) -> pathspec.PathSpec:
         return pathspec.PathSpec.from_lines("gitwildmatch", [])
 
 
-def _should_ignore(path: Path, root: Path, spec: pathspec.PathSpec) -> bool:
-    """Check if relative path should be ignored via spec or default dir names."""
+def _load_nested_ignore_spec(directory: Path) -> pathspec.PathSpec | None:
+    """Load a subdirectory's own .gitignore/.peekignore, or None if it has none.
+
+    Unlike `_load_ignore_spec` this adds no defaults: those are already applied
+    from the root. Patterns here are matched relative to `directory`, which is
+    what git does for a nested .gitignore.
+    """
+    lines: list[str] = []
+    for ignore_file in (".gitignore", ".peekignore"):
+        p = directory / ignore_file
+        if not p.is_file():
+            continue
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            lines.append(line)
+
+    if not lines:
+        return None
+    try:
+        return pathspec.PathSpec.from_lines("gitwildmatch", lines)
+    except Exception:
+        return None
+
+
+def _should_ignore(
+    path: Path,
+    root: Path,
+    spec: pathspec.PathSpec,
+    nested: Sequence[tuple[Path, pathspec.PathSpec]] = (),
+) -> bool:
+    """Check if relative path should be ignored via spec or default dir names.
+
+    `nested` carries (directory, spec) pairs for every ancestor .gitignore
+    between `root` and `path`, each matched relative to its own directory.
+    """
     try:
         rel = path.relative_to(root)
     except ValueError:
@@ -279,6 +318,16 @@ def _should_ignore(path: Path, root: Path, spec: pathspec.PathSpec) -> bool:
     # Also check with trailing slash for dirs
     if path.is_dir() and spec.match_file(rel_str + "/"):
         return True
+    # Nested .gitignore files, each relative to the directory that holds it
+    for base, nested_spec in nested:
+        try:
+            nested_rel = path.relative_to(base).as_posix()
+        except ValueError:
+            continue
+        if nested_spec.match_file(nested_rel):
+            return True
+        if path.is_dir() and nested_spec.match_file(nested_rel + "/"):
+            return True
     return False
 
 
@@ -587,12 +636,14 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
         total_loc = 0
 
         # Walk — use rglob but filter dirs early to avoid descending into ignored trees
-        # We do manual stack to skip ignored dirs efficiently.
-        stack: list[Path] = [root]
+        # We do manual stack to skip ignored dirs efficiently. Each entry carries
+        # the nested .gitignore specs of its ancestors, so a subdirectory's own
+        # .gitignore applies to it and everything below it, the way git does it.
+        stack: list[tuple[Path, tuple[tuple[Path, pathspec.PathSpec], ...]]] = [(root, ())]
         visited: set[Path] = set()
 
         while stack and len(files) < max_files:
-            current = stack.pop()
+            current, nested = stack.pop()
             try:
                 # List entries, sorted for determinism
                 entries = sorted(current.iterdir(), key=lambda p: p.name)
@@ -616,14 +667,16 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                 except Exception:
                     continue
 
-                if _should_ignore(entry, root, spec):
+                if _should_ignore(entry, root, spec, nested):
                     continue
 
                 try:
                     if entry.is_dir():
                         if entry not in visited:
                             visited.add(entry)
-                            stack.append(entry)
+                            child_spec = _load_nested_ignore_spec(entry)
+                            child_nested = nested + ((entry, child_spec),) if child_spec else nested
+                            stack.append((entry, child_nested))
                     elif entry.is_file():
                         if len(files) >= max_files:
                             break
