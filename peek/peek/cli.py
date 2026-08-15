@@ -1004,6 +1004,7 @@ def main_callback(
     Use `--html -o out.html` for HTML export.
     Use `--pack [--ask QUERY]` to pack top files for LLM.
     Use `peek find <query>` to search.
+    Tip: peek --watch for live TUI, peek watch . for static watch.
     """
     if version:
         console.print(f"peek v{__version__}")
