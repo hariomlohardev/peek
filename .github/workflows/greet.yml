@@ -1,0 +1,29 @@
+name: Greet PR
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Welcome contributor
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+            const body = `Hey @${author}! :wave: :sparkles:\n\nThank you for your contribution! :tada: :heart: We really appreciate your PR — our maintainers will review it soon (usually within 48h). :eyes: :pray:\n\n:mega: **While you wait — check out our other project!** :mega:\n\nWe’re also building **Inkdown** — a beautiful, fast markdown editor for Windows! :pen: :window: :sparkles:\n\n:arrow_down: **Explore the repo:**\n**https://github.com/hariomlohardev/inkdown**\n\n:arrow_down: **Download the installer & try it:**\n**https://github.com/hariomlohardev/inkdown/releases/tag/WINDOWS**\n\nWe’d love your feedback — try it and let us know what you think in the Inkdown repo! Any thoughts, bugs, or feature ideas mean a lot! :star2: :rocket:\n\n---\n\n:handshake: **Let’s connect!**\n\n- :briefcase: **LinkedIn:** https://linkedin.com/in/hariomlohar\n- :snoo: **Reddit:** https://reddit.com/user/hariomlohar0602\n\nThanks again for contributing to **peek** — you’re awesome! :hugs: :100: :clap:\n\n*P.S. If you like Inkdown, a :star: on that repo helps a ton too!*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: body
+            });
+            core.info(`Greeted @${author} on PR #${pr.number}`);
