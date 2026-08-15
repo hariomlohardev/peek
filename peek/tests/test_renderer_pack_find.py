@@ -1,5 +1,6 @@
 """Tests for renderer, html, pack, find, llm."""
 
+import re
 import tempfile
 from pathlib import Path
 
@@ -232,3 +233,83 @@ def test_render_static_animates_on_a_terminal(monkeypatch):
 
         assert calls, "a TTY render should stagger"
         assert all(d <= 0.05 for d in calls), f"unexpectedly long stagger: {calls}"
+
+
+# ---------------------------------------------------------------------------
+# NO_COLOR (https://no-color.org/)
+# ---------------------------------------------------------------------------
+
+_COLOR_SGR_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _sgr_params(text: str) -> set[str]:
+    """Every SGR parameter emitted by a render, as individual codes."""
+    params: set[str] = set()
+    for seq in _COLOR_SGR_RE.findall(text):
+        params.update(seq[2:-1].split(";"))
+    return params
+
+
+def _render_to_string(*, no_color: bool) -> str:
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _w(root / "a.py", "import b\n\n\ndef foo():\n    return 1\n")
+        _w(root / "b.py", "x = 1\n")
+        sr = scan(root)
+        ar = analyze(sr)
+        buf = io.StringIO()
+        console = Console(
+            file=buf,
+            force_terminal=True,
+            legacy_windows=False,
+            width=100,
+            no_color=no_color,
+        )
+        render_static(sr, ar, 0.01, console, animate=False)
+        return buf.getvalue()
+
+
+def test_no_color_render_emits_no_colour_codes():
+    """NO_COLOR must strip colour, per https://no-color.org/.
+
+    Rich implements this for us -- a Console built while NO_COLOR is set has
+    ``no_color=True``. This pins the end result so that a future renderer
+    change (an explicit ``color_system=``, a ``force_terminal`` console built
+    somewhere new, raw ANSI written by hand) cannot silently reintroduce
+    colour on a NO_COLOR terminal.
+    """
+    params = _sgr_params(_render_to_string(no_color=True))
+
+    # 30-37/90-97 foreground, 40-47/100-107 background, and the 38/48
+    # extended-colour introducers are the codes NO_COLOR forbids.
+    colour_codes = {
+        p
+        for p in params
+        if p.isdigit()
+        and (30 <= int(p) <= 49 or 90 <= int(p) <= 107)
+    }
+    assert not colour_codes, f"NO_COLOR render still emitted colour: {sorted(colour_codes)}"
+
+
+def test_no_color_render_keeps_bold_and_dim():
+    """NO_COLOR is about colour only -- bold/dim carry peek's hierarchy.
+
+    The spec asks to "prevent the addition of ANSI color", not to strip all
+    styling, so the panels stay readable rather than going flat.
+    """
+    params = _sgr_params(_render_to_string(no_color=True))
+
+    assert params & {"1", "2"}, f"expected bold/dim to survive NO_COLOR, got {sorted(params)}"
+
+
+def test_colour_render_is_the_control():
+    """Without this the two tests above would pass on an empty render."""
+    params = _sgr_params(_render_to_string(no_color=False))
+
+    colour_codes = {
+        p
+        for p in params
+        if p.isdigit()
+        and (30 <= int(p) <= 49 or 90 <= int(p) <= 107)
+    }
+    assert colour_codes, "the coloured control render emitted no colour at all"
