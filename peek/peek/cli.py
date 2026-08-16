@@ -586,7 +586,13 @@ def find_command(
     json_output: bool = typer.Option(False, "--json", help="Output JSON."),
     max_files: int = typer.Option(2000, "--max-files", help="Hard cap on files scanned."),
 ) -> None:
-    """Find files by keyword — filename + content, ranked by relevance."""
+    """Find files by keyword — filename + content, ranked by relevance.
+
+    \b
+    Examples:
+        peek find "auth" . --limit 5
+        peek find "TODO" src/
+    """
     t0 = time.perf_counter()
     root = path.resolve() if path.exists() else Path.cwd() / path
     if root.is_file():
@@ -750,7 +756,13 @@ def wtf_command(
     path: Path = typer.Argument(None, help="File containing traceback, or omit to read stdin pipe"),
     explain: bool = typer.Option(True, "--explain/--no-explain", help="Add heuristic explain with scan"),
 ) -> None:
-    """Explain a Python traceback with scan-aware hints."""
+    """Explain a Python traceback with scan-aware hints.
+
+    \b
+    Examples:
+        cat tb.txt | peek wtf
+        peek wtf traceback.txt
+    """
     import sys
 
     text = ""
