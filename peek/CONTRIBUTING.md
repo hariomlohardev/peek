@@ -26,7 +26,7 @@ peek            # TUI (q to quit)
 
 1. **Fork** and create a branch: `git checkout -b fix/thing` or `feat/thing`
 2. **Code**: keep it under ~200 LOC per file, handle edge cases (binary, huge, SyntaxError, empty, non-python)
-3. **Test**: add a test in `tests/` — fixtures in temp dirs, no network, no `git clone` in tests
+3. **Test**: add a test in `peek/tests/` — fixtures in temp dirs, no network, no `git clone` in tests
 4. **Style**: `ruff check .` (line length 100), `pytest -q` must pass
 5. **PR**: clear title, what/why, screenshot if you touch renderer/TUI
 
