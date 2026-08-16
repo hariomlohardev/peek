@@ -737,7 +737,7 @@ def run_tui(root: Path | str, scan_result=None, analyzer_result=None, elapsed: f
     if not TEXTUAL_AVAILABLE:
         from rich.console import Console
 
-        console = Console(legacy_windows=False)
+        console = Console(no_color=bool(os.getenv("NO_COLOR")), legacy_windows=False)
         from peek.renderer import render_static
 
         render_static(scan_result, analyzer_result, elapsed, console, theme=theme)
@@ -747,7 +747,7 @@ def run_tui(root: Path | str, scan_result=None, analyzer_result=None, elapsed: f
     if not sys.stdout.isatty() and not sys.stderr.isatty():
         from rich.console import Console
 
-        console = Console(legacy_windows=False)
+        console = Console(no_color=bool(os.getenv("NO_COLOR")), legacy_windows=False)
         from peek.renderer import render_static
 
         render_static(scan_result, analyzer_result, elapsed, console, theme=theme)

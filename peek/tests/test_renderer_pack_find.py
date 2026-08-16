@@ -1,15 +1,17 @@
 """Tests for renderer, html, pack, find, llm."""
 
+import io
+import re
 import tempfile
 from pathlib import Path
 
-from peek.scanner import scan
-from peek.analyzer import analyze
-from peek.renderer import build_html, render_static
-from peek.pack import build_pack, estimate_tokens
-from peek.find import find_matches
 from rich.console import Console
-import io
+
+from peek.analyzer import analyze
+from peek.find import find_matches
+from peek.pack import build_pack, estimate_tokens
+from peek.renderer import build_html, render_static
+from peek.scanner import scan
 
 
 def _w(p: Path, c: str):
@@ -232,3 +234,30 @@ def test_render_static_animates_on_a_terminal(monkeypatch):
 
         assert calls, "a TTY render should stagger"
         assert all(d <= 0.05 for d in calls), f"unexpectedly long stagger: {calls}"
+
+
+def test_no_color(monkeypatch):
+    """NO_COLOR disables ANSI colour escapes in static output."""
+    monkeypatch.setenv("NO_COLOR", "1")
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _w(root / "a.py", "x = 1\n")
+        sr = scan(root)
+        ar = analyze(sr)
+
+        output = io.StringIO()
+        console = Console(
+            file=output,
+            force_terminal=True,
+            legacy_windows=False,
+            width=80,
+            no_color=False,
+        )
+
+        render_static(sr, ar, 0.01, console, animate=False)
+
+    ansi_colour = re.compile(
+        r"\x1b\[[0-9;]*(?:3[0-7]|4[0-7]|9[0-7]|10[0-7]|38|48)[0-9;]*m"
+    )
+    assert not ansi_colour.search(output.getvalue())
