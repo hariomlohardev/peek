@@ -3,7 +3,8 @@ site_url: https://hariomlohardev.github.io/peek/
 site_description: The htop for codebases — understand any repo in 5 seconds
 repo_url: https://github.com/hariomlohardev/peek
 repo_name: hariomlohardev/peek
-docs_dir: .
+docs_dir: docs
+site_dir: site
 theme:
   name: material
   palette:
@@ -27,10 +28,10 @@ theme:
     - search.suggest
     - content.code.copy
 nav:
-  - Home: docs.md
-  - Install: README.md
-  - Contributing: peek/CONTRIBUTING.md
-  - Research: docs/research/README.md
+  - Home: index.md
+  - Install: install.md
+  - Contributing: contributing.md
+  - Research: research/README.md
 markdown_extensions:
   - admonition
   - pymdownx.details
