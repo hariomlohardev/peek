@@ -14,7 +14,7 @@
 
 ## Tests
 
-- [ ] `pytest -q` passes (113+ tests)
+- [ ] `pytest -q` passes (146 passed, 1 skipped)
 - [ ] New test added for this change (if applicable)
 - [ ] `ruff check peek` clean
 

@@ -13,10 +13,10 @@ See **[`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md)** for the full guide (Quick
 **Quick Start (from repo root):**
 ```bash
 git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e "peek[dev]"
+pip install -e ".[dev]"
 pytest -q          # 146 passed, 1 skipped
 peek --no-tui && peek  # static + TUI (peek . also works)
-riff check peek    # lint
+ruff check peek    # lint
 ```
 
 **Workflow:**
