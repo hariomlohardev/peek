@@ -13,7 +13,7 @@
   <a href="https://github.com/hariomlohardev/peek/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hariomlohardev/peek" alt="License"/></a>
   <a href="https://github.com/hariomlohardev/peek"><img src="https://img.shields.io/github/stars/hariomlohardev/peek?style=social" alt="Stars"/></a>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
-  <img src="https://img.shields.io/badge/tests-113%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-146%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 </p>
@@ -33,8 +33,9 @@ pip install peek-code
 pipx install peek-code
 uv tool install peek-code
 
-# dev (with tests + demo generator)
-pip install -e "peek[dev]"
+# dev (with tests + demo generator) — from repo root:
+pip install -e "./peek[dev]"
+# or from peek/: pip install -e ".[dev]"
 ```
 
 Requires Python 3.11+. Deps: `typer`, `rich`, `textual`, `pathspec`.
@@ -132,8 +133,8 @@ peek --theme-list
 
 ```bash
 git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e "peek[dev]"
-pytest -q          # 113 passed, 1 skipped
+pip install -e ".[dev]"
+pytest -q          # 146 passed, 1 skipped
 peek --no-tui
 peek              # TUI — q to quit, peek . also works
 python -m peek.tools.gen_demo
