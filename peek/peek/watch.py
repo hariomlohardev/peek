@@ -26,11 +26,12 @@ def watch_repo(path: Path, on_change: Callable, debounce: float = 0.4, poll_inte
 
     # snapshot current mtimes so first poll doesn't fire spuriously
     try:
-        for f in path.rglob("*.py"):
-            try:
-                last_mtime[f] = f.stat().st_mtime
-            except FileNotFoundError:
-                pass
+        for ext in ("*.py", "*.toml", "*.json", "*.md", "*.yaml", "*.yml"):
+            for f in path.rglob(ext):
+                try:
+                    last_mtime[f] = f.stat().st_mtime
+                except FileNotFoundError:
+                    pass
     except Exception:
         pass
 
@@ -43,15 +44,16 @@ def watch_repo(path: Path, on_change: Callable, debounce: float = 0.4, poll_inte
             # check modified/new files
             try:
                 current_files: set[Path] = set()
-                for f in path.rglob("*.py"):
-                    current_files.add(f)
-                    try:
-                        mt = f.stat().st_mtime
-                        if last_mtime.get(f) != mt:
-                            last_mtime[f] = mt
-                            changed = True
-                    except FileNotFoundError:
-                        pass
+                for ext in ("*.py", "*.toml", "*.json", "*.md", "*.yaml", "*.yml"):
+                    for f in path.rglob(ext):
+                        current_files.add(f)
+                        try:
+                            mt = f.stat().st_mtime
+                            if last_mtime.get(f) != mt:
+                                last_mtime[f] = mt
+                                changed = True
+                        except FileNotFoundError:
+                            pass
                 # detect deleted files
                 deleted = [k for k in list(last_mtime.keys()) if k not in current_files and not k.exists()]
                 if deleted:
