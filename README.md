@@ -20,7 +20,7 @@
 
 <p align="center">
   <em>Beautiful, zero-config codebase cartographer — Python-native, Rich + Textual, works offline.</em><br>
-  <code>peek scan</code> • <code>peek analyze</code> • <code>peek .</code> (TUI) • <code>peek --html</code> • <code>peek --pack</code> • <code>peek find</code> • <code>10 themes</code>
+  <code>peek scan</code> • <code>peek analyze</code> • <code>peek .</code> (TUI) • <code>peek --html</code> • <code>peek --pack</code> • <code>peek find</code> • <code>peek trace --html</code> • <code>10 themes</code>
 </p>
 
 ---
@@ -81,6 +81,23 @@ export OPENAI_API_KEY=sk-...
 peek --llm
 ```
 
+### 4 — Trace (Python-only, flag not TUI, `--html` browser)
+
+```bash
+# Function tree — what it takes & where it goes (depth, direction, cross-file)
+peek trace scan --depth 3
+peek trace "MyClass.method" ./src --depth 4
+peek trace --at peek/scanner.py:601 --depth 2 --local
+peek trace "peek/scanner.py::scan" --depth 3 --json | jq
+
+# Polished HTML → temp file + browser (filter, theme picker, expand/collapse, copy JSON)
+peek trace scan --html
+peek trace Value.backward --html -o trace.html --theme dracula
+peek trace scan --depth 3 --show-externals --direction callers
+```
+
+`--depth 1-6` • `--direction callees|callers|both` • `--cross-file/--local` • `--show-externals` • `--at FILE:LINE` • `--json`/`--output` • `--html` (temp + `webbrowser.open`) • Python-only for now (JS/TS/Go/Rust later) • `pip install -e "."` or `pip install -e ".[dev]"`.
+
 ## Demo (by code)
 
 No `vhs`/`ffmpeg` needed — generated via Pillow:
@@ -106,6 +123,7 @@ Preview: `peek/assets/demo.gif` (15s, 145 frames, anthropic-pro `#D4A27F`→`#14
 | Heuristic summary (FastAPI/Django/Typer…) | — | ✅ | ✅ |
 | Textual TUI (nav, filter, open, 10 themes) | — | — | ✅ |
 | `--html` / `--pack` / `find` / `--llm` | ✅ | ✅ | ✅ |
+| `trace` Python-only function tree (`peek trace --html` → browser, `--at FILE:LINE`, `--depth`/`--direction`/`--cross-file`, `takes → assign`) | ✅ | ✅ | ✅ |
 
 ## 10 Themes
 

@@ -2,6 +2,12 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.4.0 — 2026-08-18
+- `trace` Python-only function tree — `peek trace` (flag, not TUI) `peek/trace/` (`models.py` `python.py` `builder.py` `query.py` `render.py` `html.py`): `FuncId`/`FuncNode`/`CallSite`/`TraceGraph`, 2-pass `ast` (decl + per-file call extraction `extract_calls_per_file`), `CallVisitor` with `PARAM_THROUGH|LITERAL|LOCAL_RESULT` + `assign_target`, resolver (same-file → import alias → module_index → external/builtin), `trace(graph, focal, depth=1-6, direction=callees|callers|both, cross_file, show_externals)` with cycle `↺` detection
+- CLI `peek trace` — `symbol` (`name`|`MyClass.method`|`file::func`|`module:func`) or `--at FILE:LINE`, `--depth` 1-6, `--direction`, `--cross-file/--local`, `--show-externals`, `--json`/`--output`, `--html` (temp HTML + `webbrowser.open`, polished self-contained `build_trace_html` with 10-theme tokens, file chips, `takes → assign · L`, filter/expand/copy, `localStorage` theme), `--theme`; Python-only for now, later JS/TS/Go/Rust via `tree-sitter`; `pip install -e "."` or `pip install -e ".[dev]"` (no extra deps)
+- Design/UI — minimal editorial `render_trace` (`ROUNDED` `line` `bg`, `ink`/`muted`/`cyan`/`accent` hierarchy, `takes` line with `PARAM_THROUGH` highlight, file chips, `takes → assign · L`, cycle `↺`), `build_trace_html` polished viewer (sticky header, `focal` pill, stats `nodes·files·depth`, `ul.tree` with `▾` toggle, search `/`, `e`/`c` expand, 10-theme picker, responsive/print, `file://` safe)
+- Docs — `README.md` + `peek/README.md` `trace` quick-start + features table, `CHANGELOG.md` 0.4.0
+
 ## 0.3.0 — 2026-08-14
 - `polyglot` graph — Python AST + JavaScript/TypeScript `import`/`require` regex (`peek/analyzer.py` `JS_IMPORT_RE`), no hard dep, `symbols` index `peek/symbols.py` (AST + `JS_EXPORT_RE`, BOM-tolerant)
 - `peek graph --format svg` — `peek/graph.py` `export_graph` DOT/SVG/HTML (`build_dot` top15, `build_svg` `dot -Tsvg` or fallback), `peek graph --format dot|svg|html -o out.svg` (`exit 2` on unknown)

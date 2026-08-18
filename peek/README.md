@@ -40,10 +40,14 @@ peek --theme dracula --html -o map.html && open map.html
 peek graph --format svg -o graph.svg  # polyglot import graph → DOT/SVG/HTML
 peek find "auth token" --semantic     # semantic BM25 (+ fastembed) — multi-word = intent
 peek mcp                  # MCP server for Claude Code / any MCP client
+peek trace --html                  # function tree → browser (filter, theme, expand, copy)
 ```
 Keys: `q` quit • `j/k` nav • `o` open `$EDITOR` • `/` filter • `enter` details • `esc` clear • `?` help • `t` theme • `w` watch
 
 ```bash
+peek trace scan --depth 3              # terminal tree: what it takes & where it goes
+peek trace scan --html -o trace.html      # polished HTML + browser (filter, theme, expand)
+peek trace --at peek/scanner.py:601 --depth 2 --local  # pinpoint via file:line
 peek wtf                  # paste traceback → explain with Start Here hint
 peek watch .              # live rescan on file change (polling, Ctrl+C)
 peek config set theme dracula  # persists
@@ -69,6 +73,7 @@ pytest peek/tests/test_demo_assets.py -v
 | TUI 10 themes, filter, open, HTML export, token-aware pack, ranked find (keyword + semantic) | `peek` / `--html` / `--pack` / `find` |
 | `graph` DOT/SVG/HTML, `symbols` index (AST + JS regex), `semantic` BM25/fastembed, `index` cache | `peek graph --format svg` / `peek find "auth token" --semantic` |
 | `pack` 3.0: tiktoken, `--clip`, `--dry-run`, `--diff`/`--staged`, URL `https://` | `peek --pack --clip --dry-run --diff HEAD` |
+| `trace` Python-only function tree — flag not TUI, depth/direction/cross-file, `--html` browser (filter, theme, expand) | `peek trace --html` / `peek trace --at file:line --depth 3` |
 | `wtf`/`watch`/`config`/`mcp` server, never crashes, <1s for 500 files, offline | `peek wtf` / `peek watch .` / `peek mcp` |
 
 > Full table → [`docs.md#features`](../docs.md#features)

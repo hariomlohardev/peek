@@ -132,7 +132,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Options like --help, --theme, --no-tui etc. should not be treated as subcommand
@@ -651,6 +651,274 @@ def graph_command(
             sys.stdout.write(out)
             sys.stdout.write("\n")
             sys.stdout.flush()
+
+
+@app.command("trace")
+def trace_command(
+    symbol: str = typer.Argument(None, help="Function to trace: name, qualname (MyClass.method), file::func, or use --at FILE:LINE. Python only for now."),
+    path: Path = typer.Argument(Path("."), help="Repo path (default: current dir)."),
+    depth: int = typer.Option(3, "--depth", "-d", help="Depth of tree (1-6, default 3)."),
+    direction: str = typer.Option("callees", "--direction", help="callees | callers | both (default callees)."),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON instead of tree."),
+    output: Path = typer.Option(None, "--output", "-o", help="Write output to file (for --json, --html or text)."),
+    at: str = typer.Option(None, "--at", help="Locate function by FILE:LINE (e.g. --at peek/scanner.py:601) instead of symbol."),
+    cross_file: bool = typer.Option(True, "--cross-file/--local", help="Follow cross-file calls (default --cross-file). Use --local for intra-file only."),
+    show_externals: bool = typer.Option(False, "--show-externals", help="Include external/builtin leaf nodes."),
+    html: bool = typer.Option(False, "--html", help="Open polished HTML in browser (temp file + webbrowser, filter, theme, expand)."),
+    theme: str = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, etc."),
+) -> None:
+    """Trace a Python function — show its call tree (what it takes & where it goes).
+
+    Different from TUI — this is a **flag/command** that prints a tree to stdout (or --json).
+    Python only for now; other languages later.
+
+    \b
+    Examples:
+        peek trace scan --depth 3
+        peek trace "MyClass.method" ./src --depth 4
+        peek trace --at peek/scanner.py:601 --depth 2 --local
+        peek trace scan --json | jq
+        peek trace scan --direction callers --show-externals
+        peek trace "peek/scanner.py::scan" --depth 3 --output tree.txt
+    """
+    import json as _json
+
+    # Resolve theme early
+    resolved_theme = None
+    if theme and resolve_theme:
+        try:
+            resolved_theme = resolve_theme(theme)
+        except ValueError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(2)
+    elif resolve_theme:
+        try:
+            resolved_theme = resolve_theme(None)
+        except Exception:
+            resolved_theme = None
+
+    # Paths
+    # Handle case where symbol positional consumed the path when --at is used
+    # e.g. `peek trace --at C:\tmp\x.py:5 C:\tmp` -> typer assigns C:\tmp to symbol (first positional) and leaves path as default "."
+    # Detect and shift: if at is set, symbol looks like a path, and path is still default "."
+    if at is not None and symbol is not None and path == Path("."):
+        # Don't shift if symbol looks like a qualified symbol (contains ::)
+        if "::" not in symbol:
+            # Check if symbol looks like a path (exists or contains slash/backslash or is "."/"..")
+            is_path_like = False
+            try:
+                if Path(symbol).exists():
+                    is_path_like = True
+                elif "/" in symbol or "\\" in symbol or symbol in (".", "..") or symbol.startswith("./") or symbol.startswith("../"):
+                    is_path_like = True
+                # Also handle Windows absolute like C:\ or C:/
+                elif len(symbol) >= 2 and symbol[1] == ":" and (symbol[2:3] == "\\" or symbol[2:3] == "/"):
+                    is_path_like = True
+            except Exception:
+                pass
+            if is_path_like:
+                path = Path(symbol)
+                symbol = None
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+
+    # Validate symbol / at
+    if not symbol and not at:
+        err_console.print("[red]Provide a symbol or --at FILE:LINE[/]  [dim]e.g. peek trace scan  or  peek trace --at peek/scanner.py:601[/]")
+        raise typer.Exit(2)
+    if depth < 1 or depth > 6:
+        err_console.print("[red]--depth must be 1-6[/]")
+        raise typer.Exit(2)
+    if direction not in ("callees", "callers", "both"):
+        err_console.print("[red]--direction must be callees|callers|both[/]")
+        raise typer.Exit(2)
+
+    t0 = time.perf_counter()
+    # Scan
+    scan_result = scan(root)
+    if scan_result.total_files == 0:
+        _warn_no_files(root)
+        raise typer.Exit(0)
+
+    # Build trace graph (Python only)
+    try:
+        from peek.trace.builder import build_trace_graph
+        from peek.trace.query import find_by_location, find_focals
+        from peek.trace.render import render_trace, trace_to_json
+        from peek.trace.query import trace as trace_query
+    except Exception as e:
+        err_console.print(f"[red]Trace failed to load: {e}[/]")
+        raise typer.Exit(1)
+
+    graph = build_trace_graph(scan_result)
+    if not graph.nodes:
+        err_console.print("[yellow]No Python functions found.[/]  [dim]Trace is Python-only for now — ensure the repo has .py files and is not empty/ignored.[/]")
+        # Still handle json?
+        if json_output:
+            payload = {"focal": None, "error": "No Python functions found", "root": str(root), "warnings": graph.warnings}
+            out = _json.dumps(payload, indent=2)
+            if output:
+                _write_output_safely(output, out)
+                console.print(f"[green]Written to {output}[/]")
+            else:
+                console.print_json(data=payload)
+            raise typer.Exit(0)
+        raise typer.Exit(0)
+
+    # Resolve focal
+    focal = None
+    candidates: list = []
+    if at:
+        # at is like "peek/scanner.py:601" or "scanner.py:601"
+        if ":" not in at:
+            err_console.print("[red]--at must be FILE:LINE e.g. --at peek/scanner.py:601[/]")
+            raise typer.Exit(2)
+        file_part, line_str = at.rsplit(":", 1)
+        try:
+            lineno = int(line_str.strip())
+        except ValueError:
+            err_console.print("[red]--at LINE must be integer[/]")
+            raise typer.Exit(2)
+        focal = find_by_location(graph, file_part.strip(), lineno)
+        if not focal:
+            err_console.print(f"[red]No function contains {at}[/]  [dim]Try peek scan to check files, or use symbol name.[/]")
+            # List nearby functions in that file for hint
+            try:
+                rel_hint = file_part.strip()
+                nearby = [n for fid, n in graph.nodes.items() if n.rel.as_posix() == rel_hint or n.rel.as_posix().endswith(rel_hint) or n.file.name == rel_hint]
+                if not nearby:
+                    # try any file containing hint
+                    nearby = [n for fid, n in graph.nodes.items() if rel_hint in n.rel.as_posix()]
+                if nearby:
+                    nearby_sorted = sorted(nearby, key=lambda n: n.lineno)[:5]
+                    hint = ", ".join(f"{n.qualname}:{n.lineno}" for n in nearby_sorted)
+                    err_console.print(f"[dim]Nearby in {file_part}: {hint}[/]")
+            except Exception:
+                pass
+            raise typer.Exit(1)
+    else:
+        # symbol resolution
+        assert symbol is not None
+        candidates = find_focals(graph, symbol, limit=5)
+        if not candidates:
+            err_console.print(f"[red]No function matches {symbol!r}[/]")
+            # Suggest closest by substring
+            try:
+                # show 3 suggestions
+                all_names = sorted({n.name for n in graph.nodes.values()})[:10]
+                err_console.print(f"[dim]Available (sample): {', '.join(all_names[:6])} ...[/]")
+                err_console.print(f"[dim]Tip: peek trace --at FILE:LINE to pinpoint[/]")
+            except Exception:
+                pass
+            raise typer.Exit(1)
+        if len(candidates) > 1:
+            # Disambiguate: show table and pick first, but warn
+            err_console.print(f"[yellow]Multiple matches for {symbol!r} — showing first, {len(candidates)} total:[/]")
+            from rich.table import Table as _T
+            t = _T(box=box.SIMPLE_HEAD, show_header=True, header_style="bold cyan", padding=(0,1))
+            t.add_column("#", style="dim", width=3, justify="right")
+            t.add_column("Qualname", style="white")
+            t.add_column("File", style="cyan")
+            t.add_column("Line", justify="right", style="green")
+            for i, fid in enumerate(candidates[:5], 1):
+                n = graph.nodes[fid]
+                style = "bold white" if i==1 else "white"
+                t.add_row(str(i), f"[{style}]{n.qualname}[/]", n.rel.as_posix(), str(n.lineno))
+            err_console.print(t)
+            err_console.print(f"[dim]Tip: use qualified name like {graph.nodes[candidates[0]].qualname} or file::func or --at[/]")
+        focal = candidates[0]
+
+    # Build tree
+    trace_tree = trace_query(graph, focal, depth=depth, direction=direction, cross_file=cross_file, show_externals=show_externals)
+    elapsed = time.perf_counter() - t0
+
+    if html:
+        try:
+            from peek.trace.html import build_trace_html
+
+            html_str = build_trace_html(trace_tree, graph, theme=resolved_theme, root_path=root)
+            if output:
+                actual = _write_output_safely(output, html_str)
+                console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
+                # also try to open if --html without needing temp
+                try:
+                    import webbrowser
+
+                    webbrowser.open(actual.resolve().as_uri())
+                except Exception:
+                    pass
+            else:
+                import tempfile
+                import webbrowser
+
+                tmp = Path(tempfile.gettempdir()) / f"peek-trace-{focal.qualname.replace('.', '-').replace('::', '-')}.html"
+                try:
+                    tmp.write_text(html_str, encoding="utf-8")
+                except Exception:
+                    tmp = Path.cwd() / f"peek-trace-{focal.qualname.replace('.', '-').replace('::', '-')}.html"
+                    tmp.write_text(html_str, encoding="utf-8")
+                console.print(f"[green]HTML written to[/] [bold]{tmp}[/] ({len(html_str)} bytes) — opening browser")
+                try:
+                    webbrowser.open(tmp.as_uri())
+                except Exception as e:
+                    err_console.print(f"[yellow]Open browser failed: {e}[/]  [dim]Open file://{tmp} manually[/]")
+            return
+        except Exception as e:
+            err_console.print(f"[red]HTML failed: {e}[/]")
+            raise typer.Exit(1)
+
+    if json_output:
+        payload = trace_to_json(trace_tree, graph)
+        payload["elapsed"] = round(elapsed, 3)
+        payload["root"] = str(root)
+        payload["args"] = {"symbol": symbol, "at": at, "depth": depth, "direction": direction, "cross_file": cross_file, "show_externals": show_externals}
+        out = _json.dumps(payload, indent=2, ensure_ascii=False)
+        if output:
+            actual = _write_output_safely(output, out)
+            console.print(f"[green]JSON written to[/] [bold]{actual}[/] ({len(out)} bytes)")
+        else:
+            # Use plain stdout for jq piping, not console.print_json which adds markup
+            try:
+                import sys as _sys
+                _sys.stdout.write(out + "\n")
+                _sys.stdout.flush()
+            except Exception:
+                console.print_json(data=payload)
+        return
+
+    # Render tree
+    from peek.trace.render import render_trace as _render
+
+    panel = _render(trace_tree, graph, theme=resolved_theme)
+    if output:
+        # Capture panel to file for --output (text)
+        try:
+            from io import StringIO as _SIO
+
+            from rich.console import Console as _RConsole
+
+            buf = _SIO()
+            tmp_c = _RConsole(file=buf, force_terminal=False, width=console.width if hasattr(console, "width") else 100)
+            tmp_c.print(panel)
+            footer = f"— trace: {focal.qualname} at {graph.nodes[focal].rel.as_posix()}:{graph.nodes[focal].lineno} • depth {depth} • {trace_tree.total_nodes} nodes • {elapsed:.2f}s —"
+            tmp_c.print(f"[dim]{footer}[/]")
+            text = buf.getvalue()
+            actual = _write_output_safely(output, text)
+            console.print(f"[green]Trace written to[/] [bold]{actual}[/] ({len(text)} bytes)")
+        except Exception as e:
+            err_console.print(f"[red]Failed to write {output}: {e}[/]")
+            raise typer.Exit(1)
+        return
+    console.print(panel)
+    # Footer hints
+    if not cross_file and trace_tree.total_nodes < 3:
+        console.print("[dim]Tip: try without --local to follow cross-file calls.[/]")
+    if direction == "callees" and not trace_tree.root.children:
+        console.print("[dim]No callees within depth — try --direction callers or --depth 4, or --show-externals for builtins.[/]")
+    # Also show file count
+    console.print(f"[dim]— trace: {focal.qualname} at {graph.nodes[focal].rel.as_posix()}:{graph.nodes[focal].lineno} • depth {depth} • {trace_tree.total_nodes} nodes • {elapsed:.2f}s —[/]")
 
 
 @app.command("index")
