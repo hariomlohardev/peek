@@ -24,8 +24,13 @@
 
 ```bash
 pip install peek-code
-pipx install peek-code          # or: uv tool install peek-code
-pip install -e "peek[dev]" # dev — pyproject is at peek/pyproject.toml
+# or
+pipx install peek-code
+uv tool install peek-code
+
+# dev (with tests + demo generator) — from repo root:
+pip install -e "./peek[dev]"
+# or from peek/: pip install -e ".[dev]"
 ```
 Requires Python 3.11+. Deps: `typer`, `rich`, `textual`, `pathspec`.
 
