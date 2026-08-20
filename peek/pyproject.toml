@@ -1,6 +1,6 @@
 [project]
 name = "peek-code"
-version = "0.3.0"
+version = "0.4.0"
 description = "The htop for codebases — understand any repo in 5 seconds"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -28,6 +28,7 @@ classifiers = [
 ]
 dependencies = [
     "typer>=0.12",
+    "click>=8.0",
     "rich>=13.0",
     "textual>=0.80",
     "pathspec>=0.12",

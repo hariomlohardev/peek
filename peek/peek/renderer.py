@@ -6,6 +6,7 @@ Used by `peek --no-tui` (staggered when TTY) and `peek --html` (static capture).
 
 from __future__ import annotations
 
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -199,6 +200,8 @@ def render_static(
     theme: Any | None = None,
 ) -> None:
     """Themed static — subtle staggered reveal when TTY."""
+    if os.getenv("NO_COLOR"):
+        console.no_color = True
     t = _tokens(theme)
     root = analyzer_result.root if analyzer_result else scan_result.root
     s = analyzer_result.stats if analyzer_result else scan_result.stats

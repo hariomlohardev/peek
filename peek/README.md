@@ -31,6 +31,8 @@ uv tool install peek-code
 # dev (with tests + demo generator) — from repo root:
 pip install -e "./peek[dev]"
 # or from peek/: pip install -e ".[dev]"
+pipx install peek-code          # or: uv tool install peek-code
+pip install -e ".[dev]" # dev — from peek/ (package dir)
 ```
 Requires Python 3.11+. Deps: `typer`, `rich`, `textual`, `pathspec`.
 
@@ -107,7 +109,7 @@ Warm clay `anthropic-pro` → neon `cinematic` → `dracula` → `nord`. 15 toke
 
 ```bash
 git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e "peek[dev]"
+pip install -e ".[dev]"
 pytest -q          # 146 passed, 1 skipped
 peek --no-tui && peek  # static + TUI
 ```
@@ -122,7 +124,7 @@ New to open source? Start here — **20 `good first issue`s, each ~30 min, one f
 
 **Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 
-- **Beginner (30 min):** docstrings, typo fixes, `--help` examples, `peek --version` test — pick any, no setup beyond `pip install -e peek[dev]`
+- **Beginner (30 min):** docstrings, typo fixes, `--help` examples, `peek --version` test — pick any, no setup beyond `pip install -e ".[dev]"`
 - **Intermediate (60-90 min):** `tiktoken` tokens, `peek diff`, `peek serve`, symbol index
 - **Complex (1-2 days):** `peek-mcp` for Claude Code, polyglot `tree-sitter`, semantic embeddings, `peek-vscode`
 

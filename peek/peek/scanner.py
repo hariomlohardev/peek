@@ -12,7 +12,7 @@ import ast
 import fnmatch
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import pathspec
 
@@ -262,7 +262,31 @@ def _load_ignore_spec(root: Path) -> pathspec.PathSpec:
         return pathspec.PathSpec.from_lines("gitwildmatch", [])
 
 
-def _should_ignore(path: Path, root: Path, spec: pathspec.PathSpec) -> bool:
+def _load_nested_ignore_spec(directory: Path) -> pathspec.PathSpec | None:
+    """Load .gitignore / .peekignore in a subdirectory into a PathSpec."""
+    lines: list[str] = []
+    for ignore_file in (".gitignore", ".peekignore"):
+        p = directory / ignore_file
+        if not p.is_file():
+            continue
+        try:
+            text = p.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            lines.append(line)
+    if not lines:
+        return None
+    try:
+        return pathspec.PathSpec.from_lines("gitwildmatch", lines)
+    except Exception:
+        return None
+
+
+def _should_ignore(path: Path, root: Path, spec: pathspec.PathSpec, nested: Sequence[tuple[Path, pathspec.PathSpec]] = ()) -> bool:
     """Check if relative path should be ignored via spec or default dir names."""
     try:
         rel = path.relative_to(root)
@@ -279,6 +303,16 @@ def _should_ignore(path: Path, root: Path, spec: pathspec.PathSpec) -> bool:
     # Also check with trailing slash for dirs
     if path.is_dir() and spec.match_file(rel_str + "/"):
         return True
+    # Nested .gitignore files — each relative to the directory that holds it
+    for base, nested_spec in nested:
+        try:
+            nested_rel = path.relative_to(base).as_posix()
+        except ValueError:
+            continue
+        if nested_spec.match_file(nested_rel):
+            return True
+        if path.is_dir() and nested_spec.match_file(nested_rel + "/"):
+            return True
     return False
 
 
@@ -586,13 +620,13 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
         total_bytes = 0
         total_loc = 0
 
-        # Walk — use rglob but filter dirs early to avoid descending into ignored trees
-        # We do manual stack to skip ignored dirs efficiently.
-        stack: list[Path] = [root]
+        # Walk — manual stack to skip ignored dirs efficiently, with nested .gitignore support
+        stack: list[tuple[Path, tuple[tuple[Path, pathspec.PathSpec], ...]]] = [(root, ())]
         visited: set[Path] = set()
+        visited_inodes: set[tuple[int, int]] = set()
 
         while stack and len(files) < max_files:
-            current = stack.pop()
+            current, nested = stack.pop()
             try:
                 # List entries, sorted for determinism
                 entries = sorted(current.iterdir(), key=lambda p: p.name)
@@ -600,6 +634,16 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                 continue
 
             for entry in entries:
+                # Inode-based symlink loop guard
+                try:
+                    st = entry.stat()
+                    key = (getattr(st, "st_dev", 0), getattr(st, "st_ino", 0))
+                    if key != (0, 0) and key in visited_inodes:
+                        continue
+                    if key != (0, 0):
+                        visited_inodes.add(key)
+                except Exception:
+                    pass
                 # Skip symlinks that escape root or are broken
                 try:
                     if entry.is_symlink():
@@ -616,14 +660,19 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                 except Exception:
                     continue
 
-                if _should_ignore(entry, root, spec):
+                if _should_ignore(entry, root, spec, nested):
                     continue
 
                 try:
                     if entry.is_dir():
                         if entry not in visited:
                             visited.add(entry)
-                            stack.append(entry)
+                            # Load nested .gitignore for this dir
+                            new_nested = nested
+                            nested_spec = _load_nested_ignore_spec(entry)
+                            if nested_spec is not None:
+                                new_nested = nested + ((entry, nested_spec),)
+                            stack.append((entry, new_nested))
                     elif entry.is_file():
                         if len(files) >= max_files:
                             break

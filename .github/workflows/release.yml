@@ -22,10 +22,13 @@ jobs:
         run: cd peek && python -m build
       - name: Check
         run: twine check peek/dist/*
-      - name: Publish to PyPI
+      - name: Publish to PyPI (trusted publishing)
         uses: pypa/gh-action-pypi-publish@release/v1
+        continue-on-error: true
         with:
           packages-dir: peek/dist/
+          skip-existing: true
+          verbose: true
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
