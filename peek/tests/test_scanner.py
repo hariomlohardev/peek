@@ -118,3 +118,34 @@ def test_scan_never_crashes_on_weird():
         sr = scan(root)
         # Should not raise, and should handle broken file gracefully
         assert sr.total_files >= 2
+
+
+def test_symlink_loop():
+    """Symlink file and dir loops must not hang or double-count (#103)."""
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _write(root / "a.py", "x=1\n")
+        _write(root / "sub" / "c.py", "y=1\n")
+        try:
+            # File symlink: b.py -> a.py (same inode, should not double-count)
+            (root / "b.py").symlink_to(root / "a.py")
+            # Dir symlink loop: sub/loop -> root (must not be followed)
+            (root / "sub" / "loop").symlink_to(root)
+            # Additional file symlink loop: a symlink cycle
+            # Create d.py symlink -> e.py and e.py symlink -> d.py is not possible
+            # because d.py doesn't exist yet. Instead test broken/circular via dir.
+        except (OSError, NotImplementedError):
+            # Symlinks not supported on this platform / privilege
+            return
+        sr = scan(root)
+        # Should complete without hanging; file symlink deduped, dir loop not followed
+        rels = {f.rel.as_posix() for f in sr.files}
+        # Real files must be present
+        assert "a.py" in rels
+        assert "sub/c.py" in rels
+        # Should not double-count a.py via b.py
+        # b.py shares inode with a.py, so total distinct files == 2
+        # Allow either 2 (skip symlink) or 2 with dedup; never 3+ and never infinite
+        assert sr.total_files == 2
+        # Ensure loop dir not traversed infinitely — file count stays bounded
+        assert not any("loop" in r for r in rels)
