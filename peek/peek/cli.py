@@ -467,7 +467,7 @@ def scan_command(
         html_str = build_html(result, fake_analyzer, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
-            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes) — open with: open {actual}")
         else:
             out = Path("peek.html")
             actual = _write_output_safely(out, html_str)
@@ -548,7 +548,7 @@ def analyze_command(
         html_str = build_html(scan_result, result, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
-            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes) — open with: open {actual}")
         else:
             out = Path("peek.html")
             actual = _write_output_safely(out, html_str)
@@ -854,7 +854,7 @@ def trace_command(
             html_str = build_trace_html(trace_tree, graph, theme=resolved_theme, root_path=root)
             if output:
                 actual = _write_output_safely(output, html_str)
-                console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
+                console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes) — open with: open {actual}")
                 # also try to open if --html without needing temp
                 try:
                     import webbrowser
@@ -1605,7 +1605,7 @@ def main_callback(
         html_str = build_html(scan_result, analyzer_result, elapsed, theme=resolved_theme)
         if output:
             actual = _write_output_safely(output, html_str)
-            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes)")
+            console.print(f"[green]HTML written to[/] [bold]{actual}[/] ({len(html_str)} bytes) — open with: open {actual}")
         else:
             out = Path("peek.html")
             actual = _write_output_safely(out, html_str)
