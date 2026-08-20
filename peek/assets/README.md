@@ -6,7 +6,7 @@ This folder holds demo media for `README` and launch.
 
 ```bash
 # Code-generated GIF + SVG via Pillow (primary, works on Windows/Linux/macOS)
-python -m peek.tools.gen_demo
+python -m peek.tools.gen_demo  # run from repo root
 # or
 python peek/tools/gen_demo.py
 # outputs: assets/demo.gif (800x450, <3MB, ~15s) + assets/demo.svg
