@@ -2,6 +2,8 @@
 
 This folder holds demo media for `README` and launch.
 
+![demo](https://github.com/hariomlohardev/peek/blob/main/peek/assets/demo.gif)
+
 ## Quick Generate (no external tools)
 
 ```bash
