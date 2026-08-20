@@ -320,10 +320,31 @@ def render_static(
 
 
 def build_html(scan_result, analyzer_result, elapsed: float, theme: Any | None = None) -> str:
+    # Fix #80: do not cache theme — always derive tokens from the passed `theme`
+    # object. Previous caching of resolve_theme caused `peek --theme dracula --html`
+    # on Windows to embed anthropic-pro bg #141413 instead of dracula #282A36.
+    # If theme is None, resolve fresh (respects PEEK_THEME env) without lru_cache.
+    if theme is None:
+        try:
+            from peek.themes import resolve_theme as _resolve
+
+            theme = _resolve(None)
+        except Exception:
+            theme = None
     try:
+        import io
+
         from rich.console import Console as RichConsole
 
-        c = RichConsole(record=True, width=100, legacy_windows=False, force_terminal=True, color_system="truecolor")
+        # Use StringIO to avoid Windows cp1252 charmap errors when stdout is not UTF-8
+        c = RichConsole(
+            record=True,
+            width=100,
+            legacy_windows=False,
+            force_terminal=True,
+            color_system="truecolor",
+            file=io.StringIO(),
+        )
         render_static(scan_result, analyzer_result, elapsed, c, animate=False, theme=theme)
         html_fragment = c.export_html(inline_styles=True)
         root = analyzer_result.root if analyzer_result else scan_result.root

@@ -435,11 +435,17 @@ def scan_command(
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
 ) -> None:
     """Scan a repo and show file stats, tech stack, and entry points."""
-    # Resolve theme early for error handling and spinner color
+    # Fix #80: resolve theme fresh (no cache) — respects --theme and PEEK_THEME env
     resolved_theme = None
     if theme and resolve_theme:
         try:
             resolved_theme = resolve_theme(theme)
+        except ValueError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(2)
+    elif resolve_theme:
+        try:
+            resolved_theme = resolve_theme(None)
         except ValueError as e:
             err_console.print(f"[red]{e}[/]")
             raise typer.Exit(2)
@@ -500,10 +506,17 @@ def analyze_command(
     theme: Optional[str] = typer.Option(None, "--theme", help="Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"),
 ) -> None:
     """Build import graph, rank files, and summarize the codebase."""
+    # Fix #80: resolve theme fresh (no cache) — respects --theme and PEEK_THEME env
     resolved_theme = None
     if theme and resolve_theme:
         try:
             resolved_theme = resolve_theme(theme)
+        except ValueError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(2)
+    elif resolve_theme:
+        try:
+            resolved_theme = resolve_theme(None)
         except ValueError as e:
             err_console.print(f"[red]{e}[/]")
             raise typer.Exit(2)
@@ -622,7 +635,7 @@ def find_command(
 @app.command("graph")
 def graph_command(
     path: Path = typer.Argument(Path("."), help="Path to repo"),
-    format: str = typer.Option("dot", "--format", help="dot|svg|html"),
+    format: str = typer.Option("dot", "--format", help="dot|svg|html|mermaid"),
     output: Path = typer.Option(None, "--output", "-o"),
 ):
     from peek.scanner import scan; from peek.analyzer import analyze
@@ -1312,6 +1325,9 @@ def main_callback(
         raise typer.Exit(0)
 
     # Resolve theme early (before scan) — handle invalid immediately
+    # Fix #80: do not cache resolve_theme — must re-evaluate cli_opt and PEEK_THEME
+    # on every invocation. Previous caching returned anthropic-pro (#141413) for
+    # later `dracula` requests on Windows, causing wrong bg in html export.
     resolved_theme = None
     # Check raw extra for --theme if Typer didn't parse due to ctx.args path handling
     _raw_theme = theme
@@ -1327,12 +1343,13 @@ def main_callback(
         _want = _raw_theme or theme
         if resolve_theme:
             try:
+                # Always call fresh — no lru_cache, respects env/config changes
                 resolved_theme = resolve_theme(_want)
             except ValueError as e:
                 err_console.print(f"[red]{e}[/]")
                 raise typer.Exit(2)
     else:
-        # No cli theme — try env/config via resolve_theme(None)
+        # No cli theme — try env/config via resolve_theme(None) fresh each call
         if resolve_theme:
             try:
                 resolved_theme = resolve_theme(None)
