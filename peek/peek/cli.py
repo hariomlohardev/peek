@@ -173,7 +173,7 @@ class _PeekGroup(TyperGroup):
 
 app = typer.Typer(
     name="peek",
-    help="The htop for codebases — understand any repo in 5 seconds.\n\nTip: Try peek . for the live TUI, or peek . --no-tui for a screenshot",
+    help="The htop for codebases — understand any repo in 5 seconds.\n\nTip: Try peek . for the live TUI, or peek . --no-tui for a screenshot\n\n\b\nExamples:\n    peek --pack --ask \"auth\" --format md",
     add_completion=False,
     no_args_is_help=False,
     cls=_PeekGroup,
@@ -1299,6 +1299,10 @@ def main_callback(
     Use `peek find <query>` to search.
     Tip: peek --watch for live TUI, peek watch . for static watch.
     Tip: Try peek . for the live TUI, or peek . --no-tui for a screenshot
+
+    
+    Examples:
+        peek --pack --ask "auth" --format md
     """
     if version:
         console.print(f"peek v{__version__}")
