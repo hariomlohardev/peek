@@ -95,3 +95,13 @@ def test_non_empty_scan_does_not_warn(tmp_path):
 
     assert r.exit_code == 0
     assert "No files found" not in r.output
+
+
+def test_peek_dot_help():
+    """`peek . --help` shows the same as `peek --help`."""
+    r_dot = runner.invoke(app, [".", "--help"])
+    r_main = runner.invoke(app, ["--help"])
+    assert r_dot.exit_code == 0
+    assert r_main.exit_code == 0
+    assert r_dot.output == r_main.output
+
