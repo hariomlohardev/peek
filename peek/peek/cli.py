@@ -1309,14 +1309,15 @@ def main_callback(
             from peek.themes import list_themes as _list_themes
             from rich.table import Table as _Table
             tbl = _Table(box=box.ROUNDED, show_header=True, header_style="bold cyan", padding=(0, 1))
-            tbl.add_column("■", style="white", width=2, justify="center")
-            tbl.add_column("ID", style="cyan")
-            tbl.add_column("Label", style="white")
-            tbl.add_column("Description", style="dim")
-            tbl.add_column("Accent", style="white")
-            tbl.add_column("Bg", style="dim")
+            tbl.add_column("Preview", style="white", justify="center", width=7, no_wrap=True)
+            tbl.add_column("ID", style="cyan", width=14, no_wrap=True)
+            tbl.add_column("Label", style="white", width=11, overflow="fold")
+            tbl.add_column("Description", style="dim", width=11, overflow="fold")
+            tbl.add_column("Accent", style="white", width=7, no_wrap=True)
+            tbl.add_column("Bg", style="dim", width=7, no_wrap=True)
             for th in _list_themes():
-                tbl.add_row(f"[{th.tokens['accent']}]{th.preview}[/]", f"[bold]{th.id}[/]", th.label, th.description, th.tokens["accent"], th.tokens["bg"])
+                swatch = f"[{th.tokens['accent']} on {th.tokens['bg']}]████[/]"
+                tbl.add_row(swatch, f"[bold]{th.id}[/]", th.label, th.description, th.tokens["accent"], th.tokens["bg"])
             console.print(Panel(tbl, title="[bold]Available themes[/]  [dim]10 themes • --theme <id> • PEEK_THEME env • config.toml[/]", box=box.ROUNDED, border_style="cyan", padding=(0, 1)))
             # also plain list for scripting
             console.print("[dim]Usage: [bold]peek --theme dracula[/]  or  [bold]PEEK_THEME=dracula peek[/]  or  [bold]theme = \"dracula\"[/] in ~/.peek/config.toml[/]")
