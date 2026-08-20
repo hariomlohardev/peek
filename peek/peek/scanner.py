@@ -624,6 +624,13 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
         stack: list[tuple[Path, tuple[tuple[Path, pathspec.PathSpec], ...]]] = [(root, ())]
         visited: set[Path] = set()
         visited_inodes: set[tuple[int, int]] = set()
+        # Seed with root inode to prevent symlink-to-root loops
+        try:
+            rst = root.stat()
+            visited_inodes.add((rst.st_dev, rst.st_ino))
+            visited.add(root.resolve())
+        except Exception:
+            pass
 
         while stack and len(files) < max_files:
             current, nested = stack.pop()
@@ -634,39 +641,84 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                 continue
 
             for entry in entries:
-                # Inode-based symlink loop guard
+                # --- Symlink handling: never follow symlink dirs (rglob guard) ---
+                try:
+                    is_sym = entry.is_symlink() or (
+                        hasattr(entry, "is_junction") and entry.is_junction()  # type: ignore[attr-defined]
+                    )
+                except Exception:
+                    continue
+                if is_sym:
+                    try:
+                        target = entry.resolve(strict=True)
+                    except Exception:
+                        continue
+                    try:
+                        if not target.exists():
+                            continue
+                        if not target.is_relative_to(root):
+                            continue
+                    except Exception:
+                        continue
+                    # Do not follow symlink dirs at all
+                    try:
+                        if target.is_dir():
+                            continue
+                    except Exception:
+                        continue
+                    # Symlink to file inside root — deduplicate via inode
+                    try:
+                        st = target.stat()
+                        key = (st.st_dev, st.st_ino)
+                        if key != (0, 0) and key in visited_inodes:
+                            continue
+                        if key != (0, 0):
+                            visited_inodes.add(key)
+                    except Exception:
+                        continue
+                    if _should_ignore(entry, root, spec, nested):
+                        continue
+                    # Treat symlink file as a file entry (but avoid double-count)
+                    try:
+                        if len(files) >= max_files:
+                            break
+                        try:
+                            size = target.stat().st_size
+                        except Exception:
+                            size = 0
+                        rel = entry.relative_to(root)
+                        ext = entry.suffix.lower()
+                        lang = _language_for(entry)
+                        loc = _count_loc(target, lang)
+                        info = FileInfo(
+                            path=target, rel=rel, ext=ext, size=size, loc=loc, language=lang
+                        )
+                        files.append(info)
+                        total_bytes += size
+                        total_loc += loc
+                    except (PermissionError, OSError):
+                        continue
+                    continue
+
+                # --- Regular (non-symlink) entries: inode guard to avoid hardlink double-count ---
                 try:
                     st = entry.stat()
-                    key = (getattr(st, "st_dev", 0), getattr(st, "st_ino", 0))
+                    key = (st.st_dev, st.st_ino)
                     if key != (0, 0) and key in visited_inodes:
                         continue
                     if key != (0, 0):
                         visited_inodes.add(key)
                 except Exception:
                     pass
-                # Skip symlinks that escape root or are broken
-                try:
-                    if entry.is_symlink():
-                        # Resolve and check if inside root
-                        try:
-                            target = entry.resolve()
-                            if not target.is_relative_to(root):
-                                continue
-                            # Avoid cycles
-                            if target in visited:
-                                continue
-                        except Exception:
-                            continue
-                except Exception:
-                    continue
 
                 if _should_ignore(entry, root, spec, nested):
                     continue
 
                 try:
+                    # Use follow_symlinks=False implicitly: we already excluded symlinks above
                     if entry.is_dir():
                         if entry not in visited:
-                            visited.add(entry)
+                            visited.add(entry.resolve())
                             # Load nested .gitignore for this dir
                             new_nested = nested
                             nested_spec = _load_nested_ignore_spec(entry)
