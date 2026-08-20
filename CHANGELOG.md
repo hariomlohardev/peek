@@ -2,6 +2,14 @@
 
 All notable changes to `peek` will be documented here.
 
+## 5.0.0 — 2026-08-20
+- **trace v2** — `peek trace` minimal aesthetic terminal UI (quiet hierarchy, accent only on focal, `takes → assign`, `● param ◆ local ◇ literal`, `↺ recursive`, `↗ external`, `Panel ROUNDED` `dim line` `padding (1,2)`, `Tree guide_style dim line`) + premium `--html` viewer (glass hero, file pills, instant 10-theme switch without reload, `localStorage`, search highlight, `copy JSON/Save`, sticky file side-panel, `file://` safe)
+- **--html flag** — `peek trace --html` temp HTML + `webbrowser.open`, `peek trace --html -o trace.html`, polished self-contained `peek/trace/html.py` (412 → 509 lines, 42K)
+- **CLI polish** — `symbol` (`name|MyClass.method|file::func|module:func`) / `--at FILE:LINE` / `--depth 1-6` / `--direction callees|callers|both` / `--cross-file/--local` / `--show-externals` / `--json`/`--output`/`--html`/`--theme`, Windows `C:\` safe, `•` leaf, `cycle` detection
+- **Terminal** — `peek/peek/trace/render.py` rewritten (278 lines → 182 insertions, `All checks passed`, `163 passed`)
+- **Docs** — `README.md` + `peek/README.md` trace quick-start + features table updated for 5.0, `CHANGELOG 5.0.0`
+- **Release** — `pyproject.toml` `5.0.0`, `twine` upload, `git tag v5.0.0`, `gh release create`
+
 ## 0.4.0 — 2026-08-18
 - `trace` Python-only function tree — `peek trace` (flag, not TUI) `peek/trace/` (`models.py` `python.py` `builder.py` `query.py` `render.py` `html.py`): `FuncId`/`FuncNode`/`CallSite`/`TraceGraph`, 2-pass `ast` (decl + per-file call extraction `extract_calls_per_file`), `CallVisitor` with `PARAM_THROUGH|LITERAL|LOCAL_RESULT` + `assign_target`, resolver (same-file → import alias → module_index → external/builtin), `trace(graph, focal, depth=1-6, direction=callees|callers|both, cross_file, show_externals)` with cycle `↺` detection
 - CLI `peek trace` — `symbol` (`name`|`MyClass.method`|`file::func`|`module:func`) or `--at FILE:LINE`, `--depth` 1-6, `--direction`, `--cross-file/--local`, `--show-externals`, `--json`/`--output`, `--html` (temp HTML + `webbrowser.open`, polished self-contained `build_trace_html` with 10-theme tokens, file chips, `takes → assign · L`, filter/expand/copy, `localStorage` theme), `--theme`; Python-only for now, later JS/TS/Go/Rust via `tree-sitter`; `pip install -e "."` or `pip install -e ".[dev]"` (no extra deps)
