@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 
 def config_path() -> Path:
@@ -17,7 +18,7 @@ def config_path() -> Path:
     return Path.home() / ".peek" / "config.toml"
 
 
-def load_config() -> dict:
+def load_config() -> dict[str, Any]:
     p = config_path()
     if not p.exists():
         return {}
@@ -33,11 +34,11 @@ def load_config() -> dict:
         return {}
 
 
-def save_config(data: dict) -> Path:
+def save_config(data: dict[str, Any]) -> Path:
     p = config_path()
     p.parent.mkdir(parents=True, exist_ok=True)
     lines = []
-    for k,v in data.items():
+    for k, v in data.items():
         if isinstance(v, str):
             lines.append(f'{k} = "{v}"')
         else:
