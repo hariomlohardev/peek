@@ -299,7 +299,13 @@ def list_themes() -> list[Theme]:
 
 
 def resolve_theme(cli_opt: str | None) -> Theme:
-    """Precedence: cli > PEEK_THEME env > config file > anthropic-pro."""
+    """Precedence: cli > PEEK_THEME env > config file > anthropic-pro.
+
+    Fix #80: do not cache — PEEK_THEME env and --theme must be re-evaluated
+    on every call. A previous lru_cache on this function cached the first
+    result (often anthropic-pro #141413) and returned it for later dracula
+    requests, causing Windows `peek --theme dracula --html` to embed the wrong bg.
+    """
     if cli_opt:
         return get_theme(cli_opt)
     env = os.environ.get("PEEK_THEME")
