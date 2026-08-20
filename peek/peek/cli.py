@@ -173,7 +173,7 @@ class _PeekGroup(TyperGroup):
 
 app = typer.Typer(
     name="peek",
-    help="The htop for codebases — understand any repo in 5 seconds.",
+    help="The htop for codebases — understand any repo in 5 seconds.\n\n\b\nExamples:\n    peek --pack --ask \"auth\" --format md",
     add_completion=False,
     no_args_is_help=False,
     cls=_PeekGroup,
@@ -1298,6 +1298,10 @@ def main_callback(
     Use `--pack [--ask QUERY]` to pack top files for LLM.
     Use `peek find <query>` to search.
     Tip: peek --watch for live TUI, peek watch . for static watch.
+
+    \b
+    Examples:
+        peek --pack --ask "auth" --format md
     """
     if version:
         console.print(f"peek v{__version__}")
