@@ -44,6 +44,11 @@ _FALLBACK = {
 
 ANTHRO = _FALLBACK  # keep alias for backward compat
 
+try:
+    from peek import __version__ as _peek_version
+except Exception:  # pragma: no cover
+    _peek_version = "0.0.0"
+
 
 def _tok(theme: Any | None) -> dict[str, str]:
     if theme is None:
@@ -235,7 +240,7 @@ def _detail_for(path: Path, graph, reverse_graph, root: Path, theme: Any | None 
 if TEXTUAL_AVAILABLE:
 
     class PeekApp(App):  # type: ignore
-        TITLE = "peek — themed — htop for codebases"
+        TITLE = f"peek v{_peek_version} — htop for codebases"
         SUB_TITLE = "10 themes"
 
         # CSS will be set dynamically in __init__ based on theme
@@ -264,7 +269,7 @@ if TEXTUAL_AVAILABLE:
             self._label = _label(theme)
             self._filter = ""
             self._all_ranked = list(analyzer_result.ranked) if analyzer_result else []
-            self.title = f"peek — {root.name}"
+            self.title = f"peek v{_peek_version} — {root.name}"
             self.sub_title = f"{scan_result.stats.get('total_files',0)} files · {elapsed:.2f}s · {self._label}"
             self._pulse_idx = 0
             self._pulse_frames = ["◐", "◑", "◒", "◓"]
