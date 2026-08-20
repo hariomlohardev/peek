@@ -24,6 +24,13 @@
 
 ```bash
 pip install peek-code
+# or
+pipx install peek-code
+uv tool install peek-code
+
+# dev (with tests + demo generator) — from repo root:
+pip install -e "./peek[dev]"
+# or from peek/: pip install -e ".[dev]"
 pipx install peek-code          # or: uv tool install peek-code
 pip install -e ".[dev]" # dev — from peek/ (package dir)
 ```
