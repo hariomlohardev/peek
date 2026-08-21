@@ -23,10 +23,9 @@ def test_estimate_tokens_tiktoken_fallback(monkeypatch):
     assert estimate_tokens("hello world") == 42
 
     # When tiktoken missing, fallback to len//4 (with max 1)
-    monkeypatch.delitem(sys.modules, "tiktoken", raising=False)
+    monkeypatch.setitem(sys.modules, "tiktoken", None)
     # Need to ensure next call doesn't use cached import? estimate_tokens does import inside
-    # So del should make it fallback. Reimport or just call?
-    # The module still cached as None? We removed, so ImportError fallback.
+    # So set to None makes it raise ImportError fallback.
     assert estimate_tokens("a" * 100) == 25
     assert estimate_tokens("") == 1
 

@@ -125,6 +125,11 @@ class _PeekGroup(TyperGroup):
     def parse_args(self, ctx, args):
         # Let Click handle --help / --version normally (eager options)
         if any(a in ("--help", "-h", "--version", "-V") for a in args):
+            if args:
+                first = args[0]
+                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace"}
+                if first not in known and not first.startswith("-"):
+                    args = args[1:]
             return super().parse_args(ctx, args)
         if not args and self.no_args_is_help and not ctx.resilient_parsing:
             raise _click.exceptions.NoArgsIsHelpError(ctx)
