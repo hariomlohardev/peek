@@ -1,0 +1,1381 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/superpowers/plans/2026-08-11-peek-code-v2/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>peek-code v2 — Packit Deep, WTF, Live Themes, Config Set, Watch, Viral Polish Implementation Plan - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#peek-code-v2-packit-deep-wtf-live-themes-config-set-watch-viral-polish-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              peek-code v2 — Packit Deep, WTF, Live Themes, Config Set, Watch, Viral Polish Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../research/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-1-wtf-traceback-explainer-pure-python-no-llm-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: wtf — Traceback Explainer (pure Python, no LLM required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-2-pack-v2-token-smart-deep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: pack v2 — Token-Smart Deep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-3-config-set-persistent-theme-generic-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: config set — Persistent Theme + Generic Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-4-live-theme-cycling-in-tui-t-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Live Theme Cycling in TUI (t key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-watch-mode-live-rescan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Watch Mode — Live Rescan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-6-viral-polish-readme-docs-pypi-gif-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Viral Polish — README, Docs, PyPI, GIF Refresh
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="peek-code-v2-packit-deep-wtf-live-themes-config-set-watch-viral-polish-implementation-plan">peek-code v2 — Packit Deep, WTF, Live Themes, Config Set, Watch, Viral Polish Implementation Plan<a class="headerlink" href="#peek-code-v2-packit-deep-wtf-live-themes-config-set-watch-viral-polish-implementation-plan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Ship <code>peek-code 0.2.0</code> — turn v1’s solid <code>peek</code> (htop for codebases) into a daily-driver: token-smart <code>pack</code> that rivals <code>gitingest</code>, instant <code>wtf</code> traceback explainer, live <code>t</code>-to-cycle themes + <code>peek config set</code>, <code>watch</code> mode for live TUI, and viral polish (GIF + README + PyPI) that keeps <code>pip install peek-code</code> frictionless.</p>
+<p><strong>Architecture:</strong> Keep v1’s <code>scanner → analyzer → renderer/tui</code> core untouched; add 3 new verticals (<code>wtf.py</code> traceback parser, <code>watch.py</code> file watcher, <code>config set</code> writer) and deepen 2 existing (<code>pack.py</code> token-smart, <code>tui.py</code> live theme). All new code is pure Python, no new heavy deps (watch via <code>watchfiles</code> optional, else polling), TDD with <code>CliRunner</code>, branch <code>v2</code> from <code>main</code>.</p>
+<p><strong>Tech Stack:</strong> Python 3.11+, Typer 0.12+, Rich 13+, Textual 0.80+, pathspec 0.12+, tomllib/tomli, <code>watchfiles</code> (optional), <code>pygments</code> (optional for wtf highlight), hatchling, pytest 8+, Pillow 10+ (already for demo)</p>
+<h2 id="global-constraints">Global Constraints<a class="headerlink" href="#global-constraints" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python &gt;=3.11 (project <code>requires-python</code> in <code>peek/pyproject.toml</code>)</li>
+<li>Keep commit messages clean — no attribution lines</li>
+<li>Local <code>git commit</code> only, no <code>git push</code> unless user explicitly says <code>you can push</code> (then push to <code>v2</code> branch, PR to <code>main</code>)</li>
+<li>Branch <code>v2</code> from <code>main</code> (which is at <code>f421b94</code> + <code>a77ffe3</code>), never commit to <code>main</code> directly</li>
+<li>74 tests must stay green (8 + 9 + 12 + 14 + 29 + 2), add new suites for v2, 1 skipped allowed for symlink</li>
+<li>Package name <code>peek-code</code> (PyPI <code>https://pypi.org/project/peek-code/</code>), command <code>peek</code> (<code>peek = "peek.cli:app"</code>), keep <code>pip install peek-code =&gt; peek</code></li>
+<li>TUI CSS must stay <code>linear</code> (Textual valid), <code>import asyncio</code> at top, <code>SpinnerColumn(spinner_name="dots")</code></li>
+<li>GIF <code>peek/assets/demo.gif</code> stays 800×450 &lt;3MB, regenerates via <code>python -m peek.tools.gen_demo</code></li>
+<li>No new hard deps without fallback — <code>watchfiles</code>/<code>pygments</code> are optional, polling/no-highlight fallback must work offline</li>
+</ul>
+<hr />
+<h2 id="file-structure">File Structure<a class="headerlink" href="#file-structure" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose in v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peek/peek/wtf.py</code> (new)</td>
+<td><code>wtf</code> traceback parser: <code>parse_traceback(text) -&gt; TracebackInfo</code>, <code>explain_tb(info, scan_result, analyzer_result) -&gt; str</code>, <code>find_relevant_files</code></td>
+</tr>
+<tr>
+<td><code>peek/peek/watch.py</code> (new)</td>
+<td><code>watch</code> mode: <code>watch_repo(path, on_change, debounce=0.4)</code> — polling fallback, <code>watchfiles</code> if available, triggers rescan</td>
+</tr>
+<tr>
+<td><code>peek/peek/pack.py</code> (deepen)</td>
+<td>Token-smart pack v2: <code>build_pack()</code> now respects <code>.gitignore</code> already, adds <code>pack --format</code> (<code>md</code>/<code>xml</code>/<code>txt</code>), <code>--budget</code> bytes, <code>--include/--exclude</code> glob, <code>--no-gitignore</code></td>
+</tr>
+<tr>
+<td><code>peek/peek/tui.py</code> (deepen)</td>
+<td>Live theme cycling: <code>t</code> to cycle 10 themes live (no restart), <code>c</code> to open config, <code>w</code> to toggle watch, CSS live update, footer hints</td>
+</tr>
+<tr>
+<td><code>peek/peek/config.py</code> (deepen)</td>
+<td>Add <code>save_config(data: dict) -&gt; Path</code> and <code>set_theme(theme_id: str) -&gt; Theme</code> with TOML write + validation</td>
+</tr>
+<tr>
+<td><code>peek/peek/cli.py</code> (deepen)</td>
+<td>New commands: <code>peek wtf [FILE|PIPE]</code>, <code>peek watch [PATH]</code>, <code>peek config get/set/list</code>, <code>peek pack</code> flags (<code>--format</code>, <code>--budget</code>, <code>--include</code>, <code>--exclude</code>), <code>peek --watch</code> flag for TUI</td>
+</tr>
+<tr>
+<td><code>peek/tests/test_wtf.py</code> (new)</td>
+<td>10 tests for traceback parse, explain, find_relevant, CLI <code>wtf</code></td>
+</tr>
+<tr>
+<td><code>peek/tests/test_pack_v2.py</code> (new)</td>
+<td>8 tests for pack v2 flags, format, budget, globs</td>
+</tr>
+<tr>
+<td><code>peek/tests/test_config_set.py</code> (new)</td>
+<td>6 tests for <code>config set/get/list</code>, file write, precedence</td>
+</tr>
+<tr>
+<td><code>peek/tests/test_watch.py</code> (new)</td>
+<td>5 tests for watch debounce, polling, no-watchfiles fallback</td>
+</tr>
+<tr>
+<td><code>peek/tests/test_tui_live.py</code> (new)</td>
+<td>5 tests for <code>t</code> cycle, live CSS, <code>w</code> toggle (via <code>Pilot</code> if Textual available, else unit)</td>
+</tr>
+<tr>
+<td><code>peek/README.md</code></td>
+<td>Shrink already done (98 lines) — add <code>wtf</code> + <code>watch</code> + <code>config set</code> to hero + Quick Start, keep 98-120 lines</td>
+</tr>
+<tr>
+<td><code>docs.md</code></td>
+<td>Add <code>wtf</code>, <code>watch</code>, <code>config set</code>, <code>pack v2</code> sections; keep TUI Guide merged</td>
+</tr>
+<tr>
+<td><code>CHANGELOG.md</code></td>
+<td>Add <code>0.2.0</code> entry</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="task-1-wtf-traceback-explainer-pure-python-no-llm-required">Task 1: <code>wtf</code> — Traceback Explainer (pure Python, no LLM required)<a class="headerlink" href="#task-1-wtf-traceback-explainer-pure-python-no-llm-required" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Create: <code>peek/peek/wtf.py</code>
+- Modify: <code>peek/peek/cli.py:1-30</code> (add <code>wtf</code> command)
+- Test: <code>peek/tests/test_wtf.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek.scanner.ScanResult</code>, <code>peek.analyzer.AnalyzerResult</code> (for <code>find_relevant_files</code>)
+- Produces: <code>TracebackInfo</code> dataclass, <code>parse_traceback(text: str) -&gt; TracebackInfo | None</code>, <code>explain_tb(info, scan, analyzer) -&gt; str</code> (markdown), <code>find_relevant_files(info, scan) -&gt; list[Path]</code>, CLI <code>peek wtf [PATH] [--explain] [--no-tui]</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_wtf.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_parse_simple_tb</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.wtf</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_traceback</span>
+    <span class="n">tb</span> <span class="o">=</span> <span class="s1">'Traceback (most recent call last):</span><span class="se">\n</span><span class="s1">  File "a.py", line 10, in foo</span><span class="se">\n</span><span class="s1">    x = 1/0</span><span class="se">\n</span><span class="s1">ZeroDivisionError: division by zero</span><span class="se">\n</span><span class="s1">'</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">parse_traceback</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">exc_type</span> <span class="o">==</span> <span class="s2">"ZeroDivisionError"</span>
+    <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s2">"a.py"</span>
+    <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lineno</span> <span class="o">==</span> <span class="mi">10</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_parse_none_on_no_tb</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.wtf</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_traceback</span>
+    <span class="k">assert</span> <span class="n">parse_traceback</span><span class="p">(</span><span class="s2">"hello"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_explain_needs_scan</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.wtf</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_traceback</span><span class="p">,</span> <span class="n">explain_tb</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="n">tb</span> <span class="o">=</span> <span class="s1">'Traceback (most recent call last):</span><span class="se">\n</span><span class="s1">  File "peek/peek/cli.py", line 50, in foo</span><span class="se">\n</span><span class="s1">    y</span><span class="se">\n</span><span class="s1">NameError: name </span><span class="se">\'</span><span class="s1">y</span><span class="se">\'</span><span class="s1"> is not defined</span><span class="se">\n</span><span class="s1">'</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">parse_traceback</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"peek/peek/cli.py"</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"peek/peek/cli.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"y=1</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"peek"</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">explain_tb</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">"NameError"</span> <span class="ow">in</span> <span class="n">out</span>
+        <span class="k">assert</span> <span class="s2">"peek/peek/cli.py:50"</span> <span class="ow">in</span> <span class="n">out</span> <span class="ow">or</span> <span class="s2">"cli.py"</span> <span class="ow">in</span> <span class="n">out</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run test to verify it fails</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_wtf.py::test_parse_simple_tb -v</code>
+Expected: FAIL <code>ModuleNotFoundError: No module named 'peek.wtf'</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Write minimal implementation</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/wtf.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Frame</span><span class="p">:</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lineno</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">func</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TracebackInfo</span><span class="p">:</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Frame</span><span class="p">]</span>
+    <span class="n">exc_type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">exc_msg</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">raw</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">_TB_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'File "([^"]+)", line (\d+), in (\S+)'</span><span class="p">)</span>
+<span class="n">_EXC_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(\w+(?:\.\w+)*Error|\w+Exception|\w+Error):\s*(.*)$'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_traceback</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TracebackInfo</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"Traceback"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_TB_RE</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">fn</span><span class="p">,</span> <span class="n">ln</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="c1"># next line after match is code</span>
+        <span class="n">after</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">after</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">after</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Frame</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ln</span><span class="p">),</span> <span class="n">func</span><span class="p">,</span> <span class="n">code</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">frames</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># last line that matches exc</span>
+    <span class="n">exc_type</span> <span class="o">=</span> <span class="n">exc_msg</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()):</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="n">_EXC_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">mm</span><span class="p">:</span>
+            <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_msg</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exc_type</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">TracebackInfo</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_msg</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_relevant_files</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">TracebackInfo</span><span class="p">,</span> <span class="n">scan_result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+    <span class="c1"># map frame filename to scanned files by suffix match, shortest rel path wins</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scanned</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">():</span> <span class="n">f</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">scan_result</span><span class="o">.</span><span class="n">files</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">fr</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">frames</span><span class="p">:</span>
+        <span class="c1"># try exact rel, else suffix</span>
+        <span class="n">cand</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">rel</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="n">scanned</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">rel</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">fr</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fr</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">rel</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">cand</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cand</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">explain_tb</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">TracebackInfo</span><span class="p">,</span> <span class="n">scan_result</span><span class="p">,</span> <span class="n">analyzer_result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"## </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">exc_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">exc_msg</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"Traceback (most relevant first):"</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fr</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- `</span><span class="si">{</span><span class="n">fr</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">fr</span><span class="o">.</span><span class="n">lineno</span><span class="si">}</span><span class="s2">` in `</span><span class="si">{</span><span class="n">fr</span><span class="o">.</span><span class="n">func</span><span class="si">}</span><span class="s2">`"</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">" — `</span><span class="si">{</span><span class="n">fr</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">`"</span> <span class="k">if</span> <span class="n">fr</span><span class="o">.</span><span class="n">code</span> <span class="k">else</span> <span class="s2">""</span><span class="p">))</span>
+    <span class="c1"># heuristic: if file in Start Here ranked, add hint</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ranked</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">analyzer_result</span><span class="o">.</span><span class="n">ranked</span><span class="p">[:</span><span class="mi">5</span><span class="p">]}</span>
+        <span class="n">hinted</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">find_relevant_files</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">scan_result</span><span class="p">)</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranked</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">hinted</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">**Start Here:** </span><span class="si">{</span><span class="n">hinted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> is in ranked top 5 — check its callers in `peek analyze`."</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Run test to verify it passes</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_wtf.py -v</code>
+Expected: PASS (3 tests)</p>
+<ul>
+<li>[ ] <strong>Step 5: Wire CLI <code>peek wtf</code></strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/cli.py — add</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"wtf"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wtf_command</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"File containing traceback, or omit to read stdin pipe"</span><span class="p">),</span>
+    <span class="n">explain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">"--explain/--no-explain"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Add heuristic explain with scan"</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.wtf</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_traceback</span><span class="p">,</span> <span class="n">explain_tb</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">parse_traceback</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">info</span><span class="p">:</span>
+        <span class="n">err_console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"[yellow]No traceback found in input.[/]"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">explain</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">());</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">explain_tb</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+            <span class="n">err_console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[dim]explain failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">[/]"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+</code></pre></div>
+<p>Test CLI: <code>echo 'Traceback...' | peek wtf</code>, <code>peek wtf tb.txt --no-explain</code>, <code>peek wtf --help</code></p>
+<ul>
+<li>[ ] <strong>Step 6: Add 7 more tests</strong> (file read, stdin, no-explain flag, find_relevant, empty, multi-frame, CLI via CliRunner)</li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_wtf.py -q</code> → 10 passed</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/wtf.py<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/tests/test_wtf.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add wtf traceback explainer with scan-aware hints"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-2-pack-v2-token-smart-deep">Task 2: <code>pack</code> v2 — Token-Smart Deep<a class="headerlink" href="#task-2-pack-v2-token-smart-deep" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/pack.py</code>
+- Modify: <code>peek/peek/cli.py</code> (pack flags)
+- Test: <code>peek/tests/test_pack_v2.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek.scanner.ScanResult</code>, <code>peek.analyzer.AnalyzerResult</code>
+- Produces: <code>build_pack(scan, analyzer, query=None, budget=8000, format="md", include=None, exclude=None) -&gt; (str, list[Path], int)</code> — <code>format</code> in <code>{"md","xml","txt"}</code>, <code>include</code>/<code>exclude</code> are glob strings</p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_pack_v2.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_pack_format_xml</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.pack</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_pack</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x=1</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"b.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"y=2</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">toks</span> <span class="o">=</span> <span class="n">build_pack</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"xml"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">"&lt;file"</span> <span class="ow">in</span> <span class="n">out</span> <span class="ow">or</span> <span class="s2">"&lt;code"</span> <span class="ow">in</span> <span class="n">out</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_pack_include_glob</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.pack</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_pack</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"b.md"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"y</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">build_pack</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="s2">"*.py"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".py"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong> <code>TypeError: build_pack() got unexpected keyword format</code></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement pack v2 minimal</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/pack.py — extend build_pack signature</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_pack</span><span class="p">(</span><span class="n">scan_result</span><span class="p">,</span> <span class="n">analyzer_result</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"md"</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
+    <span class="c1"># filter files by include/exclude glob (against rel posix)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">scan_result</span><span class="o">.</span><span class="n">files</span>
+    <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">include</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="n">exclude</span><span class="p">)]</span>
+    <span class="c1"># rank via analyzer + query (existing logic), then budget</span>
+    <span class="c1"># ... keep existing ranking, then format</span>
+    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">"xml"</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'&lt;file path="</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s1">"&gt;</span><span class="se">\n</span><span class="s1">&lt;![CDATA[</span><span class="se">\n</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span><span class="si">}</span><span class="s1">]]&gt;</span><span class="se">\n</span><span class="s1">&lt;/file&gt;'</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ranked</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">),</span> <span class="n">ranked_paths</span><span class="p">,</span> <span class="n">toks</span>
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">"txt"</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'# </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ranked</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">),</span> <span class="n">ranked_paths</span><span class="p">,</span> <span class="n">toks</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># md</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'## </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">```</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">language</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">```'</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ranked</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">),</span> <span class="n">ranked_paths</span><span class="p">,</span> <span class="n">toks</span>
+</code></pre></div>
+<p>Keep token budget logic (<code>~len/4</code> estimate, truncate at <code>budget</code>).</p>
+<ul>
+<li>[ ] <strong>Step 4: Wire CLI flags</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># cli.py — modify pack branch in main_callback</span>
+<span class="c1"># add options to pack handling: --format, --budget, --include, --exclude</span>
+<span class="c1"># main_callback already has --pack, add:</span>
+<span class="c1"># pack_format: str = Typer.Option("md", "--format", help="md|xml|txt")</span>
+<span class="c1"># pack_budget: int = Typer.Option(8000, "--budget")</span>
+<span class="c1"># pack_include: str = Typer.Option(None, "--include")</span>
+<span class="c1"># pack_exclude: str = Typer.Option(None, "--exclude")</span>
+</code></pre></div>
+<p>CliRunner test: <code>peek --pack --format xml</code>, <code>peek --pack --include "*.py"</code>, <code>peek --pack --budget 100 --format txt</code></p>
+<ul>
+<li>[ ] <strong>Step 5: Run tests</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_pack_v2.py -q</code> → 8 passed, <code>pytest -q</code> → 82 passed (74 + 8)</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/pack.py<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/tests/test_pack_v2.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: pack v2 with format, budget, include/exclude globs"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-3-config-set-persistent-theme-generic-set">Task 3: <code>config set</code> — Persistent Theme + Generic Set<a class="headerlink" href="#task-3-config-set-persistent-theme-generic-set" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/config.py</code>
+- Modify: <code>peek/peek/cli.py</code>
+- Test: <code>peek/tests/test_config_set.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek.config.load_config</code>, <code>peek.config.config_path</code>
+- Produces: <code>save_config(data: dict) -&gt; Path</code>, <code>set_config_value(key: str, value: str) -&gt; Path</code>, CLI <code>peek config get/set/list</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_config_set.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_config_set_theme</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_config</span><span class="p">,</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">config_path</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">"PEEK_CONFIG"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"cfg.toml"</span><span class="p">))</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_config_value</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">set_config_value</span><span class="p">(</span><span class="s2">"theme"</span><span class="p">,</span> <span class="s2">"dracula"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">load_config</span><span class="p">()[</span><span class="s2">"theme"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"dracula"</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_config_set_validates_theme</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_config_value</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">"PEEK_CONFIG"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"cfg.toml"</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">"Unknown theme"</span><span class="p">):</span>
+        <span class="n">set_config_value</span><span class="p">(</span><span class="s2">"theme"</span><span class="p">,</span> <span class="s2">"bogus"</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong> <code>ImportError: cannot import name 'set_config_value'</code></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement <code>config.py</code> writer</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/config.py — add</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_config</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">config_path</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># toml write minimal — manual for portability</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> = "</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">set_config_value</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"theme"</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+        <span class="n">get_theme</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># validates, raises ValueError if unknown</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">()</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">save_config</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Wire CLI <code>peek config</code></strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># cli.py</span>
+<span class="n">config_app</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">"Config: get/set/list"</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">add_typer</span><span class="p">(</span><span class="n">config_app</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"config"</span><span class="p">)</span>
+
+<span class="nd">@config_app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"set"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_set</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="o">...</span><span class="p">)):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_config_value</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">set_config_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[green]Set </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2"> at </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">[/]"</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">err_console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[red]</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">[/]"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nd">@config_app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"get"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_get</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="o">...</span><span class="p">)):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">load_config</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">""</span><span class="p">)))</span>
+
+<span class="nd">@config_app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"list"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_list</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">config_path</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[dim]</span><span class="si">{</span><span class="n">config_path</span><span class="p">()</span><span class="si">}</span><span class="s2">[/]"</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print_json</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">load_config</span><span class="p">())</span>
+</code></pre></div>
+<p>Test via CliRunner: <code>peek config set theme dracula</code>, <code>peek config get theme</code>, <code>peek config list</code>, <code>peek config set theme bogus</code> → exit 2</p>
+<ul>
+<li>[ ] <strong>Step 5: Run tests</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_config_set.py -q</code> → 6 passed</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/config.py<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/tests/test_config_set.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add config set/get/list with theme validation"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-4-live-theme-cycling-in-tui-t-key">Task 4: Live Theme Cycling in TUI (<code>t</code> key)<a class="headerlink" href="#task-4-live-theme-cycling-in-tui-t-key" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/tui.py</code>
+- Test: <code>peek/tests/test_tui_live.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek.themes.list_themes</code>, <code>peek.themes.get_theme</code>
+- Produces: <code>PeekApp</code> with <code>BINDINGS</code> <code>t</code> → <code>action_cycle_theme</code>, live <code>self._theme</code> update, CSS re-render without restart, footer hint <code>t theme</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_tui_live.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tui_bindings_has_t</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.tui</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeekApp</span>
+    <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">"t"</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">PeekApp</span><span class="o">.</span><span class="n">BINDINGS</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cycle_theme_changes_theme</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.tui</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeekApp</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x=1</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">PeekApp</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">get_theme</span><span class="p">(</span><span class="s2">"dracula"</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">app</span><span class="o">.</span><span class="n">_theme</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">"dracula"</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">action_cycle_theme</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">app</span><span class="o">.</span><span class="n">_theme</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="s2">"dracula"</span>
+        <span class="k">assert</span> <span class="n">app</span><span class="o">.</span><span class="n">_theme</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">"peek.themes"</span><span class="p">)</span><span class="o">.</span><span class="n">themes</span><span class="o">.</span><span class="n">list_themes</span><span class="p">()]</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong> <code>AttributeError: PeekApp has no attribute action_cycle_theme</code></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement live cycling</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/tui.py — add to BINDINGS</span>
+<span class="n">BINDINGS</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Binding</span><span class="p">(</span><span class="s2">"t"</span><span class="p">,</span> <span class="s2">"cycle_theme"</span><span class="p">,</span> <span class="s2">"Theme"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">Binding</span><span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="s2">"open_config"</span><span class="p">,</span> <span class="s2">"Config"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">action_cycle_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_themes</span>
+    <span class="n">themes</span> <span class="o">=</span> <span class="n">list_themes</span><span class="p">()</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">themes</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_theme</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">nxt</span> <span class="o">=</span> <span class="n">themes</span><span class="p">[(</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">themes</span><span class="p">)]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_theme</span> <span class="o">=</span> <span class="n">nxt</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_tokens</span> <span class="o">=</span> <span class="n">_tok</span><span class="p">(</span><span class="n">nxt</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">_label</span><span class="p">(</span><span class="n">nxt</span><span class="p">)</span>
+    <span class="c1"># re-template CSS</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">CSS</span> <span class="o">=</span> <span class="n">_css_for_theme</span><span class="p">(</span><span class="n">nxt</span><span class="p">)</span>  <span class="c1"># extract current CSS templating to function</span>
+    <span class="c1"># update pulse/tip with new label</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_one</span><span class="p">(</span><span class="s2">"#pulse"</span><span class="p">,</span> <span class="n">Static</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pulse_frames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pulse_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tips</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tip_idx</span><span class="p">]</span><span class="si">}</span><span class="s2"> • </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="si">}</span><span class="s2"> "</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Theme: </span><span class="si">{</span><span class="n">nxt</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># refactor: extract CSS templating to def _css_for_theme(theme) -&gt; str, used in __init__ and cycle</span>
+</code></pre></div>
+<p>Also update <code>compose</code> footer to show <code>t Theme</code> hint.</p>
+<ul>
+<li>[ ] <strong>Step 4: Run tests</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_tui_live.py -q</code> → 5 passed (if Textual not installed, guard with <code>pytest.importorskip("textual")</code>)</p>
+<ul>
+<li>[ ] <strong>Step 5: Manual smoke</strong></li>
+</ul>
+<p>Run: <code>peek --theme dracula</code> → press <code>t</code> → theme cycles, <code>peek config set theme nord</code> persists</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/tui.py<span class="w"> </span>peek/tests/test_tui_live.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: live theme cycling with t key in TUI"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-5-watch-mode-live-rescan">Task 5: Watch Mode — Live Rescan<a class="headerlink" href="#task-5-watch-mode-live-rescan" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Create: <code>peek/peek/watch.py</code>
+- Modify: <code>peek/peek/cli.py</code>, <code>peek/peek/tui.py</code>
+- Test: <code>peek/tests/test_watch.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek.scanner.scan</code>, <code>peek.analyzer.analyze</code>
+- Produces: <code>watch_repo(path: Path, on_change: Callable[[ScanResult, AnalyzerResult], None], debounce=0.4, poll_interval=0.8) -&gt; Watcher</code>, CLI <code>peek watch [PATH]</code> and <code>peek --watch</code> TUI flag</p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_watch.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_watch_debounce</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.watch</span><span class="w"> </span><span class="kn">import</span> <span class="n">watch_repo</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span><span class="p">;</span> <span class="n">p</span><span class="o">.</span><span class="n">mkdir</span><span class="p">();</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x=1</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">calls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">watcher</span> <span class="o">=</span> <span class="n">watch_repo</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">sr</span><span class="p">,</span><span class="n">ar</span><span class="p">:</span> <span class="n">calls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">debounce</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x=2</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">watcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">calls</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">calls</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span>  <span class="c1"># debounce prevents many</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong> <code>No module named 'peek.watch'</code></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement <code>watch.py</code> minimal (polling + watchfiles optional)</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/watch.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">watch_repo</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">on_change</span><span class="p">,</span> <span class="n">debounce</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+    <span class="c1"># try watchfiles if available</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">watchfiles</span><span class="w"> </span><span class="kn">import</span> <span class="n">watch</span> <span class="k">as</span> <span class="n">wwatch</span>  <span class="c1"># type: ignore</span>
+        <span class="n">has_watchfiles</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">has_watchfiles</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">stop</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+    <span class="n">last_mtime</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">poll_loop</span><span class="p">():</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+            <span class="c1"># naive: check mtime of .py/.md/.toml/.json files</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"*.py"</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">mt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mtime</span>
+                    <span class="k">if</span> <span class="n">last_mtime</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">!=</span> <span class="n">mt</span><span class="p">:</span>
+                        <span class="n">last_mtime</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">mt</span>
+                        <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">debounce</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+                    <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">path</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+                    <span class="n">on_change</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">has_watchfiles</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">watchfiles_loop</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">changes</span> <span class="ow">in</span> <span class="n">wwatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">debounce</span><span class="o">=</span><span class="n">debounce</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">poll_interval</span><span class="o">*</span><span class="mi">1000</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span> <span class="k">break</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+                    <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">path</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+                    <span class="n">on_change</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">watchfiles_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">poll_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Watcher</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="n">stop</span><span class="o">.</span><span class="n">set</span><span class="p">();</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Watcher</span><span class="p">()</span>
+</code></pre></div>
+<p>Simplify: only polling fallback for MVP, no watchfiles required.</p>
+<ul>
+<li>[ ] <strong>Step 4: Wire CLI <code>peek watch</code> and TUI <code>w</code> toggle</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># cli.py</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"watch"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">watch_command</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"."</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Path to watch"</span><span class="p">)):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span><span class="p">;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.watch</span><span class="w"> </span><span class="kn">import</span> <span class="n">watch_repo</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_static</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rich.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">Console</span>
+    <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">root</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+    <span class="n">render_static</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">console</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"[dim]Watching... Ctrl+C to quit[/]"</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_change</span><span class="p">(</span><span class="n">nsr</span><span class="p">,</span> <span class="n">nar</span><span class="p">):</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">render_static</span><span class="p">(</span><span class="n">nsr</span><span class="p">,</span> <span class="n">nar</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">console</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"[dim]Updated[/]"</span><span class="p">)</span>
+    <span class="n">watcher</span> <span class="o">=</span> <span class="n">watch_repo</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">on_change</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">watcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<span class="c1"># tui.py — add Binding w and action_toggle_watch that starts/stops watch_repo and triggers re-render</span>
+</code></pre></div>
+<p>Test CLI: <code>peek watch --help</code>, <code>timeout 2 peek watch .</code> → renders then watches</p>
+<ul>
+<li>[ ] <strong>Step 5: Run tests</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_watch.py -q</code> → 5 passed</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/watch.py<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/peek/tui.py<span class="w"> </span>peek/tests/test_watch.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add watch mode with polling and TUI toggle"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-6-viral-polish-readme-docs-pypi-gif-refresh">Task 6: Viral Polish — README, Docs, PyPI, GIF Refresh<a class="headerlink" href="#task-6-viral-polish-readme-docs-pypi-gif-refresh" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/README.md</code>, <code>docs.md</code>, <code>peek/pyproject.toml</code>, <code>peek/assets/demo.gif</code> (regen), <code>CHANGELOG.md</code>
+- Test: <code>peek/tests/test_demo_assets.py</code> (already), manual</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>peek-code</code> package name, <code>peek</code> command, v2 features
+- Produces: Updated README hero with <code>wtf</code>/<code>watch</code>, docs sections, PyPI 0.2.0 ready, GIF refreshed</p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test for README hero</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_readme_mentions_v2</span><span class="p">():</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">"peek/README.md"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="s2">"peek wtf"</span> <span class="ow">in</span> <span class="n">txt</span>
+    <span class="k">assert</span> <span class="s2">"peek watch"</span> <span class="ow">in</span> <span class="n">txt</span>
+    <span class="k">assert</span> <span class="s2">"peek config set"</span> <span class="ow">in</span> <span class="n">txt</span>
+    <span class="k">assert</span> <span class="s2">"pip install peek-code"</span> <span class="ow">in</span> <span class="n">txt</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong> (no wtf/watch in README)</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Update <code>peek/README.md</code> hero</strong></p>
+</li>
+</ul>
+<p>Add to Quick Start after <code>peek --theme-list</code>:</p>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>wtf<span class="w">                  </span><span class="c1"># paste traceback → explain with Start Here hint</span>
+cat<span class="w"> </span>tb.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>peek<span class="w"> </span>wtf
+peek<span class="w"> </span>watch<span class="w"> </span>.<span class="w">              </span><span class="c1"># live rescan on file change (polling, Ctrl+C)</span>
+peek<span class="w"> </span>config<span class="w"> </span><span class="nb">set</span><span class="w"> </span>theme<span class="w"> </span>dracula<span class="w">  </span><span class="c1"># persists</span>
+</code></pre></div>
+<p>Add to Features table row for wtf/watch/config, keep hero at 110-120 lines, link <code>Full docs → docs.md#wtf</code>, etc.</p>
+<ul>
+<li>[ ] <strong>Step 4: Update <code>docs.md</code> — add 3 new sections after <code>Pack, Find, LLM</code></strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="gu">## WTF — Traceback Explainer</span>
+<span class="sb">`peek wtf tb.txt`</span> or <span class="sb">`cat tb.txt | peek wtf`</span> → parses <span class="sb">`Traceback`</span> + <span class="sb">`...Error`</span> + frames, maps to <span class="sb">`scan`</span> files, hints if in <span class="sb">`Start Here`</span> top 5. No LLM needed.
+
+<span class="gu">## Watch — Live Rescan</span>
+<span class="sb">`peek watch .`</span> → polling every 0.8s, debounce 0.4s, re-renders static; <span class="sb">`peek --watch`</span> → TUI with <span class="sb">`w`</span> toggle. <span class="sb">`watchfiles`</span> used if installed, else polling fallback.
+
+<span class="gu">## Config Set</span>
+<span class="sb">`peek config set theme dracula`</span> → writes <span class="sb">`~/.peek/config.toml`</span>, validates via <span class="sb">`get_theme`</span>, <span class="sb">`peek config get/list`</span>.
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 5: Regenerate demo GIF to include v2 scenes</strong></li>
+</ul>
+<p>Update <code>peek/peek/tools/gen_demo.py</code> <code>SCENES</code> to add 2 new scenes (wtf + watch) or keep 6 and update filter scene to show <code>t</code> theme cycling. Then:</p>
+<p>Run: <code>python -m peek.tools.gen_demo</code> → check <code>ls -lh peek/assets/demo.gif</code> &lt;3MB, <code>file</code> GIF89a</p>
+<ul>
+<li>[ ] <strong>Step 6: Update <code>CHANGELOG.md</code> for 0.2.0</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="gu">## 0.2.0 — 2026-08-12</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`wtf`</span>: traceback explainer with scan-aware hints
+<span class="k">-</span><span class="w"> </span><span class="sb">`pack v2`</span>: format md/xml/txt, budget, include/exclude globs
+<span class="k">-</span><span class="w"> </span><span class="sb">`config set/get/list`</span>: persistent theme with validation
+<span class="k">-</span><span class="w"> </span><span class="sb">`watch`</span>: polling + Textual toggle
+<span class="k">-</span><span class="w"> </span><span class="sb">`t`</span> live theme cycling in TUI
+<span class="k">-</span><span class="w"> </span>Viral polish: README hero with wtf/watch, docs sections, GIF refreshed
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 7: Bump version and build</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/pyproject.toml</span>
+<span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"0.2.0"</span>
+</code></pre></div>
+<p>Run: <code>pytest -q</code> → 108 passed (74 + 34 new), <code>cd peek &amp;&amp; python -m build &amp;&amp; twine check peek/dist/*</code> → PASSED</p>
+<ul>
+<li>[ ] <strong>Step 8: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/README.md<span class="w"> </span>docs.md<span class="w"> </span>CHANGELOG.md<span class="w"> </span>peek/pyproject.toml<span class="w"> </span>peek/peek/tools/gen_demo.py<span class="w"> </span>peek/assets/demo.gif
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"docs: v2 polish — README hero, docs sections, GIF and 0.2.0 changelog"</span>
+</code></pre></div>
+<hr />
+<h2 id="self-review">Self-Review<a class="headerlink" href="#self-review" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Spec coverage:</strong> <code>wtf</code> → Task 1, <code>pack v2</code> → Task 2, <code>config set</code> → Task 3, live <code>t</code> → Task 4, <code>watch</code> → Task 5, viral polish → Task 6 — all 6 pillars covered. Each task ends with independently testable CLI.</li>
+<li><strong>Placeholder scan:</strong> No TBD, all code blocks concrete with exact signatures, file paths, test assertions, commit messages.</li>
+<li><strong>Type consistency:</strong> <code>TracebackInfo</code>/<code>Frame</code> dataclasses match <code>peek.wtf</code> exports; <code>build_pack</code> signature <code>format="md", include, exclude, budget</code> consistent across pack.py and cli.py; <code>save_config</code>/<code>set_config_value</code> match <code>config.py</code> contract; <code>watch_repo</code> returns <code>Watcher</code> with <code>stop()</code>; <code>PeekApp.action_cycle_theme</code> uses <code>list_themes()</code> and <code>_css_for_theme</code>.</li>
+</ul>
+<hr />
+<p>Plan complete and saved to <code>docs/superpowers/plans/2026-08-11-peek-code-v2.md</code>. Two execution options:</p>
+<p><strong>1. Subagent-Driven (recommended)</strong> - I dispatch a fresh subagent per task, review between tasks, fast iteration</p>
+<p><strong>2. Inline Execution</strong> - Execute tasks in this session using executing-plans, batch execution with checkpoints</p>
+<p><strong>Which approach?</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1372 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/research/04_project_details__peek/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Project Details — peek : Understand Any Codebase in 5 Seconds - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#project-details-peek-understand-any-codebase-in-5-seconds" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Project Details — peek : Understand Any Codebase in 5 Seconds
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-problem-the-now-what-moment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Problem — The "Now What?" Moment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-solution-peek" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Solution — peek
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Solution — peek">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-it-looks-ascii-mock-actual-is-richtextual-beautiful" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it looks (ASCII mock — actual is Rich/Textual beautiful)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-why-this-one-decision-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Why This One — Decision Rationale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Why This One — Decision Rationale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-5-tests-peek-passes-that-others-dont" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 5 tests peek passes that others don't
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-platform-advantage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "platform" advantage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#components-5-day-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components (5-day scope)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Components (5-day scope)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-scanner-peekscannerpy-150-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Scanner (peek/scanner.py — ~150 lines)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-analyzer-peekanalyzerpy-300-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Analyzer (peek/analyzer.py — ~300 lines)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-renderer-peekrendererpy-peektuipy-400-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Renderer (peek/renderer.py + peek/tui.py — ~400 lines)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-optional-llm-enhancer-peekllmpy-100-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. Optional LLM Enhancer (peek/llm.py — ~100 lines)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-cli-peekclipy-150-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. CLI (peek/cli.py — ~150 lines)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependencies-minimal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies (minimal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repo-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repo structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-mvp-features-v010-day-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. MVP Features (v0.1.0 — Day 5)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. MVP Features (v0.1.0 — Day 5)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#must-have-p0-ship-without-these-is-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Must-have (P0 — ship without these is failure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#should-have-p1-add-if-time-on-day-45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Should-have (P1 — add if time on day 4–5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nice-to-have-p2-v020" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nice-to-have (P2 — v0.2.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-non-goals-v010-explicitly-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Non-Goals (v0.1.0 explicitly does NOT do)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-success-metrics-first-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Success Metrics (first 30 days)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="project-details-peek-understand-any-codebase-in-5-seconds">Project Details — <code>peek</code> : Understand Any Codebase in 5 Seconds<a class="headerlink" href="#project-details-peek-understand-any-codebase-in-5-seconds" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Tagline:</strong> The <code>htop</code> for codebases.<br />
+<strong>One-liner:</strong> <code>pip install peek &amp;&amp; peek .</code> turns any repo into a beautiful, interactive architecture map in 5 seconds.<br />
+<strong>Elevator pitch (15 sec):</strong> "You know how <code>htop</code> makes system state instantly visible? <code>peek</code> does that for code. Run it in any repo — even one you've never seen — and in 5 seconds you get a beautiful map of what it does, how it's structured, where to start, and what talks to what. No API key, no config. Just <code>peek .</code>"</p>
+</blockquote>
+<hr />
+<h2 id="1-problem-the-now-what-moment">1. Problem — The "Now What?" Moment<a class="headerlink" href="#1-problem-the-now-what-moment" title="Permanent link">&para;</a></h2>
+<p>Every programmer hits this weekly:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/someone/awesome-project
+<span class="nb">cd</span><span class="w"> </span>awesome-project
+ls<span class="w">          </span><span class="c1"># 47 files, 12 dirs</span>
+cat<span class="w"> </span>README.md<span class="w">  </span><span class="c1"># "A blazingly fast framework for..." (lies or outdated)</span>
+<span class="c1"># Now what? Where is the entry point? What talks to what? Where do I start?</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.py"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20<span class="w">   </span><span class="c1"># wall of files</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">"main"</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">"*.py"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w">  </span><span class="c1"># noisy, not helpful</span>
+<span class="c1"># 25 minutes later... still confused</span>
+</code></pre></div>
+<p><strong>This is not niche. It's universal:</strong>
+- Onboarding to a new team/repo
+- Evaluating an open-source project (should I use this?)
+- Returning to your own code after 3 months
+- Reviewing a PR in an unfamiliar area
+- Packing context for an LLM (what files matter?)</p>
+<p><strong>Current solutions and why they fail:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Why it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>README</code></td>
+<td>Outdated, incomplete, no structure</td>
+</tr>
+<tr>
+<td><code>find</code> / <code>grep</code> / <code>tree</code></td>
+<td>Syntactic, not semantic; no ranking</td>
+</tr>
+<tr>
+<td>IDE "go to definition"</td>
+<td>Requires IDE setup; doesn't give overview</td>
+</tr>
+<tr>
+<td>Sourcegraph</td>
+<td>Heavy, enterprise, cloud, not local CLI</td>
+</tr>
+<tr>
+<td><code>gitingest</code> / <code>repomix</code></td>
+<td>Dumps all files as text — not a map, no ranking</td>
+</tr>
+<tr>
+<td>GitHub file browser</td>
+<td>Flat list, no relationships</td>
+</tr>
+<tr>
+<td>Asking a teammate</td>
+<td>Not always possible; doesn't scale</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost:</strong> 15–60 minutes wasted per new repo. For a dev who touches 2–3 new repos/week, that's 2–4 hours/week. For teams onboarding new hires, it's days.</p>
+<hr />
+<h2 id="2-solution-peek">2. Solution — <code>peek</code><a class="headerlink" href="#2-solution-peek" title="Permanent link">&para;</a></h2>
+<h3 id="what-it-is">What it is<a class="headerlink" href="#what-it-is" title="Permanent link">&para;</a></h3>
+<p>A <strong>local, zero-config, beautiful CLI/TUI</strong> that answers 5 questions instantly:</p>
+<ol>
+<li><strong>What does this repo do?</strong> — 3-sentence summary (heuristic, no LLM needed)</li>
+<li><strong>What's the structure?</strong> — Interactive file tree with smart ranking ("start here" ⭐)</li>
+<li><strong>What talks to what?</strong> — Architecture map: modules → imports → dependencies (visual graph)</li>
+<li><strong>Where are the entry points?</strong> — Auto-detected (<code>main.py</code>, <code>app.py</code>, <code>__main__</code>, <code>cli.py</code>, <code>api.py</code>, <code>manage.py</code>, etc.)</li>
+<li><strong>What should I read first?</strong> — Ranked "start here" list (entry points + most-imported + most-central)</li>
+</ol>
+<h3 id="how-it-looks-ascii-mock-actual-is-richtextual-beautiful">How it looks (ASCII mock — actual is Rich/Textual beautiful)<a class="headerlink" href="#how-it-looks-ascii-mock-actual-is-richtextual-beautiful" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>  peek  v0.1.0  —  /home/you/awesome-project  (Python · 47 files · 4.2k LOC)
+
+  ┌─ Summary ─────────────────────────────────────────────────────┐
+  │ FastAPI-based task queue with Redis backend. Workers pull     │
+  │ jobs from Redis, execute via pluggable executors, and report  │
+  │ results to Postgres. CLI via Typer, config via Pydantic.     │
+  └───────────────────────────────────────────────────────────────┘
+
+  ┌─ Architecture ───────────────────┐  ┌─ Start Here ⭐ ───────────────┐
+  │                                │  │ ⭐ app/main.py      (entry)    │
+  │   cli ──→ api ──→ core ──→ db  │  │ ⭐ app/core/executor.py (hub)  │
+  │    │       │        │           │  │    app/worker.py    (worker)   │
+  │    └───────┴────────┴──→ redis  │  │    app/config.py    (config)   │
+  │                                │  │    tests/test_exec.py          │
+  └────────────────────────────────┘  └────────────────────────────────┘
+
+  ┌─ Stats ────────────────────────┐  ┌─ Tech Stack ────────────────────┐
+  │  Python  92%  ██████████████   │  │  FastAPI · Redis · Postgres    │
+  │  YAML     5%  █                │  │  Typer · Pydantic · pytest     │
+  │  12 dirs · 47 files · 4.2k LOC │  │  Docker · ruff · uv            │
+  └────────────────────────────────┘  └────────────────────────────────┘
+
+  [j/k] navigate  [enter] drill in  [o] open in $EDITOR  [p] pack for LLM  [q] quit
+</code></pre></div>
+<p><strong>Modes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peek .</code></td>
+<td>Full interactive TUI (default)</td>
+</tr>
+<tr>
+<td><code>peek . --no-tui</code></td>
+<td>Static rich output (for CI / piping / screenshots)</td>
+</tr>
+<tr>
+<td><code>peek . --html</code></td>
+<td>Export interactive HTML map (shareable)</td>
+</tr>
+<tr>
+<td><code>peek . --pack</code></td>
+<td>Pack ranked files for LLM (like gitingest but smart)</td>
+</tr>
+<tr>
+<td><code>peek . --find "auth"</code></td>
+<td>Semantic find (ranks files by relevance to query)</td>
+</tr>
+<tr>
+<td><code>peek --help</code></td>
+<td>Beautiful help with examples</td>
+</tr>
+</tbody>
+</table>
+<h3 id="design-principles">Design principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Zero config, zero friction</strong> — <code>peek .</code> works with no API key, no config file, no setup. LLM features are opt-in.</li>
+<li><strong>Beauty is a feature</strong> — Every output is Rich/Textual gorgeous. Screenshots should make people stop scrolling.</li>
+<li><strong>Speed is a feature</strong> — &lt; 2 seconds for repos up to 500 files; &lt; 5 seconds for 2k files. Feels instant.</li>
+<li><strong>Heuristics first, LLM optional</strong> — 80% value offline via AST + heuristics; LLM adds polish (better summaries) if <code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code> is set.</li>
+<li><strong>Don't be clever, be useful</strong> — No over-engineering. File ranking via simple centrality; summaries via template + heuristics before LLM.</li>
+</ol>
+<hr />
+<h2 id="3-why-this-one-decision-rationale">3. Why This One — Decision Rationale<a class="headerlink" href="#3-why-this-one-decision-rationale" title="Permanent link">&para;</a></h2>
+<p>From <code>03_candidate_projects.md</code>, <code>peek</code> scored <strong>90/100</strong>, highest of 15. But scores alone don't capture the full thesis:</p>
+<h3 id="the-5-tests-peek-passes-that-others-dont">The 5 tests <code>peek</code> passes that others don't<a class="headerlink" href="#the-5-tests-peek-passes-that-others-dont" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th><code>peek</code></th>
+<th><code>wtf</code> (2nd)</th>
+<th><code>packit</code> (3rd)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instant wow GIF?</strong></td>
+<td>✅ Map animating from chaos to clarity</td>
+<td>✅ Traceback before/after</td>
+<td>⚠️ File picker — good not great</td>
+</tr>
+<tr>
+<td><strong>Every dev, every week?</strong></td>
+<td>✅ Every repo clone/onboarding</td>
+<td>✅ Every crash, but crashes are less frequent than new repos</td>
+<td>⚠️ Only AI coders (still ~70% in 2026)</td>
+</tr>
+<tr>
+<td><strong>Zero-config?</strong></td>
+<td>✅ Heuristics offline</td>
+<td>✅ Heuristics offline</td>
+<td>❌ Needs embedding model download</td>
+</tr>
+<tr>
+<td><strong>Weak competition?</strong></td>
+<td>✅ No beautiful local codebase map exists</td>
+<td>⚠️ <code>rich</code> traceback exists</td>
+<td>❌ gitingest/repomix already viral</td>
+</tr>
+<tr>
+<td><strong>Screenshot shareable?</strong></td>
+<td>✅ Map of any repo is shareable</td>
+<td>✅ Traceback side-by-side</td>
+<td>❌ Clipboard action is invisible</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-platform-advantage">The "platform" advantage<a class="headerlink" href="#the-platform-advantage" title="Permanent link">&para;</a></h3>
+<p><code>peek</code> is not a one-trick tool — it's a <strong>platform for codebase understanding</strong>. Every runner-up becomes a <code>peek</code> feature:</p>
+<ul>
+<li><code>wtf</code> → <code>peek --explain traceback.txt</code></li>
+<li><code>packit</code> → <code>peek --pack --ask "where is auth?"</code></li>
+<li><code>findit</code> → <code>peek --find "auth validation"</code></li>
+<li><code>depcruise</code> → <code>peek --deps</code></li>
+<li><code>lumen</code> → <code>peek --trace app.py</code> (future)</li>
+</ul>
+<p>This gives <code>peek</code> a <strong>compounding viral surface area</strong>: each feature adds a new shareable moment and a new search keyword that leads to <code>peek</code>.</p>
+<h3 id="the-timing">The timing<a class="headerlink" href="#the-timing" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AI coding is now default</strong> (2026): every dev needs to understand code quickly, whether human or AI-written.</li>
+<li><strong>Textual is mature</strong>: we can build a showcase TUI that itself goes viral as a Textual example.</li>
+<li><strong>No dominant tool exists</strong>: Sourcegraph is heavy/enterprise; <code>tree</code>/<code>grep</code> are dumb; gitingest is not visual. The "htop for codebases" slot is empty.</li>
+<li><strong>Aug–Sep launch window</strong>: peak "try new tools" season, before holiday noise.</li>
+</ul>
+<hr />
+<h2 id="4-architecture">4. Architecture<a class="headerlink" href="#4-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="high-level">High-level<a class="headerlink" href="#high-level" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                        peek CLI                             │
+│  (Typer + Rich)  —  `peek .` / `peek . --html` / etc.     │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   ┌─────────┐   ┌──────────┐   ┌──────────┐
+   │ Scanner │   │ Analyzer │   │ Renderer │
+   │         │   │          │   │          │
+   │ • walk  │──→│ • AST    │──→│ • Rich   │
+   │ • .git- │   │ • graph  │   │ • Textual│
+   │   ignore│   │ • rank   │   │ • HTML   │
+   │ • LOC   │   │ • summary│   │ • JSON   │
+   └─────────┘   └──────────┘   └──────────┘
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              ┌─────────────────┐
+              │  Optional LLM   │
+              │  (summary boost)│
+              │  OpenAI/Anthropic│
+              └─────────────────┘
+</code></pre></div>
+<h3 id="components-5-day-scope">Components (5-day scope)<a class="headerlink" href="#components-5-day-scope" title="Permanent link">&para;</a></h3>
+<h4 id="a-scanner-peekscannerpy-150-lines">A. Scanner (<code>peek/scanner.py</code> — ~150 lines)<a class="headerlink" href="#a-scanner-peekscannerpy-150-lines" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Walk <code>path</code> respecting <code>.gitignore</code> (via <code>pathspec</code>), <code>.peekignore</code>, default ignores (<code>__pycache__</code>, <code>.git</code>, <code>node_modules</code>, <code>.venv</code>, <code>dist</code>, <code>build</code>)</li>
+<li>Collect: file paths, sizes, extensions, LOC (via <code>pygount</code> or simple line count)</li>
+<li>Detect: language breakdown, tech stack (via file presence: <code>pyproject.toml</code> → Python, <code>package.json</code> → JS, <code>Cargo.toml</code> → Rust, <code>requirements.txt</code>, <code>Dockerfile</code>, <code>Makefile</code>, etc.)</li>
+<li>Detect: entry points (heuristics — see below)</li>
+<li>Output: <code>ScanResult(files, stats, tech_stack, entry_candidates)</code></li>
+</ul>
+<p><strong>Entry point heuristics (ranked):</strong>
+1. Files named <code>main.py</code>, <code>app.py</code>, <code>cli.py</code>, <code>manage.py</code>, <code>server.py</code>, <code>api.py</code>, <code>__main__.py</code>
+2. Files with <code>if __name__ == "__main__"</code> or <code>def main(</code> at top level
+3. <code>pyproject.toml [project.scripts]</code> / <code>[tool.poetry.scripts]</code>
+4. <code>Dockerfile CMD</code> / <code>ENTRYPOINT</code>
+5. Most-imported file that is not a utility</p>
+<h4 id="b-analyzer-peekanalyzerpy-300-lines">B. Analyzer (<code>peek/analyzer.py</code> — ~300 lines)<a class="headerlink" href="#b-analyzer-peekanalyzerpy-300-lines" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>AST parsing</strong> (Python files): <code>ast.parse</code> → extract <code>Import</code> / <code>ImportFrom</code> → build directed graph <code>file → imports</code></li>
+<li><strong>Non-Python files</strong>: heuristic edges (e.g., <code>package.json</code> dependencies, <code>Dockerfile</code> base images) — simple, not deep</li>
+<li><strong>Graph analysis</strong> (no <code>networkx</code> required for MVP — simple dict + centrality):</li>
+<li>In-degree (how many files import this) → "hub" score</li>
+<li>Out-degree (how many this imports) → "leaf" vs "orchestrator"</li>
+<li>PageRank-lite (iterative) → "centrality" for ranking</li>
+<li><strong>Ranking — "Start Here"</strong> (weighted):</li>
+<li>Entry point bonus ×3</li>
+<li>In-degree (hub) ×2</li>
+<li>Centrality ×1.5</li>
+<li>File size penalty (prefer smaller entry files over huge utils)</li>
+<li>Depth penalty (prefer top-level over deep nested)</li>
+<li><strong>Summary</strong> (offline heuristic, no LLM):</li>
+<li>Template: <code>"{Framework}-based {domain} with {backend}. {Workers/components} handle {action} via {mechanism}. {CLI/config} via {tools}."</code></li>
+<li>Inferred from: framework imports (<code>fastapi</code> → "FastAPI-based"), DB imports (<code>psycopg2</code>/<code>sqlalchemy</code> → "Postgres"), queue (<code>redis</code>/<code>celery</code> → "task queue"), etc.</li>
+<li>Fallback: "Python project with {N} modules, entry at {file}."</li>
+</ul>
+<h4 id="c-renderer-peekrendererpy-peektuipy-400-lines">C. Renderer (<code>peek/renderer.py</code> + <code>peek/tui.py</code> — ~400 lines)<a class="headerlink" href="#c-renderer-peekrendererpy-peektuipy-400-lines" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Static mode</strong> (<code>--no-tui</code>): Rich panels — Summary, Architecture (ASCII graph), Start Here, Stats, Tech Stack. Uses <code>rich.panel</code>, <code>rich.table</code>, <code>rich.tree</code>, <code>rich.columns</code>.</li>
+<li><strong>TUI mode</strong> (default, <code>textual</code>):</li>
+<li>Layout: header (path + stats) + 4 panels (Summary, Graph, Start Here, Stack) + footer (key hints)</li>
+<li>Interactions: <code>j/k</code> or arrows navigate Start Here list; <code>enter</code> drills into file (shows its imports/dependents); <code>o</code> opens in <code>$EDITOR</code>; <code>p</code> packs for LLM; <code>/</code> filters; <code>q</code> quits</li>
+<li>Graph: simple box-and-arrow ASCII art in a Rich panel (not full graphviz — just <code>cli → api → core → db</code> style). For MVP, a ranked list IS the graph; visual edges are v2.</li>
+<li><strong>HTML export</strong> (<code>--html</code>): Render static output to self-contained HTML (Rich's <code>export_html</code> or simple Jinja template) — shareable.</li>
+</ul>
+<h4 id="d-optional-llm-enhancer-peekllmpy-100-lines">D. Optional LLM Enhancer (<code>peek/llm.py</code> — ~100 lines)<a class="headerlink" href="#d-optional-llm-enhancer-peekllmpy-100-lines" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Only if <code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code> env var exists (or <code>peek --llm</code>)</li>
+<li>Prompt: "Summarize this codebase in 2–3 sentences given: file list, import graph, entry points, tech stack: {context}"</li>
+<li>Model: <code>gpt-4o-mini</code> or <code>claude-3-5-haiku</code> (cheap, fast)</li>
+<li>Graceful fallback: heuristic summary if no key or API fails</li>
+<li><strong>Never blocks main flow</strong> — LLM call is async/optional, result replaces heuristic summary when ready (TUI updates live)</li>
+</ul>
+<h4 id="e-cli-peekclipy-150-lines">E. CLI (<code>peek/cli.py</code> — ~150 lines)<a class="headerlink" href="#e-cli-peekclipy-150-lines" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>Typer</code> app with commands/options:
+  <div class="highlight"><pre><span></span><code>peek [PATH] [--no-tui] [--html] [--pack] [--find QUERY] [--llm] [--json]
+</code></pre></div></li>
+<li>Handles: path resolution, scan → analyze → render pipeline, error handling, <code>--help</code> with examples</li>
+<li>Entry point: <code>peek = "peek.cli:app"</code> in <code>pyproject.toml</code></li>
+</ul>
+<h3 id="dependencies-minimal">Dependencies (minimal)<a class="headerlink" href="#dependencies-minimal" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"typer&gt;=0.12"</span><span class="p">,</span><span class="w">        </span><span class="c1"># CLI</span>
+<span class="w">    </span><span class="s2">"rich&gt;=13.0"</span><span class="p">,</span><span class="w">         </span><span class="c1"># Beautiful output</span>
+<span class="w">    </span><span class="s2">"textual&gt;=0.80"</span><span class="p">,</span><span class="w">      </span><span class="c1"># TUI</span>
+<span class="w">    </span><span class="s2">"pathspec&gt;=0.12"</span><span class="p">,</span><span class="w">     </span><span class="c1"># .gitignore</span>
+<span class="w">    </span><span class="s2">"pygments&gt;=2.17"</span><span class="p">,</span><span class="w">     </span><span class="c1"># Syntax (via rich)</span>
+<span class="p">]</span>
+<span class="c1"># Optional:</span>
+<span class="c1"># "openai&gt;=1.0" / "anthropic&gt;=0.30" — only if user wants LLM summary</span>
+<span class="c1"># No networkx, no heavy ML — keep install &lt; 10s</span>
+</code></pre></div>
+<h3 id="repo-structure">Repo structure<a class="headerlink" href="#repo-structure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>peek/
+├── pyproject.toml
+├── README.md              # GIF + install + demo — the landing page
+├── peek/
+│   ├── __init__.py
+│   ├── cli.py             # Typer app
+│   ├── scanner.py         # File walk + tech detect
+│   ├── analyzer.py        # AST graph + ranking + summary
+│   ├── renderer.py        # Rich static renderer
+│   ├── tui.py             # Textual TUI
+│   ├── llm.py             # Optional LLM summary
+│   └── _ascii_graph.py    # Tiny graph → ASCII art
+├── tests/
+│   ├── test_scanner.py
+│   ├── test_analyzer.py
+│   └── fixtures/          # 3 sample repos (tiny, medium, real)
+├── assets/
+│   ├── demo.gif           # THE GIF — 15 sec, above the fold
+│   ├── screenshot.png     # Static fallback
+│   └── architecture.png   # Diagram for README
+└── scripts/
+    └── record_demo.py     # Reproducible demo recording
+</code></pre></div>
+<hr />
+<h2 id="5-mvp-features-v010-day-5">5. MVP Features (v0.1.0 — Day 5)<a class="headerlink" href="#5-mvp-features-v010-day-5" title="Permanent link">&para;</a></h2>
+<h3 id="must-have-p0-ship-without-these-is-failure">Must-have (P0 — ship without these is failure)<a class="headerlink" href="#must-have-p0-ship-without-these-is-failure" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>Why P0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>peek .</code> scans any repo respecting <code>.gitignore</code></td>
+<td>Core — without this nothing works</td>
+</tr>
+<tr>
+<td>2</td>
+<td>AST import graph for Python files</td>
+<td>Core intelligence</td>
+</tr>
+<tr>
+<td>3</td>
+<td>"Start Here" ranked list (entry + hub + centrality)</td>
+<td>The #1 user question, answered</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Beautiful static output (<code>--no-tui</code>) with Rich</td>
+<td>Shareable, screenshot-worthy, works everywhere</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Interactive TUI (<code>textual</code>) with nav + drill-in</td>
+<td>The wow factor, HN GIF material</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Heuristic summary (no LLM)</td>
+<td>Works offline, zero friction</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tech stack detection</td>
+<td>Instant context</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>pip install peek</code> in &lt; 10s, no config</td>
+<td>Viral prerequisite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="should-have-p1-add-if-time-on-day-45">Should-have (P1 — add if time on day 4–5)<a class="headerlink" href="#should-have-p1-add-if-time-on-day-45" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9</td>
+<td><code>--html</code> export</td>
+<td>Shareable map for teams</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>--pack</code> — smart LLM pack (ranked files → clipboard/file)</td>
+<td>Gitingest-killer feature</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Optional LLM summary (if API key)</td>
+<td>Better summaries, opt-in</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>--find "query"</code> keyword search ranked by relevance</td>
+<td>Lightweight semantic-ish</td>
+</tr>
+<tr>
+<td>13</td>
+<td>File size / LOC stats + language breakdown</td>
+<td>Easy, visual</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nice-to-have-p2-v020">Nice-to-have (P2 — v0.2.0)<a class="headerlink" href="#nice-to-have-p2-v020" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Feature</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>14</td>
+<td>Full import graph visualization (graphviz/DOT)</td>
+<td>Visual edges, not just list</td>
+</tr>
+<tr>
+<td>15</td>
+<td>True semantic search via embeddings</td>
+<td>Needs model download — heavier</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>peek --explain traceback.txt</code></td>
+<td>Absorb <code>wtf</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Watch mode (<code>peek --watch</code>)</td>
+<td>Live update on file change</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Config file (<code>.peek.toml</code>)</td>
+<td>Custom entry hints, ignore rules</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-non-goals-v010-explicitly-does-not-do">6. Non-Goals (v0.1.0 explicitly does NOT do)<a class="headerlink" href="#6-non-goals-v010-explicitly-does-not-do" title="Permanent link">&para;</a></h2>
+<ul>
+<li>❌ Not a code editor or IDE — no editing, just understanding</li>
+<li>❌ Not a linter/formatter — no style opinions</li>
+<li>❌ Not a full semantic search engine — keyword + ranking only for MVP</li>
+<li>❌ Not a replacement for <code>gitingest</code> for non-Python repos — Python-first, but handles other files gracefully</li>
+<li>❌ No backend, no telemetry, no account, no cloud</li>
+</ul>
+<hr />
+<h2 id="7-success-metrics-first-30-days">7. Success Metrics (first 30 days)<a class="headerlink" href="#7-success-metrics-first-30-days" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>How to measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitHub stars</td>
+<td>1k in week 1, 5k in month 1</td>
+<td>GitHub insights</td>
+</tr>
+<tr>
+<td><code>pip</code> downloads</td>
+<td>10k in month 1</td>
+<td>PyPI stats</td>
+</tr>
+<tr>
+<td>HN front page</td>
+<td>Top 10 for ≥ 4h</td>
+<td>HN rank tracker</td>
+</tr>
+<tr>
+<td>Demo GIF views</td>
+<td>50k impressions</td>
+<td>Twitter analytics</td>
+</tr>
+<tr>
+<td>Issues/PRs</td>
+<td>20+ community interactions</td>
+<td>GitHub issues</td>
+</tr>
+<tr>
+<td>"I used peek on X" tweets</td>
+<td>30+ organic</td>
+<td>Twitter search</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Next → <code>05_why_this_will_go_viral.md</code> — the viral thesis as a standalone memo.</em></p>
+<hr />
+<p><em>Author: </em><em>Hariom Lohar</em><em> -- hariomlohar.new@gmail.com -- https://hariomlohardev.github.io/ -- 2026-08-10</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
