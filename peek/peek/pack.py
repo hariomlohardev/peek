@@ -785,8 +785,8 @@ def build_pack(
                     lines.append(f"# diff: {diff!r}")
             lines.append("# tip: pipe to clipboard `peek --pack --clip` or `pbcopy`")
             lines.append("")
-            lines.append("| # | File | LOC | Tokens | Size |")
-            lines.append("|---|------|-----|--------|------|")
+            lines.append("| # | File | LOC | Tokens | % of budget | Size |")
+            lines.append("|---|------|-----|--------|-------------|------|")
             for idx, p in enumerate(included, 1):
                 try:
                     rel = p.relative_to(scan_result.root).as_posix()
@@ -820,9 +820,12 @@ def build_pack(
                 except Exception:
                     pass
                 toks = per_file_tokens[idx - 1] if idx - 1 < len(per_file_tokens) else "?"
+                pct_str = "?"
+                if isinstance(toks, (int, float)) and budget:
+                    pct_str = f"{(toks / budget * 100):.1f}%"
                 # Escape pipe in rel
                 rel_esc = rel.replace("|", "\\|")
-                lines.append(f"| {idx} | {rel_esc} | {loc_str} | {toks} | {size_str} |")
+                lines.append(f"| {idx} | {rel_esc} | {loc_str} | {toks} | {pct_str} | {size_str} |")
             lines.append("")
             # Summary
             try:

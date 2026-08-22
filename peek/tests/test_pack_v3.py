@@ -77,9 +77,8 @@ def test_pack_dry_run(tmp_path):
     ar = analyze(sr)
     out, files, toks = build_pack(sr, ar, dry_run=True)
     assert toks > 0
-    # dry-run should produce table-like output, not normal pack with FILE markers? but should contain File/Tokens or dry-run keyword
-    assert "a.py" in out or "b.py" in out
-    assert toks > 0
+    assert "% of budget" in out
+    assert "% used" in out
     # dry-run CLI
     from typer.testing import CliRunner
     from peek.cli import app
