@@ -63,3 +63,16 @@ def test_tui_w_toggle_binding():
     # verify start/stop helpers exist
     assert hasattr(PeekApp, "_start_watch")
     assert hasattr(PeekApp, "_stop_watch")
+
+
+def test_watch_toml_changes(tmp_path):
+    import time
+    from peek.watch import watch_repo
+    p = tmp_path / "repo"; p.mkdir(); (p/"pyproject.toml").write_text("x=1\n")
+    calls = []
+    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    time.sleep(0.2)
+    (p/"pyproject.toml").write_text("x=2\n")
+    time.sleep(0.5)
+    watcher.stop()
+    assert len(calls) >= 1

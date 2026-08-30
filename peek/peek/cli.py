@@ -54,9 +54,10 @@ def _scan_with_spinner(path: Path, max_files: int = 2000, label: str = "Scanning
         except Exception:
             pass
         if is_tty:
-            from rich.progress import Progress, SpinnerColumn, TextColumn
-            import time as _t
             import threading
+            import time as _t
+
+            from rich.progress import Progress, SpinnerColumn, TextColumn
 
             with Progress(
                 SpinnerColumn(spinner_name="dots", style=_theme_accent(theme)),
@@ -121,6 +122,7 @@ except ImportError:
     from typer import _click  # typer 0.27+ vendors click
 from typer.core import TyperGroup
 
+
 class _PeekGroup(TyperGroup):
     def parse_args(self, ctx, args):
         # Let Click handle --help / --version normally (eager options)
@@ -147,9 +149,7 @@ class _PeekGroup(TyperGroup):
                 return ctx.args
             # Path-like: ".", "..", "./", "../", "/", contains slash/dot, or exists as file/dir
             is_path = False
-            if first in (".", ".."):
-                is_path = True
-            elif first.startswith(("./", "../", "/", "\\")):
+            if first in (".", "..") or first.startswith(("./", "../", "/", "\\")):
                 is_path = True
             elif not is_known_cmd:
                 # Treat as path only if it looks like a path (contains . or / or \ or exists)
@@ -392,7 +392,7 @@ def _print_find_result(matches: list[dict], query: str, elapsed: float) -> None:
     header = Text()
     header.append("peek find", style="bold magenta")
     header.append(f"  v{__version__}", style="dim")
-    header.append(f"  —  query: ", style="dim")
+    header.append("  —  query: ", style="dim")
     header.append(f'"{query}"', style="cyan")
     header.append(f"  ({elapsed:.2f}s)", style="dim")
     console.print(Panel(header, box=box.ROUNDED, border_style="magenta", padding=(0, 1)))
@@ -643,8 +643,9 @@ def graph_command(
     format: str = typer.Option("dot", "--format", help="dot|svg|html|mermaid"),
     output: Path = typer.Option(None, "--output", "-o"),
 ):
-    from peek.scanner import scan; from peek.analyzer import analyze
+    from peek.analyzer import analyze
     from peek.graph import export_graph
+    from peek.scanner import scan
     sr = scan(path.resolve()); ar = analyze(sr)
     try:
         out = export_graph(ar, format=format)
@@ -725,12 +726,7 @@ def trace_command(
             # Check if symbol looks like a path (exists or contains slash/backslash or is "."/"..")
             is_path_like = False
             try:
-                if Path(symbol).exists():
-                    is_path_like = True
-                elif "/" in symbol or "\\" in symbol or symbol in (".", "..") or symbol.startswith("./") or symbol.startswith("../"):
-                    is_path_like = True
-                # Also handle Windows absolute like C:\ or C:/
-                elif len(symbol) >= 2 and symbol[1] == ":" and (symbol[2:3] == "\\" or symbol[2:3] == "/"):
+                if Path(symbol).exists() or "/" in symbol or "\\" in symbol or symbol in (".", "..") or symbol.startswith("./") or symbol.startswith("../") or len(symbol) >= 2 and symbol[1] == ":" and (symbol[2:3] == "\\" or symbol[2:3] == "/"):
                     is_path_like = True
             except Exception:
                 pass
@@ -764,8 +760,8 @@ def trace_command(
     try:
         from peek.trace.builder import build_trace_graph
         from peek.trace.query import find_by_location, find_focals
-        from peek.trace.render import render_trace, trace_to_json
         from peek.trace.query import trace as trace_query
+        from peek.trace.render import trace_to_json
     except Exception as e:
         err_console.print(f"[red]Trace failed to load: {e}[/]")
         raise typer.Exit(1)
@@ -827,7 +823,7 @@ def trace_command(
                 # show 3 suggestions
                 all_names = sorted({n.name for n in graph.nodes.values()})[:10]
                 err_console.print(f"[dim]Available (sample): {', '.join(all_names[:6])} ...[/]")
-                err_console.print(f"[dim]Tip: peek trace --at FILE:LINE to pinpoint[/]")
+                err_console.print("[dim]Tip: peek trace --at FILE:LINE to pinpoint[/]")
             except Exception:
                 pass
             raise typer.Exit(1)
@@ -991,7 +987,7 @@ def config_get(key: str = typer.Argument(...)):
 
 @config_app.command("list")
 def config_list():
-    from peek.config import load_config, config_path
+    from peek.config import config_path, load_config
     console.print(f"[dim]{config_path()}[/]")
     console.print_json(data=load_config())
 
@@ -1001,11 +997,12 @@ def watch_command(
     path: Path = typer.Argument(Path("."), help="Path to watch"),
 ) -> None:
     """Watch a repo and re-render on changes (polling). Ctrl+C to quit."""
+    from rich.console import Console
+
     from peek.analyzer import analyze
+    from peek.renderer import render_static
     from peek.scanner import scan
     from peek.watch import watch_repo
-    from peek.renderer import render_static
-    from rich.console import Console
 
     console_w = Console(legacy_windows=False)
     root = path.resolve()
@@ -1065,10 +1062,9 @@ def wtf_command(
     else:
         text = sys.stdin.read()
 
-    from peek.wtf import explain_tb, parse_traceback
-
     from peek.analyzer import analyze
     from peek.scanner import scan
+    from peek.wtf import explain_tb, parse_traceback
 
     info = parse_traceback(text)
     if not info:
@@ -1294,6 +1290,7 @@ def main_callback(
     dry_run: bool = typer.Option(False, "--dry-run", help="Dry-run: show table instead of pack (with --pack)."),
     diff: Optional[str] = typer.Option(None, "--diff", help="Pack only diff files (with --pack). e.g. --diff HEAD or --diff main"),
     staged: bool = typer.Option(False, "--staged", help="Pack only staged files (with --pack)."),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON instead of Rich table (no TUI, alias for peek scan --json)."),
 ) -> None:
     """peek — htop for codebases. Understand any repo in 5 seconds.
 
@@ -1316,8 +1313,9 @@ def main_callback(
     # --theme-list early exit (no scan needed)
     if theme_list:
         try:
-            from peek.themes import list_themes as _list_themes
             from rich.table import Table as _Table
+
+            from peek.themes import list_themes as _list_themes
             tbl = _Table(box=box.ROUNDED, show_header=True, header_style="bold cyan", padding=(0, 1))
             tbl.add_column("Preview", style="white", justify="center", width=7, no_wrap=True)
             tbl.add_column("ID", style="cyan", width=14, no_wrap=True)
@@ -1375,12 +1373,14 @@ def main_callback(
     # Collect extra args for path + --no-tui in ctx.args (e.g. `peek . --no-tui`)
     extra = list(ctx.args) if ctx.args else []
     # Typer already parsed some flags, but also check raw args for aliases
-    for flag in ("--no-tui", "--html"):
+    for flag in ("--no-tui", "--html", "--json"):
         if flag in extra:
             if flag == "--no-tui":
                 no_tui = True
             if flag == "--html":
                 html = True
+            if flag == "--json":
+                json_output = True
             extra = [a for a in extra if a != flag]
     # Clean --theme / --theme-list from extra so path detection works (they were already resolved)
     if "--theme" in extra:
@@ -1560,9 +1560,7 @@ def main_callback(
         if cand not in ("--help", "-h"):
             try:
                 p = Path(cand)
-                if p.exists() or cand in (".", "..") or cand.startswith("./") or cand.startswith("../"):
-                    path = p
-                elif cand.startswith("/") or cand.startswith("\\"):
+                if p.exists() or cand in (".", "..") or cand.startswith("./") or cand.startswith("../") or cand.startswith("/") or cand.startswith("\\"):
                     path = p
             except Exception:
                 pass
@@ -1585,15 +1583,28 @@ def main_callback(
     # If pack requested, we handle it before TUI
     t0 = time.perf_counter()
     try:
-        if not pack and not html and not llm and _should_animate() and not no_tui:
+        if not pack and not html and not llm and _should_animate() and not no_tui and not json_output:
             scan_result = _scan_with_spinner(path, label="Scanning", theme=resolved_theme)
         else:
             scan_result = scan(path)
-        analyzer_result = analyze(scan_result)
+        if not json_output:
+            analyzer_result = analyze(scan_result)
         elapsed = time.perf_counter() - t0
     except Exception as e:
         err_console.print(f"[red]Failed to analyze {path}: {e}[/]")
         raise typer.Exit(1)
+
+    if json_output:
+        payload = {
+            "root": str(scan_result.root),
+            "elapsed": round(elapsed, 3),
+            "stats": scan_result.stats,
+            "tech_stack": scan_result.tech_stack,
+            "entry_candidates": [str(p) for p in scan_result.entry_candidates],
+            "files": [{"path": str(f.rel), "loc": f.loc, "lang": f.language, "size": f.size} for f in scan_result.files[:100]],
+        }
+        console.print_json(data=payload)
+        raise typer.Exit(0)
 
     # LLM: enrich summary if requested
     if llm:
@@ -1669,7 +1680,7 @@ def main_callback(
             else:
                 err_console.print(f"\n[dim]— pack: {len(included)} files • ~{tokens} tokens • query={ask or 'none'} —[/]")
             if clip:
-                err_console.print(f"[dim]— copied to clipboard —[/]")
+                err_console.print("[dim]— copied to clipboard —[/]")
         raise typer.Exit(0)
 
     # --no-tui or not a tty → static render
@@ -1726,7 +1737,7 @@ def main_callback(
 
     # Try TUI
     try:
-        from peek.tui import run_tui, TEXTUAL_AVAILABLE
+        from peek.tui import TEXTUAL_AVAILABLE, run_tui
         if not TEXTUAL_AVAILABLE:
             err_console.print("[yellow]Textual not installed — falling back to static.[/]  [dim]pip install textual[/]")
             from peek.renderer import render_static

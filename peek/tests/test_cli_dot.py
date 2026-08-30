@@ -105,3 +105,22 @@ def test_peek_dot_help():
     assert r_main.exit_code == 0
     assert r_dot.output == r_main.output
 
+
+def test_peek_json_output():
+    import json
+    r = runner.invoke(app, ["--json"])
+    assert r.exit_code == 0, r.output
+    data = json.loads(r.output)
+    assert "root" in data
+    assert "stats" in data
+    assert "total_files" in data["stats"]
+
+
+def test_peek_no_tui_json_output():
+    import json
+    r = runner.invoke(app, [".", "--no-tui", "--json"])
+    assert r.exit_code == 0, r.output
+    data = json.loads(r.output)
+    assert "root" in data
+    assert "stats" in data
+
