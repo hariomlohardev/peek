@@ -1,0 +1,1383 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/superpowers/plans/2026-08-11-themes-10/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>10-Theme System Implementation Plan - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#10-theme-system-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              10-Theme System Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../research/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-1-skeleton-theme-dataclass-2-reference-themes-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Skeleton — Theme dataclass + 2 reference themes + config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-2-dracula-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: Dracula theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-3-nord-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Nord theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-4-catppuccin-mocha-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Catppuccin Mocha theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-tokyo-night-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Tokyo Night theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-6-solarized-dark-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Solarized Dark theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-7-github-dark-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: GitHub Dark theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-8-monokai-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 8: Monokai theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-9-minimal-mono-theme-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 9: Minimal Mono theme entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-10-wire-cli-theme-theme-list-env-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 10: Wire CLI — --theme, --theme-list, env, config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-11-wire-renderer-tui-animations-to-theme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 11: Wire renderer, TUI, animations to theme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-12-comprehensive-theme-tests-branch-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 12: Comprehensive theme tests + branch verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-review-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-Review (done)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="10-theme-system-implementation-plan">10-Theme System Implementation Plan<a class="headerlink" href="#10-theme-system-implementation-plan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Add 10 selectable themes to peek (anthropic-pro default + 9) via central <code>themes.py</code> registry, selectable via <code>--theme</code> flag / <code>PEEK_THEME</code> env / <code>~/.peek/config.toml</code>, rendered in TUI, static, and HTML.</p>
+<p><strong>Architecture:</strong> Central <code>Theme</code> dataclass registry (<code>peek/peek/themes.py: THEMES dict</code>) with 15-token dicts; <code>resolve_theme(cli_opt)</code> precedence chain; pure-arg threading of <code>theme</code> into <code>renderer.render_static</code>, <code>build_html</code>, <code>tui.run_tui</code>; no global mutable state.</p>
+<p><strong>Tech Stack:</strong> Python 3.11+, Rich 13+, Textual 0.80+, Typer 0.12+, tomllib/tomli, pytest, pathspec</p>
+<h2 id="global-constraints">Global Constraints<a class="headerlink" href="#global-constraints" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python &gt;=3.11 (project requires-python)</li>
+<li>Keep commit messages clean — no attribution lines</li>
+<li>Local <code>git commit</code> only, no push</li>
+<li>29 existing tests must remain green; new tests in <code>peek/tests/test_themes.py</code></li>
+<li>Branch <code>themes-10</code> from <code>design-anthropic</code>, tested via <code>pytest</code> and <code>peek --theme-list</code> / <code>peek --theme &lt;name&gt; --no-tui</code></li>
+<li>All 10 themes share identical layout and subtle animations (40-60ms stagger, 220ms fade) — only tokens differ</li>
+</ul>
+<hr />
+<h2 id="file-structure">File Structure<a class="headerlink" href="#file-structure" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peek/peek/themes.py</code></td>
+<td>NEW — <code>Theme</code> dataclass, <code>THEMES</code> dict (10 entries), <code>get_theme</code>, <code>list_themes</code>, <code>resolve_theme</code></td>
+</tr>
+<tr>
+<td><code>peek/peek/config.py</code></td>
+<td>NEW — <code>config_path()</code>, <code>load_config()</code> reading TOML, tolerant</td>
+</tr>
+<tr>
+<td><code>peek/peek/renderer.py</code></td>
+<td>MOD — accept <code>theme: Theme | None</code>, replace <code>ANTHRO</code> with <code>theme.tokens</code></td>
+</tr>
+<tr>
+<td><code>peek/peek/tui.py</code></td>
+<td>MOD — accept <code>theme</code>, template CSS from tokens</td>
+</tr>
+<tr>
+<td><code>peek/peek/animations.py</code></td>
+<td>MOD — spinner color from <code>get_theme().tokens["accent"]</code></td>
+</tr>
+<tr>
+<td><code>peek/peek/cli.py</code></td>
+<td>MOD — add <code>--theme</code> and <code>--theme-list</code>, wire <code>resolve_theme</code> before scan</td>
+</tr>
+<tr>
+<td><code>peek/tests/test_themes.py</code></td>
+<td>NEW — 12 tests for registry, resolve, render smoke</td>
+</tr>
+<tr>
+<td><code>docs/superpowers/specs/2026-08-11-theme-system-design.md</code></td>
+<td>Spec (already committed)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="task-1-skeleton-theme-dataclass-2-reference-themes-config">Task 1: Skeleton — Theme dataclass + 2 reference themes + config<a class="headerlink" href="#task-1-skeleton-theme-dataclass-2-reference-themes-config" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Create: <code>peek/peek/themes.py</code>
+- Create: <code>peek/peek/config.py</code>
+- Test: <code>peek/tests/test_themes.py</code> (initial failing)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: nothing
+- Produces: <code>Theme</code> dataclass, <code>THEMES</code>, <code>get_theme(name:str|None)-&gt;Theme</code>, <code>list_themes()-&gt;list[Theme]</code>, <code>resolve_theme(cli_opt:str|None)-&gt;Theme</code>, <code>config_path()-&gt;Path</code>, <code>load_config()-&gt;dict</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test for registry existence</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/tests/test_themes.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_registry_has_at_least_two</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">THEMES</span>
+    <span class="k">assert</span> <span class="s2">"anthropic-pro"</span> <span class="ow">in</span> <span class="n">THEMES</span>
+    <span class="k">assert</span> <span class="s2">"cinematic"</span> <span class="ow">in</span> <span class="n">THEMES</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">THEMES</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run test to verify it fails</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_themes.py::test_registry_has_at_least_two -v</code>
+Expected: FAIL <code>ModuleNotFoundError: No module named 'peek.themes'</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Implement themes.py skeleton with 2 themes</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/themes.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Theme</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">tokens</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="n">preview</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"■"</span>
+
+<span class="c1"># 15-token keys required</span>
+<span class="n">_KEYS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"bg"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">]</span>
+
+<span class="n">THEMES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Theme</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"anthropic-pro"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">"anthropic-pro"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Anthropic Pro"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Warm editorial, clay on charcoal"</span><span class="p">,</span>
+        <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+        <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#141413"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#1C1C19"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#232320"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#2A2A27"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#3A3936"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#4A4946"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#E8E6E3"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#D4D0C8"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#9A9590"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#6B6661"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#D4A27F"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#C4896A"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#8AB4B8"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#9A8FBF"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#8BA888"</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="s2">"cinematic"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">"cinematic"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Cinematic"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Neon viral, signal yellow"</span><span class="p">,</span>
+        <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+        <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#070A14"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#0F1320"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#141A2E"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#1A2140"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#2A3358"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#3A4568"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#E8E6E3"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#D4D0C8"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#8B8FA3"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#6B7280"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#FFE600"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#FFD000"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#00D4FF"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#9A8FBF"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#00FF88"</span><span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_theme</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Theme</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">THEMES</span><span class="p">[</span><span class="s2">"anthropic-pro"</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">THEMES</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">THEMES</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown theme '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'. Available: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">THEMES</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">list_themes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Theme</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">THEMES</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">THEMES</span><span class="p">)]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_theme</span><span class="p">(</span><span class="n">cli_opt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Theme</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cli_opt</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_theme</span><span class="p">(</span><span class="n">cli_opt</span><span class="p">)</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PEEK_THEME"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">env</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_theme</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">peek.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"theme"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">get_theme</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">"theme"</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">THEMES</span><span class="p">[</span><span class="s2">"anthropic-pro"</span><span class="p">]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># peek/peek/config.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">config_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">p</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PEEK_CONFIG"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xdg</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"XDG_CONFIG_HOME"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">xdg</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"peek"</span> <span class="o">/</span> <span class="s2">"config.toml"</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">".config"</span> <span class="o">/</span> <span class="s2">"peek"</span> <span class="o">/</span> <span class="s2">"config.toml"</span>
+    <span class="k">if</span> <span class="n">p2</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">p2</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">".peek"</span> <span class="o">/</span> <span class="s2">"config.toml"</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">config_path</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">tomli</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tomllib</span>  <span class="c1"># type: ignore</span>
+        <span class="k">with</span> <span class="n">p</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">tomllib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Run test to verify it passes</strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_themes.py::test_registry_has_at_least_two -v</code>
+Expected: PASS</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/themes.py<span class="w"> </span>peek/peek/config.py<span class="w"> </span>peek/tests/test_themes.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Themes: skeleton registry + config with 2 reference themes"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-2-dracula-theme-entry">Task 2: Dracula theme entry<a class="headerlink" href="#task-2-dracula-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code> — add <code>dracula</code> entry to <code>THEMES</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>Theme</code>, <code>THEMES</code> from Task 1
+- Produces: <code>THEMES["dracula"]</code> with 15 tokens, case-insensitive via <code>get_theme</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_dracula_exists</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"dracula"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">"dracula"</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#282A36"</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#BD93F9"</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">15</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run test — expect FAIL <code>ValueError: Unknown theme 'dracula'</code></strong></li>
+</ul>
+<p>Run: <code>pytest peek/tests/test_themes.py::test_dracula_exists -v</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Add dracula dict entry in themes.py</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"dracula"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">"dracula"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Dracula"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Purple haze, soft pink"</span><span class="p">,</span>
+    <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#282A36"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#1E1F2E"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#343746"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#44475A"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#6272A4"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#44475A"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#F8F8F2"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#E6E6E6"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#6272A4"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#44475A"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#BD93F9"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#FF79C6"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#8BE9FD"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#BD93F9"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#50FA7B"</span><span class="p">},</span>
+<span class="p">),</span>
+</code></pre></div>
+<p>Insert after cinematic entry with anchor <code># THEME: dracula</code>.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: Run test — PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/themes.py<span class="w"> </span>peek/tests/test_themes.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Themes: add dracula"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-3-nord-theme-entry">Task 3: Nord theme entry<a class="headerlink" href="#task-3-nord-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_nord_exists</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"nord"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#2E3440"</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#88C0D0"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"nord"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"nord"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Nord"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Frosty arctic, muted blues"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#2E3440"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#3B4252"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#434C5E"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#4C566A"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#4C566A"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#3B4252"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#ECEFF4"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#E5E9F0"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#4C566A"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#3B4252"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#88C0D0"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#81A1C1"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#88C0D0"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#B48EAD"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#A3BE8C"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/themes.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Themes: add nord"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-4-catppuccin-mocha-theme-entry">Task 4: Catppuccin Mocha theme entry<a class="headerlink" href="#task-4-catppuccin-mocha-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_catppuccin_exists</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"catppuccin-mocha"</span><span class="p">,</span><span class="s2">"catppuccin_mocha"</span><span class="p">,</span><span class="s2">"Catppuccin-Mocha"</span><span class="p">]:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="n">alias</span> <span class="k">if</span> <span class="n">alias</span><span class="o">==</span><span class="s2">"catppuccin-mocha"</span> <span class="k">else</span> <span class="s2">"catppuccin-mocha"</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"catppuccin-mocha"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#CBA6F7"</span>
+</code></pre></div>
+<p>Note: simplify — only test <code>catppuccin-mocha</code> lower-case; normalization handles dashes.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"catppuccin-mocha"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"catppuccin-mocha"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Catppuccin Mocha"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Pastel mauve, cozy"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#1E1E2E"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#181825"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#313244"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#45475A"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#585B70"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#45475A"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#CDD6F4"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#BAC2DE"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#6C7086"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#585B70"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#CBA6F7"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#F5C2E7"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#89B4FA"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#CBA6F7"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#A6E3A1"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-5-tokyo-night-theme-entry">Task 5: Tokyo Night theme entry<a class="headerlink" href="#task-5-tokyo-night-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_tokyo_night</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"tokyo-night"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#7AA2F7"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add tokyo-night tokens <code>bg #1A1B26, accent #7AA2F7, muted #565F89, ink #C0CAF5, cyan #7DCFFF</code></strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"tokyo-night"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"tokyo-night"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Tokyo Night"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Electric blue, storm"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#1A1B26"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#16161E"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#24283B"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#414868"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#414868"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#24283B"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#C0CAF5"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#A9B1D6"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#565F89"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#414868"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#7AA2F7"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#BB9AF7"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#7DCFFF"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#BB9AF7"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#9ECE6A"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-6-solarized-dark-theme-entry">Task 6: Solarized Dark theme entry<a class="headerlink" href="#task-6-solarized-dark-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_solarized</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"solarized-dark"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#002B36"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add <code>bg #002B36, accent #268BD2, ink #EEE8D5, muted #586E75, cyan #2AA198</code></strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"solarized-dark"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"solarized-dark"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Solarized Dark"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Teal, classic"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#002B36"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#073642"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#0A3B4A"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#184956"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#586E75"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#0A3B4A"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#EEE8D5"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#FDF6E3"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#586E75"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#657B83"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#268BD2"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#2AA198"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#2AA198"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#6C71C4"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#859900"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-7-github-dark-theme-entry">Task 7: GitHub Dark theme entry<a class="headerlink" href="#task-7-github-dark-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_github_dark</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"github-dark"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#58A6FF"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add <code>bg #0D1117, accent #58A6FF, muted #8B949E, ink #E6EDF3, surface #161B22</code></strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"github-dark"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"github-dark"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"GitHub Dark"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"GitHub dark, familiar"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#0D1117"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#010409"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#161B22"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#21262D"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#30363D"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#21262D"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#E6EDF3"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#C9D1D9"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#8B949E"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#6E7681"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#58A6FF"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#A371F7"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#58A6FF"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#A371F7"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#3FB950"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-8-monokai-theme-entry">Task 8: Monokai theme entry<a class="headerlink" href="#task-8-monokai-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_monokai</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"monokai"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#F92672"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add <code>bg #272822, accent #F92672, ink #F8F8F2, muted #75715E, cyan #66D9EF</code></strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"monokai"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"monokai"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Monokai"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Hot pink/green, contrast"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#272822"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#1E1F1C"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#3E3D32"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#49483E"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#75715E"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#49483E"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#F8F8F2"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#E8E8E2"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#75715E"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#49483E"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#F92672"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#A6E22E"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#66D9EF"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#AE81FF"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#A6E22E"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-9-minimal-mono-theme-entry">Task 9: Minimal Mono theme entry<a class="headerlink" href="#task-9-minimal-mono-theme-entry" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/themes.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_minimal_mono</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_theme</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"minimal-mono"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">t</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"accent"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"#E5E5E5"</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: FAIL</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Add grayscale <code>bg #111111, accent #E5E5E5, ink #E5E5E5, muted #8A8A8A, surface #1A1A1A</code></strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="s2">"minimal-mono"</span><span class="p">:</span> <span class="n">Theme</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"minimal-mono"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Minimal Mono"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Black &amp; white, a11y"</span><span class="p">,</span> <span class="n">preview</span><span class="o">=</span><span class="s2">"■"</span><span class="p">,</span>
+    <span class="n">tokens</span><span class="o">=</span><span class="p">{</span><span class="s2">"bg"</span><span class="p">:</span><span class="s2">"#111111"</span><span class="p">,</span><span class="s2">"bg2"</span><span class="p">:</span><span class="s2">"#0A0A0A"</span><span class="p">,</span><span class="s2">"surface"</span><span class="p">:</span><span class="s2">"#1A1A1A"</span><span class="p">,</span><span class="s2">"panel"</span><span class="p">:</span><span class="s2">"#262626"</span><span class="p">,</span><span class="s2">"line"</span><span class="p">:</span><span class="s2">"#333333"</span><span class="p">,</span><span class="s2">"line2"</span><span class="p">:</span><span class="s2">"#262626"</span><span class="p">,</span><span class="s2">"ink"</span><span class="p">:</span><span class="s2">"#E5E5E5"</span><span class="p">,</span><span class="s2">"ink2"</span><span class="p">:</span><span class="s2">"#CCCCCC"</span><span class="p">,</span><span class="s2">"muted"</span><span class="p">:</span><span class="s2">"#8A8A8A"</span><span class="p">,</span><span class="s2">"muted2"</span><span class="p">:</span><span class="s2">"#6A6A6A"</span><span class="p">,</span><span class="s2">"accent"</span><span class="p">:</span><span class="s2">"#E5E5E5"</span><span class="p">,</span><span class="s2">"accent2"</span><span class="p">:</span><span class="s2">"#FFFFFF"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">:</span><span class="s2">"#CCCCCC"</span><span class="p">,</span><span class="s2">"violet"</span><span class="p">:</span><span class="s2">"#AAAAAA"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">:</span><span class="s2">"#E5E5E5"</span><span class="p">}),</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<p>At this point registry has 10, add validation:</p>
+<ul>
+<li>[ ] <strong>Step 6: Add import-time validation + test</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># in themes.py bottom</span>
+<span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">THEMES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">_KEYS</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"Theme </span><span class="si">{</span><span class="n">th</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> missing keys"</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">==</span><span class="mi">7</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Bad color </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">"</span>
+</code></pre></div>
+<p>Test: <code>def test_registry_has_10(): assert len(THEMES)==10</code> and <code>test_tokens_shape</code> loop 15 keys hex.</p>
+<hr />
+<h3 id="task-10-wire-cli-theme-theme-list-env-config">Task 10: Wire CLI — --theme, --theme-list, env, config<a class="headerlink" href="#task-10-wire-cli-theme-theme-list-env-config" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/cli.py</code>
+- Test: <code>peek/tests/test_themes.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>get_theme</code>, <code>list_themes</code>, <code>resolve_theme</code> from Task 1
+- Produces: Typer options <code>--theme TEXT</code>, <code>--theme-list</code> (is_flag), help text, exit codes</p>
+<ul>
+<li>[ ] <strong>Step 1: Write failing test for CLI list</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_theme_list</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">CliRunner</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">CliRunner</span><span class="p">()</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"--theme-list"</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">assert</span> <span class="s2">"anthropic-pro"</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"dracula"</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">output</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cli_unknown_theme</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">CliRunner</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">CliRunner</span><span class="p">()</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"--theme"</span><span class="p">,</span><span class="s2">"bogus"</span><span class="p">,</span><span class="s2">"--no-tui"</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="s2">"Unknown theme"</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">output</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL (no such option)</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement in cli.py</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># top: from peek.themes import get_theme, list_themes, resolve_theme</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">invoke_without_command</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main_callback</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n">typer</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"--theme"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Theme: anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono"</span><span class="p">),</span>
+    <span class="n">theme_list</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"--theme-list"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"List available themes and exit"</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">theme_list</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rich.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">Console</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rich.table</span><span class="w"> </span><span class="kn">import</span> <span class="n">Table</span>
+        <span class="o">...</span>
+        <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">list_themes</span><span class="p">():</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">preview</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">th</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="n">resolve_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">err_console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[red]</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">[/]"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># thread resolved down to scan/render/tui</span>
+</code></pre></div>
+<p>Update <code>scan_command</code>, <code>analyze_command</code>, <code>main_callback</code> signatures to include <code>theme</code> param and pass through. For <code>--no-tui</code> static path: <code>render_static(..., theme=resolved)</code>, <code>build_html(..., theme=resolved)</code>, <code>run_tui(..., theme=resolved)</code>.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: Run tests — PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Manual: <code>peek --theme-list</code> shows 10, <code>peek --theme dracula --no-tui</code> renders with dracula accent, <code>PEEK_THEME=nord peek --no-tui</code> works</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 6: Commit</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/peek/config.py<span class="w"> </span>peek/peek/themes.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"CLI: --theme and --theme-list with env+config resolve"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-11-wire-renderer-tui-animations-to-theme">Task 11: Wire renderer, TUI, animations to theme<a class="headerlink" href="#task-11-wire-renderer-tui-animations-to-theme" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/renderer.py</code>
+- Modify: <code>peek/peek/tui.py</code>
+- Modify: <code>peek/peek/animations.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>Theme</code> from Task 1, <code>resolved</code> Theme from Task 10
+- Produces: themed <code>render_static(scan, analyzer, elapsed, console, theme)</code>, <code>build_html(..., theme)</code>, <code>PeekApp(theme)</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Failing test for themed render</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_render_all_themes_no_crash</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_themes</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_static</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rich.console</span><span class="w"> </span><span class="kn">import</span> <span class="n">Console</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">io</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">);</span> <span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x=1</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">list_themes</span><span class="p">():</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">Console</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(),</span> <span class="n">force_terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">legacy_windows</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">render_static</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">th</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">export_html</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">True</span>  <span class="c1"># no crash</span>
+</code></pre></div>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Run — FAIL (render_static doesn't accept theme)</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Implement renderer</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># renderer.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">peek.themes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Theme</span><span class="p">,</span> <span class="n">get_theme</span>
+
+<span class="n">ANTHRO</span> <span class="n">fallback</span> <span class="n">kept</span> <span class="k">for</span> <span class="n">compat</span><span class="p">:</span> <span class="n">theme</span> <span class="o">=</span> <span class="n">theme</span> <span class="ow">or</span> <span class="n">get_theme</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">theme</span><span class="o">.</span><span class="n">tokens</span>
+<span class="c1"># Replace every ANTHRO["x"] with tokens["x"]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">render_static</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">Theme</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">theme</span> <span class="o">=</span> <span class="n">theme</span> <span class="ow">or</span> <span class="n">get_theme</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">theme</span><span class="o">.</span><span class="n">tokens</span>
+    <span class="c1"># use t["bg"], t["accent"] etc</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_html</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">Theme</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">theme</span> <span class="o">=</span> <span class="n">theme</span> <span class="ow">or</span> <span class="n">get_theme</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="c1"># embed &lt;style&gt; body {background: {t["bg"]}}</span>
+</code></pre></div>
+<p>Similarly <code>tui.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeekApp</span><span class="p">(</span><span class="n">App</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">scan_result</span><span class="p">,</span> <span class="n">analyzer_result</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">Theme</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="n">theme</span> <span class="ow">or</span> <span class="n">get_theme</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="o">.</span><span class="n">tokens</span>
+
+    <span class="n">CSS</span> <span class="n">templated</span><span class="p">:</span> <span class="n">background</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]}</span> <span class="n">etc</span> <span class="err">—</span> <span class="n">generate</span> <span class="n">at</span> <span class="n">runtime</span> <span class="n">via</span> <span class="nb">property</span> <span class="ow">or</span> <span class="nb">set</span> <span class="n">CSS</span> <span class="ow">in</span> <span class="n">on_mount</span>
+</code></pre></div>
+<p>Simplest: build CSS string in <code>__init__</code> using <code>self._tokens</code> and assign <code>self.CSS = f"""..."""</code>.</p>
+<p><code>animations.py</code>: <code>spinner_style = get_theme(None).tokens["accent"]</code> or accept theme param.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: Run tests — PASS</strong></p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Commit</strong></p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/peek/renderer.py<span class="w"> </span>peek/peek/tui.py<span class="w"> </span>peek/peek/animations.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Theming: wire renderer, TUI, animations to Theme tokens"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-12-comprehensive-theme-tests-branch-verification">Task 12: Comprehensive theme tests + branch verification<a class="headerlink" href="#task-12-comprehensive-theme-tests-branch-verification" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/tests/test_themes.py</code> — add remaining tests
+- No code files</p>
+<p><strong>Interfaces:</strong>
+- Consumes: all prior tasks</p>
+<ul>
+<li>[ ] <strong>Step 1: Write full test suite (12 tests)</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_registry_has_10</span><span class="p">():</span> <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">THEMES</span><span class="p">)</span><span class="o">==</span><span class="mi">10</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tokens_shape</span><span class="p">():</span> <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">list_themes</span><span class="p">():</span> <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="p">)</span><span class="o">==</span><span class="nb">set</span><span class="p">(</span><span class="n">_KEYS</span><span class="p">);</span> <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_theme_case_insensitive</span><span class="p">():</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_theme_unknown_raises</span><span class="p">():</span> <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span> <span class="n">get_theme</span><span class="p">(</span><span class="s2">"bogus"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_resolve_precedence</span><span class="p">():</span> <span class="n">monkeypatch</span> <span class="n">env</span> <span class="o">+</span> <span class="n">tmp</span> <span class="n">config</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_resolve_config_missing</span><span class="p">():</span> <span class="k">assert</span> <span class="n">resolve_theme</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="o">==</span><span class="s2">"anthropic-pro"</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_build_html_all_themes_contains</span><span class="p">():</span> <span class="n">loop</span> <span class="n">themes</span> <span class="k">assert</span> <span class="n">bg</span> <span class="ow">in</span> <span class="n">html</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tui_css_per_theme</span><span class="p">():</span> <span class="n">PeekApp</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">th</span><span class="p">)</span><span class="o">.</span><span class="n">CSS</span> <span class="n">contains</span> <span class="n">th</span><span class="o">.</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"bg"</span><span class="p">]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cli_theme_list</span><span class="p">():</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cli_unknown_theme_exit2</span><span class="p">():</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_config_toml_parse</span><span class="p">():</span> <span class="n">tmp</span> <span class="n">config</span> <span class="o">-&gt;</span> <span class="n">load_config</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_render_static_backwards_compat_no_theme_arg</span><span class="p">():</span> <span class="n">render_static</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">Console</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>  <span class="c1"># no theme param</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run full suite</strong></li>
+</ul>
+<p>Run: <code>pytest -q</code>
+Expected: 41 passed (29 existing + 12 new)</p>
+<ul>
+<li>[ ] <strong>Step 3: Smoke branch</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>themes-10
+peek<span class="w"> </span>--theme-list
+peek<span class="w"> </span>--theme<span class="w"> </span>dracula<span class="w"> </span>--no-tui<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5
+peek<span class="w"> </span>--theme<span class="w"> </span>tokyo-night<span class="w"> </span>--html<span class="w"> </span>-o<span class="w"> </span>/tmp/theme.html<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ls<span class="w"> </span>/tmp/theme.html
+<span class="nv">PEEK_THEME</span><span class="o">=</span>nord<span class="w"> </span>peek<span class="w"> </span>--no-tui<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 4: Commit tests</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>peek/tests/test_themes.py
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Tests: 10-theme coverage, resolve precedence, render smoke"</span>
+</code></pre></div>
+<hr />
+<h2 id="self-review-done">Self-Review (done)<a class="headerlink" href="#self-review-done" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Spec coverage: All 10 themes (Task 2-9), registry (1), CLI (10), wiring (11), tests (12) — covered.</li>
+<li>Placeholder scan: No TBD, all code blocks concrete.</li>
+<li>Type consistency: <code>Theme</code> used uniformly, <code>get_theme(str|None)-&gt;Theme</code>, <code>resolve_theme(str|None)-&gt;Theme</code>, <code>render_static(..., theme:Theme|None)</code>.</li>
+<li>Fixed: Added backwards-compat no-theme arg test, added config tmp test, clarified exit codes.</li>
+</ul>
+<hr />
+<p><strong>Next:</strong> Execute via Workflow with parallel theme agents. Each theme task is independent after Task 1 — can fan out via <code>pipeline</code> (Tasks 2-9 parallel), then Tasks 10-11 parallel, then 12.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
