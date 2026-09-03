@@ -51,6 +51,27 @@ RUST_TYPE_RE = re.compile(
 )
 RUST_MOD_RE = re.compile(r"^[ \t]*" + _RUST_VIS + r"mod\s+([A-Za-z_]\w*)", re.MULTILINE)
 
+# Java -- indentation allowed, since a method is nested inside its class. A
+# leading modifier is required, which is what keeps control flow (`if (`,
+# `while (`, `switch (`) and calls (`return foo(`) out of the index: none of
+# them begin with an access or declaration modifier.
+_JAVA_MOD = (
+    r"(?:(?:public|protected|private|static|final|abstract|synchronized"
+    r"|native|default|strictfp|sealed|non-sealed)\s+)"
+)
+JAVA_CLASS_RE = re.compile(
+    r"^[ \t]*" + _JAVA_MOD + r"*(?:class|interface|enum|record)\s+([A-Za-z_]\w*)",
+    re.MULTILINE,
+)
+# The return type is optional so constructors (`public Server(int port)`) are
+# indexed too; `void main` still parses, because the modifier group has already
+# consumed `public static` by the time the type is tried.
+JAVA_METHOD_RE = re.compile(
+    r"^[ \t]*(?:@\w+\s+)*" + _JAVA_MOD + r"+(?:<[^>]+>\s+)?"
+    r"(?:[A-Za-z_][\w.<>\[\], ]*\s+)?([A-Za-z_]\w*)\s*\(",
+    re.MULTILINE,
+)
+
 
 
 
@@ -138,6 +159,16 @@ def index_symbols(scan_result) -> list[Symbol]:
                 (RUST_TYPE_RE, "class"),
                 (RUST_MOD_RE, "import"),
             ):
+                for m in regex.finditer(text):
+                    lineno = text[: m.start()].count("\n") + 1
+                    out.append(Symbol(m.group(1), kind, f.path, f.rel, lineno))
+        elif f.language == "java":
+            # A constructor shares its name with its class, so `Foo` is indexed
+            # both as a class and as a def. That is two real declarations, not a
+            # duplicate: jumping to the type and jumping to the constructor are
+            # different destinations. Types are emitted first so the type is the
+            # earlier entry for anything that scans in order.
+            for regex, kind in ((JAVA_CLASS_RE, "class"), (JAVA_METHOD_RE, "def")):
                 for m in regex.finditer(text):
                     lineno = text[: m.start()].count("\n") + 1
                     out.append(Symbol(m.group(1), kind, f.path, f.rel, lineno))
