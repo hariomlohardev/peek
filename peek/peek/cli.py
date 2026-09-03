@@ -992,6 +992,49 @@ def config_list():
     console.print_json(data=load_config())
 
 
+@app.command("deps")
+def deps_command(
+    path: Path = typer.Argument(Path("."), help="Repo path (default: current dir)."),
+    why_package: str = typer.Option(None, "--why", help="Trace why a package is imported."),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON instead of text."),
+    limit: int = typer.Option(10, "--limit", "-n", help="Max chains to show."),
+) -> None:
+    """Trace why an external package is imported.
+
+    
+    Examples:
+        peek deps --why rich
+        peek deps --why rich . --json
+    """
+    from peek.deps import render, why
+
+    if not why_package:
+        err_console.print("[red]Give a package to trace: peek deps --why rich[/]")
+        raise typer.Exit(2)
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    scan_result = scan(root)
+    analyzer_result = analyze(scan_result)
+    chains = why(scan_result, analyzer_result, why_package, limit=limit)
+
+    if json_output:
+        payload = {
+            "root": str(root),
+            "package": why_package,
+            "chains": [
+                {"files": [str(f) for f in c.files], "lineno": c.lineno} for c in chains
+            ],
+        }
+        console.print_json(data=payload)
+        raise typer.Exit(0)
+
+    for line in render(chains, why_package, root):
+        console.print(line)
+    # Not an error: "nothing imports it" is a useful answer, and a non-zero exit
+    # would make a shell pipeline treat it as a failed command.
+    raise typer.Exit(0)
+
+
 @app.command("watch")
 def watch_command(
     path: Path = typer.Argument(Path("."), help="Path to watch"),
