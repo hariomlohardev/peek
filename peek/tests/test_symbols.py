@@ -197,3 +197,105 @@ def test_symbols_rust_lineno_is_the_declaration_line():
 
         assert by_name["bar"].lineno == 4, f"expected line 4, got {by_name['bar'].lineno}"
 
+
+
+def test_symbols_java():
+    """Java types and methods land in the index (#98)."""
+    from peek.scanner import scan
+    from peek.symbols import index_symbols
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.java").write_text(
+            "package com.example;\n"
+            "\n"
+            "import java.util.List;\n"
+            "\n"
+            "public class Foo {\n"
+            "    private final int port;\n"
+            "\n"
+            "    public Foo(int port) {\n"
+            "        this.port = port;\n"
+            "    }\n"
+            "\n"
+            "    public static void main(String[] args) {\n"
+            "    }\n"
+            "\n"
+            "    private List<String> names() {\n"
+            "        return null;\n"
+            "    }\n"
+            "}\n"
+            "\n"
+            "interface Handler {\n"
+            "}\n"
+            "\n"
+            "enum State {\n"
+            "    IDLE\n"
+            "}\n"
+            "\n"
+            "record Point(int x, int y) {\n"
+            "}\n"
+        )
+        sr = scan(p)
+        syms = index_symbols(sr)
+        found = {(s.name, s.kind) for s in syms}
+
+        # The acceptance criterion: `class Foo` is indexed.
+        assert ("Foo", "class") in found
+        # A plain (modifier-less) declaration still counts as a type.
+        for name in ("Handler", "State", "Point"):
+            assert (name, "class") in found, name
+        # Static method, and a method with a generic return type.
+        for name in ("main", "names"):
+            assert (name, "def") in found, name
+        # The constructor shares the class's name, so `Foo` is both -- two
+        # different places to jump to, not a duplicate entry.
+        assert ("Foo", "def") in found
+        assert all(s.file.name == "a.java" for s in syms)
+
+
+def test_symbols_java_ignores_control_flow_and_calls():
+    """A modifier is required, which is what keeps `if (` and `foo(` out."""
+    from peek.scanner import scan
+    from peek.symbols import index_symbols
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.java").write_text(
+            "public class Only {\n"
+            "    public void run(int n) {\n"
+            "        if (n > 0) {\n"
+            "            while (n-- > 0) {\n"
+            "                System.out.println(n);\n"
+            "            }\n"
+            "        }\n"
+            "        switch (n) {\n"
+            "            default:\n"
+            "                break;\n"
+            "        }\n"
+            "        helper(n);\n"
+            "        return;\n"
+            "    }\n"
+            "}\n"
+        )
+        names = {s.name for s in index_symbols(scan(p))}
+
+        assert names == {"Only", "run"}
+
+
+def test_symbols_java_lineno_is_the_declaration_line():
+    from peek.scanner import scan
+    from peek.symbols import index_symbols
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.java").write_text(
+            "package com.example;\n"   # 1
+            "\n"                       # 2
+            "public class Foo {\n"     # 3
+            "\n"                       # 4
+            "    public void bar() {\n"  # 5
+            "    }\n"
+            "}\n"
+        )
+        by_name = {s.name: s for s in index_symbols(scan(p))}
+
+        assert by_name["Foo"].lineno == 3
+        assert by_name["bar"].lineno == 5
