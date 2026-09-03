@@ -103,6 +103,28 @@ def find_matches(
         # Also map for quick rel
         rel_map: dict[Path, Path] = {f.path: f.rel for f in scan_result.files}
 
+        # Where the query is *declared*, not merely mentioned.
+        #
+        # Content scoring counts occurrences, so a file that names something eight
+        # times in comments outranked the one file that defines it -- which is the
+        # opposite of what someone typing a symbol name wants. A declaration is a
+        # different kind of hit, so it scores separately rather than as more content.
+        symbol_hits: dict[Path, tuple[str, str, int]] = {}
+        try:
+            from peek.symbols import index_symbols
+
+            for sym in index_symbols(scan_result):
+                if sym.name.lower() != q:
+                    continue
+                # First declaration per file wins: a name is usually defined once,
+                # and where it is not, the earliest is the one to jump to.
+                if sym.file not in symbol_hits:
+                    symbol_hits[sym.file] = (sym.kind, sym.name, sym.lineno)
+        except Exception:
+            # Symbol indexing is an enhancement to ranking, never a reason to fail
+            # a search -- `find_matches` never raises.
+            symbol_hits = {}
+
         results: list[dict] = []
         for f in scan_result.files:
             # Skip binary / huge / no loc
@@ -162,11 +184,31 @@ def find_matches(
                     continue
                 preview = []
 
-            total = filename_score + content_score + base_score
+            # A declaration outweighs a filename match, which already outweighs
+            # content: `peek find Bar` should land on `class Bar` before it lands
+            # on a file merely called bar.py.
+            symbol_score = 0.0
+            declared = symbol_hits.get(f.path)
+            if declared is not None:
+                kind, name, lineno = declared
+                symbol_score = 12.0
+                reason_parts.insert(0, f"{'class' if kind == 'class' else 'def'} {name}")
+                # The declaration line leads the preview: it is what the reader
+                # asked for, and burying it under three comment lines is the same
+                # failure as ranking the file below them.
+                preview = [line for line in preview if not line.startswith(f"{lineno:>4}:")]
+                try:
+                    source = f.path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                    preview.insert(0, f"{lineno:>4}: {source[lineno - 1].strip()[:120]}")
+                except Exception:
+                    pass
+                preview = preview[:3]
+
+            total = filename_score + content_score + base_score + symbol_score
             if total <= 0:
                 continue
-            # Only include if at least filename or content matched
-            if filename_score == 0 and content_score == 0:
+            # Only include if at least filename, content or a declaration matched
+            if filename_score == 0 and content_score == 0 and symbol_score == 0:
                 continue
 
             # Use analyzer reason for tie-break? Keep original why
