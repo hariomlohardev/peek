@@ -1307,7 +1307,20 @@ def main_callback(
         peek --pack --ask "auth" --format md
     """
     if version:
-        console.print(f"peek v{__version__}")
+        if json_output:
+            # For CI, which wants to read the version back rather than parse
+            # "peek v0.5.0". `python` is major.minor: it exists to answer "which
+            # interpreter is this wheel running on", and the patch level is
+            # noise for that question.
+            console.print_json(
+                data={
+                    "name": "peek-code",
+                    "version": __version__,
+                    "python": f"{sys.version_info.major}.{sys.version_info.minor}",
+                }
+            )
+        else:
+            console.print(f"peek v{__version__}")
         raise typer.Exit(0)
 
     # --theme-list early exit (no scan needed)
