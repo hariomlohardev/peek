@@ -261,3 +261,95 @@ def test_no_color(monkeypatch):
         r"\x1b\[[0-9;]*(?:3[0-7]|4[0-7]|9[0-7]|10[0-7]|38|48)[0-9;]*m"
     )
     assert not ansi_colour.search(output.getvalue())
+
+
+def test_find_ranks_a_declaration_above_incidental_mentions():
+    """`peek find Bar` should land on `class Bar`, not on a file that talks about it (#26).
+
+    Content scoring counts occurrences, so before the symbol index a file
+    mentioning a name eight times in comments outranked the one file that
+    declares it — the opposite of what someone typing a symbol name wants.
+    """
+    import tempfile
+    import pathlib
+    from peek.scanner import scan
+    from peek.analyzer import analyze
+    from peek.find import find_matches
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.py").write_text("class Bar:\n    pass\n", encoding="utf-8")
+        (p / "b.py").write_text("# mentions Bar in a comment\n" * 8, encoding="utf-8")
+
+        matches = find_matches("Bar", scan(p), analyze(scan(p)), limit=5)
+
+        assert matches[0]["rel"].name == "a.py", [m["rel"].name for m in matches]
+        assert "class Bar" in matches[0]["reason"]
+
+
+def test_find_names_a_function_declaration_as_a_def():
+    import tempfile
+    import pathlib
+    from peek.scanner import scan
+    from peek.analyzer import analyze
+    from peek.find import find_matches
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.py").write_text("def handler():\n    pass\n", encoding="utf-8")
+
+        top = find_matches("handler", scan(p), analyze(scan(p)), limit=5)[0]
+
+        assert "def handler" in top["reason"]
+
+
+def test_find_leads_the_preview_with_the_declaration_line():
+    """Burying the declaration under three comment lines is the same failure."""
+    import tempfile
+    import pathlib
+    from peek.scanner import scan
+    from peek.analyzer import analyze
+    from peek.find import find_matches
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.py").write_text(
+            "# Bar is used here\n# Bar again\n# and Bar\nclass Bar:\n    pass\n",
+            encoding="utf-8",
+        )
+
+        top = find_matches("Bar", scan(p), analyze(scan(p)), limit=5)[0]
+
+        assert top["preview"][0].strip().endswith("class Bar:"), top["preview"]
+
+
+def test_find_still_matches_something_that_is_not_a_symbol():
+    """The symbol index adds ranking; it must not become a filter."""
+    import tempfile
+    import pathlib
+    from peek.scanner import scan
+    from peek.analyzer import analyze
+    from peek.find import find_matches
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.py").write_text("# a note about widgets\n", encoding="utf-8")
+
+        assert find_matches("widgets", scan(p), analyze(scan(p)), limit=5)
+
+
+def test_find_does_not_boost_a_partial_symbol_name():
+    """`Bar` must not be scored as a declaration of `BarChart`."""
+    import tempfile
+    import pathlib
+    from peek.scanner import scan
+    from peek.analyzer import analyze
+    from peek.find import find_matches
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "a.py").write_text("class BarChart:\n    pass\n", encoding="utf-8")
+
+        matches = find_matches("Bar", scan(p), analyze(scan(p)), limit=5)
+
+        assert all("class Bar," not in m["reason"] for m in matches), [m["reason"] for m in matches]
