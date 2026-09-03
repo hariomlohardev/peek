@@ -52,6 +52,35 @@ def test_scan_gitignore():
         assert "ignored/c.py" not in rels
 
 
+def test_nested_gitignore():
+    """A `.gitignore` in a subdirectory applies to that subtree (#102).
+
+    `git check-ignore` honours a nested `.gitignore`; a scanner that reads
+    only the root one silently indexes files the repository considers
+    ignored. The scanner layers per-directory specs as it walks -- this pins
+    that behaviour, which nothing else covered.
+    """
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        _write(root / ".gitignore", "*.pyc\n")
+        _write(root / "src" / "foo" / ".gitignore", "*.log\nbuild/\n")
+        _write(root / "src" / "foo" / "bar.py", "x=1")
+        _write(root / "src" / "foo" / "debug.log", "noise")
+        _write(root / "src" / "foo" / "build" / "out.py", "z=3")
+        # A sibling subtree the nested rule must NOT reach.
+        _write(root / "src" / "other" / "keep.log", "kept")
+        # And the root rule must still apply inside the nested subtree.
+        _write(root / "src" / "foo" / "stale.pyc", b"\x00")
+
+        rels = {f.rel.as_posix() for f in scan(root).files}
+
+        assert "src/foo/bar.py" in rels
+        assert "src/foo/debug.log" not in rels, "nested .gitignore was ignored"
+        assert "src/foo/build/out.py" not in rels, "nested directory rule was ignored"
+        assert "src/foo/stale.pyc" not in rels, "root rule stopped applying in a subtree"
+        assert "src/other/keep.log" in rels, "nested rule leaked into a sibling subtree"
+
+
 def test_scan_binary_and_huge():
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
