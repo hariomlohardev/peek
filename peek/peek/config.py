@@ -47,6 +47,65 @@ def save_config(data: dict[str, Any]) -> Path:
     return p
 
 
+#: The scaffold written by ``peek config init``.
+#:
+#: Every key is commented out except ``theme``, so the file documents what can
+#: be set without changing any behaviour by existing. A scaffold that silently
+#: pins a value is worse than none: the next release's better default would be
+#: overridden by a file the user never edited.
+DEFAULT_CONFIG_TEMPLATE = """\
+# peek configuration.
+#
+# Written by `peek config init`. Every setting here is optional -- delete this
+# file and peek behaves exactly as it does without it.
+#
+# Precedence, highest first:
+#   1. the command-line flag  (--theme dracula)
+#   2. the PEEK_THEME environment variable
+#   3. this file
+#   4. peek's built-in default
+
+# Colour theme. See `peek --theme-list` for the full set.
+theme = "anthropic-pro"
+
+# Stop scanning after this many files. Raise it for a large monorepo.
+# max_files = 5000
+
+# Token budget for `peek --pack`.
+# budget = 8000
+
+# Pack output format: md, xml or txt.
+# format = "md"
+"""
+
+
+class ConfigExistsError(Exception):
+    """Raised when ``init_config`` would overwrite an existing file."""
+
+    def __init__(self, path: Path) -> None:
+        super().__init__(
+            f"{path} already exists. Re-run with --force to overwrite it, "
+            f"or edit it directly."
+        )
+        self.path = path
+
+
+def init_config(force: bool = False) -> Path:
+    """Write a commented config scaffold, and return where it went.
+
+    Refuses to overwrite by default. The file is the only record of settings a
+    user has hand-tuned, and `init` is the kind of command people re-run to
+    remind themselves it exists -- so silently replacing it would be a way to
+    lose work by typing something that sounds read-only.
+    """
+    p = config_path()
+    if p.exists() and not force:
+        raise ConfigExistsError(p)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(DEFAULT_CONFIG_TEMPLATE, encoding="utf-8")
+    return p
+
+
 def set_config_value(key: str, value: str) -> Path:
     if key == "theme":
         from peek.themes import get_theme
