@@ -979,6 +979,27 @@ def config_set(key: str = typer.Argument(...), value: str = typer.Argument(...))
         raise typer.Exit(2)
 
 
+@config_app.command("init")
+def config_init(
+    force: bool = typer.Option(False, "--force", "-f", help="Overwrite an existing config file."),
+):
+    """Write a commented config file with peek's defaults.
+
+    \b
+    Examples:
+        peek config init
+        peek config init --force
+    """
+    from peek.config import ConfigExistsError, init_config
+    try:
+        p = init_config(force=force)
+    except ConfigExistsError as e:
+        err_console.print(f"[red]{e}[/]")
+        raise typer.Exit(2)
+    console.print(f"[green]Wrote {p}[/]")
+    console.print("[dim]Every setting is optional — edit it, or delete the file.[/]")
+
+
 @config_app.command("get")
 def config_get(key: str = typer.Argument(...)):
     from peek.config import load_config
