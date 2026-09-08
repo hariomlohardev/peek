@@ -1,0 +1,59 @@
+{
+  "name": "peek-vscode",
+  "displayName": "peek — htop for codebases",
+  "description": "Understand any codebase in 5 seconds: Start Here ranking + HTML map in a Webview.",
+  "version": "0.3.0",
+  "publisher": "hariomlohardev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hariomlohardev/peek.git"
+  },
+  "homepage": "https://github.com/hariomlohardev/peek",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "code map",
+    "architecture visualizer",
+    "import graph"
+  ],
+  "activationEvents": [
+    "onCommand:peek-vscode.peek"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "peek-vscode.peek",
+        "title": "Peek: Map Workspace"
+      },
+      {
+        "command": "peek-vscode.refresh",
+        "title": "Peek: Refresh Map",
+        "icon": "$(refresh)"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "peekStartHere",
+          "name": "Peek: Start Here"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}

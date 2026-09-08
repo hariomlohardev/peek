@@ -34,6 +34,7 @@
 - [Git](#git)
 - [MCP](#mcp)
 - [GitHub Action](#github-action)
+- [VS Code](#vs-code)
 - [WTF — Traceback Explainer](#wtf--traceback-explainer)
 - [Watch — Live Rescan](#watch--live-rescan)
 - [Config Set](#config-set)
@@ -462,6 +463,20 @@ Post the `Start Here` map as a PR comment (`action.yml` at repo root, example in
   with:
     path: .
 ```
+
+---
+## VS Code
+
+`peek-vscode/` — `Cmd+Shift+P → Peek: Map Workspace` renders `peek --html` in a Webview;
+the Explorer view `Peek: Start Here` mirrors the ranked list, click opens the file.
+
+```bash
+cd peek-vscode && npm install && npm run compile
+npx @vscode/vsce package   # → peek-vscode-0.3.0.vsix
+code --install-extension peek-vscode-0.3.0.vsix
+```
+
+Marketplace publishing (`vsce publish`) needs a maintainer token.
 
 ---
 ## WTF — Traceback Explainer
