@@ -6,11 +6,14 @@ from pathlib import Path
 
 def test_watch_debounce(tmp_path):
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"a.py").write_text("x=1\n")
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x=1\n")
     calls = []
-    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.2, poll_interval=0.1)
+    watcher = watch_repo(p, lambda sr, ar: calls.append(1), debounce=0.2, poll_interval=0.1)
     time.sleep(0.3)
-    (p/"a.py").write_text("x=2\n")
+    (p / "a.py").write_text("x=2\n")
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1
@@ -19,8 +22,11 @@ def test_watch_debounce(tmp_path):
 
 def test_watch_stop_idempotent(tmp_path):
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"a.py").write_text("x=1\n")
-    watcher = watch_repo(p, lambda sr,ar: None, debounce=0.1, poll_interval=0.1)
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x=1\n")
+    watcher = watch_repo(p, lambda sr, ar: None, debounce=0.1, poll_interval=0.1)
     time.sleep(0.2)
     watcher.stop()
     # second stop should not raise
@@ -29,11 +35,14 @@ def test_watch_stop_idempotent(tmp_path):
 
 def test_watch_new_file_triggers(tmp_path):
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"a.py").write_text("x=1\n")
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x=1\n")
     calls = []
-    watcher = watch_repo(p, lambda sr,ar: calls.append(sr), debounce=0.2, poll_interval=0.1)
+    watcher = watch_repo(p, lambda sr, ar: calls.append(sr), debounce=0.2, poll_interval=0.1)
     time.sleep(0.2)
-    (p/"b.py").write_text("y=1\n")
+    (p / "b.py").write_text("y=1\n")
     time.sleep(0.6)
     watcher.stop()
     assert len(calls) >= 1
@@ -44,6 +53,7 @@ def test_watch_new_file_triggers(tmp_path):
 def test_watch_cli_help():
     from typer.testing import CliRunner
     from peek.cli import app
+
     runner = CliRunner()
     result = runner.invoke(app, ["watch", "--help"])
     assert result.exit_code == 0, result.output
@@ -52,8 +62,10 @@ def test_watch_cli_help():
 
 def test_tui_w_toggle_binding():
     import pytest
+
     pytest.importorskip("textual")
     from peek.tui import PeekApp
+
     assert any(b.key == "w" for b in PeekApp.BINDINGS)
     w_bind = next(b for b in PeekApp.BINDINGS if b.key == "w")
     assert w_bind.action == "toggle_watch"
@@ -68,11 +80,14 @@ def test_tui_w_toggle_binding():
 def test_watch_toml_changes(tmp_path):
     import time
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"pyproject.toml").write_text("x=1\n")
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "pyproject.toml").write_text("x=1\n")
     calls = []
-    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    watcher = watch_repo(p, lambda sr, ar: calls.append(1), debounce=0.1, poll_interval=0.1)
     time.sleep(0.2)
-    (p/"pyproject.toml").write_text("x=2\n")
+    (p / "pyproject.toml").write_text("x=2\n")
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1
@@ -81,12 +96,16 @@ def test_watch_toml_changes(tmp_path):
 def test_watch_readme_triggers(tmp_path):
     """Issue #28: editing README.md must trigger on_change."""
     import time
+
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"README.md").write_text("# hi\n")
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "README.md").write_text("# hi\n")
     calls = []
-    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    watcher = watch_repo(p, lambda sr, ar: calls.append(1), debounce=0.1, poll_interval=0.1)
     time.sleep(0.2)
-    (p/"README.md").write_text("# hi!\n")
+    (p / "README.md").write_text("# hi!\n")
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1
@@ -95,12 +114,16 @@ def test_watch_readme_triggers(tmp_path):
 def test_watch_js_triggers(tmp_path):
     """Issue #28: editing a .js file must trigger on_change (polyglot watch)."""
     import time
+
     from peek.watch import watch_repo
-    p = tmp_path / "repo"; p.mkdir(); (p/"app.js").write_text("let x = 1;\n")
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "app.js").write_text("let x = 1;\n")
     calls = []
-    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    watcher = watch_repo(p, lambda sr, ar: calls.append(1), debounce=0.1, poll_interval=0.1)
     time.sleep(0.2)
-    (p/"app.js").write_text("let x = 2;\n")
+    (p / "app.js").write_text("let x = 2;\n")
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1

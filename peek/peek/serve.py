@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import functools
 import threading
 import time
@@ -81,10 +82,8 @@ class ReportServer:
             except Exception:
                 self._watcher = None
         if self.open_browser:
-            try:
+            with contextlib.suppress(Exception):
                 webbrowser.open(self.url)
-            except Exception:
-                pass
         return self
 
     def stop(self) -> None:

@@ -37,7 +37,7 @@ def test_action_parse_matches_analyze_json(tmp_path):
     data = json.loads(r.output)
     ranked = data.get("ranked", [])[:5]
     start_here = "\n".join(
-        f"{i+1}. {item.get('rel', item.get('path', '?'))} ({item.get('score', 0):.1f})"
+        f"{i + 1}. {item.get('rel', item.get('path', '?'))} ({item.get('score', 0):.1f})"
         for i, item in enumerate(ranked)
     )
     assert start_here.strip(), "action would post an empty Start Here"

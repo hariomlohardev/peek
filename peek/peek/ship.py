@@ -99,9 +99,7 @@ def _start_here_block(root: Path, limit: int = 5) -> str:
         from peek.scanner import scan
 
         ar = analyze(scan(root))
-        lines = [
-            f"{i + 1}. {r.rel} ({r.score:.1f})" for i, r in enumerate(ar.ranked[:limit])
-        ]
+        lines = [f"{i + 1}. {r.rel} ({r.score:.1f})" for i, r in enumerate(ar.ranked[:limit])]
         return "\n".join(lines)
     except Exception:
         return "(ranking unavailable)"
@@ -153,21 +151,37 @@ def build_message(root: Path, use_llm: bool = True) -> tuple[str, str, list[str]
     return subject, "\n".join(body_lines), files
 
 
-def run_ship(
-    root: Path, dry_run: bool = False, yolo: bool = False, use_llm: bool = True
-) -> dict:
+def run_ship(root: Path, dry_run: bool = False, yolo: bool = False, use_llm: bool = True) -> dict:
     """Build the message; commit (+push with yolo) unless dry_run."""
     root = Path(root)
     subject, body, files = build_message(root, use_llm=use_llm)
     if not files:
-        return {"subject": "", "body": "", "files": [], "committed": False,
-                "pushed": False, "note": "Nothing staged — `git add` first."}
+        return {
+            "subject": "",
+            "body": "",
+            "files": [],
+            "committed": False,
+            "pushed": False,
+            "note": "Nothing staged — `git add` first.",
+        }
     if dry_run:
-        return {"subject": subject, "body": body, "files": files, "committed": False,
-                "pushed": False, "note": "dry-run"}
+        return {
+            "subject": subject,
+            "body": body,
+            "files": files,
+            "committed": False,
+            "pushed": False,
+            "note": "dry-run",
+        }
     committed = _git(["commit", "-m", subject, "-m", body], root) is not None
     pushed = False
     if committed and yolo:
         pushed = _git(["push"], root) is not None
-    return {"subject": subject, "body": body, "files": files, "committed": committed,
-            "pushed": pushed, "note": "" if committed else "git commit failed"}
+    return {
+        "subject": subject,
+        "body": body,
+        "files": files,
+        "committed": committed,
+        "pushed": pushed,
+        "note": "" if committed else "git commit failed",
+    }

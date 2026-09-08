@@ -55,9 +55,11 @@ def upload_gist(
         with urllib.request.urlopen(req, timeout=15) as resp:
             body = json.loads(resp.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as e:
-        raise ShareError(f"gist upload failed: HTTP {e.code} — check GITHUB_TOKEN scope (`gist`).")
+        raise ShareError(
+            f"gist upload failed: HTTP {e.code} — check GITHUB_TOKEN scope (`gist`)."
+        ) from e
     except (urllib.error.URLError, OSError, TimeoutError) as e:
-        raise ShareError(f"gist upload failed: network error ({e}).")
+        raise ShareError(f"gist upload failed: network error ({e}).") from e
     url = body.get("html_url") if isinstance(body, dict) else None
     if not url:
         raise ShareError("gist upload failed: unexpected API response (no html_url).")

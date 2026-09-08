@@ -2,8 +2,8 @@
 
 from typer.testing import CliRunner
 
-from peek.cli import app
 from peek import ship as ship_mod
+from peek.cli import app
 from peek.ship import build_message, conventional_type, heuristic_subject, run_ship
 
 runner = CliRunner()
@@ -29,7 +29,8 @@ def test_dry_run_prints_without_committing(monkeypatch):
     calls = []
     monkeypatch.setattr(ship_mod, "_git", _fake_git_factory(calls))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    import tempfile, pathlib
+    import pathlib
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         res = run_ship(pathlib.Path(td), dry_run=True, use_llm=False)
@@ -44,7 +45,8 @@ def test_yolo_commits_and_pushes(monkeypatch):
     calls = []
     monkeypatch.setattr(ship_mod, "_git", _fake_git_factory(calls))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    import tempfile, pathlib
+    import pathlib
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         res = run_ship(pathlib.Path(td), dry_run=False, yolo=True, use_llm=False)
@@ -57,7 +59,8 @@ def test_yolo_commits_and_pushes(monkeypatch):
 def test_no_push_without_yolo(monkeypatch):
     calls = []
     monkeypatch.setattr(ship_mod, "_git", _fake_git_factory(calls))
-    import tempfile, pathlib
+    import pathlib
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         res = run_ship(pathlib.Path(td), dry_run=False, yolo=False, use_llm=False)
@@ -68,7 +71,8 @@ def test_no_push_without_yolo(monkeypatch):
 
 def test_nothing_staged_graceful(monkeypatch):
     monkeypatch.setattr(ship_mod, "_git", _fake_git_factory([], staged="", status=""))
-    import tempfile, pathlib
+    import pathlib
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         res = run_ship(pathlib.Path(td), dry_run=True, use_llm=False)
@@ -105,7 +109,8 @@ def test_build_message_offline_without_key(monkeypatch):
     calls = []
     monkeypatch.setattr(ship_mod, "_git", _fake_git_factory(calls))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    import tempfile, pathlib
+    import pathlib
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         subject, body, files = build_message(pathlib.Path(td), use_llm=True)
