@@ -135,3 +135,13 @@ def test_pack_cli_include_and_budget():
             assert result3.exit_code == 0, result3.output
         finally:
             os.chdir(old)
+
+
+def test_pack_format_help_explains_each():
+    """Issue #19: --format help must say when to use each (md humans, xml Claude, txt grep)."""
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0, result.output
+    out = result.output
+    assert "xml for Claude" in out
+    assert "md for humans" in out
+    assert "txt for grep" in out

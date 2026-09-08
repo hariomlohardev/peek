@@ -76,3 +76,31 @@ def test_watch_toml_changes(tmp_path):
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1
+
+
+def test_watch_readme_triggers(tmp_path):
+    """Issue #28: editing README.md must trigger on_change."""
+    import time
+    from peek.watch import watch_repo
+    p = tmp_path / "repo"; p.mkdir(); (p/"README.md").write_text("# hi\n")
+    calls = []
+    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    time.sleep(0.2)
+    (p/"README.md").write_text("# hi!\n")
+    time.sleep(0.5)
+    watcher.stop()
+    assert len(calls) >= 1
+
+
+def test_watch_js_triggers(tmp_path):
+    """Issue #28: editing a .js file must trigger on_change (polyglot watch)."""
+    import time
+    from peek.watch import watch_repo
+    p = tmp_path / "repo"; p.mkdir(); (p/"app.js").write_text("let x = 1;\n")
+    calls = []
+    watcher = watch_repo(p, lambda sr,ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+    time.sleep(0.2)
+    (p/"app.js").write_text("let x = 2;\n")
+    time.sleep(0.5)
+    watcher.stop()
+    assert len(calls) >= 1

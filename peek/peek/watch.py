@@ -7,9 +7,18 @@ import threading
 from pathlib import Path
 from typing import Callable
 
+# Issue #28: watch code + config + docs, not just *.py.
+WATCH_PATTERNS = (
+    "*.py", "*.pyi",
+    "*.js", "*.jsx", "*.ts", "*.tsx",
+    "*.go", "*.rs", "*.java",
+    "*.toml", "*.json", "*.yaml", "*.yml",
+    "*.md", "*.txt", "*.cfg", "*.ini",
+)
+
 
 def watch_repo(path: Path, on_change: Callable, debounce: float = 0.4, poll_interval: float = 0.8):
-    """Watch *path* for *.py changes, call *on_change(scan_result, analyzer_result)* debounced.
+    """Watch *path* for code/config/doc changes, call *on_change(scan_result, analyzer_result)* debounced.
 
     Uses ``watchfiles`` if available, otherwise polling fallback.
     Returns a ``Watcher`` with ``.stop()`` method.
@@ -26,7 +35,7 @@ def watch_repo(path: Path, on_change: Callable, debounce: float = 0.4, poll_inte
 
     # snapshot current mtimes so first poll doesn't fire spuriously
     try:
-        for ext in ("*.py", "*.toml", "*.json", "*.md", "*.yaml", "*.yml"):
+        for ext in WATCH_PATTERNS:
             for f in path.rglob(ext):
                 try:
                     last_mtime[f] = f.stat().st_mtime
@@ -44,7 +53,7 @@ def watch_repo(path: Path, on_change: Callable, debounce: float = 0.4, poll_inte
             # check modified/new files
             try:
                 current_files: set[Path] = set()
-                for ext in ("*.py", "*.toml", "*.json", "*.md", "*.yaml", "*.yml"):
+                for ext in WATCH_PATTERNS:
                     for f in path.rglob(ext):
                         current_files.add(f)
                         try:

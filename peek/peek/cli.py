@@ -1341,7 +1341,7 @@ def main_callback(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file for --html/--pack."),
     pack: bool = typer.Option(False, "--pack", help="LLM pack: concatenate top files for clipboard/LLM."),
     ask: Optional[str] = typer.Option(None, "--ask", help="Filter --pack by keyword (e.g. --ask auth)."),
-    pack_format: str = typer.Option("md", "--format", help="Pack format: md|xml|txt (with --pack)."),
+    pack_format: str = typer.Option("md", "--format", help="Pack format: md for humans, xml for Claude, txt for grep (with --pack)."),
     pack_budget: int = typer.Option(8000, "--budget", help="Token budget for pack (with --pack)."),
     pack_include: Optional[str] = typer.Option(None, "--include", help="Include glob for pack (with --pack)."),
     pack_exclude: Optional[str] = typer.Option(None, "--exclude", help="Exclude glob for pack (with --pack)."),

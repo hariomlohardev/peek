@@ -71,3 +71,4 @@ source = ["peek"]
 dev = ["pytest>=7", "pytest-cov", "ruff", "pyperclip", "Pillow>=10"]
 llm = ["openai", "anthropic"]
 mcp = ["mcp>=1.0"]
+accurate = ["tiktoken"]  # exact token counts for --pack (fallback: len//4)

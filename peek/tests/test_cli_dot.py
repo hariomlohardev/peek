@@ -124,3 +124,10 @@ def test_peek_no_tui_json_output():
     assert "root" in data
     assert "stats" in data
 
+
+def test_find_help_shows_example():
+    """Issue #14: `peek find --help` must show a copy-paste example."""
+    r = runner.invoke(app, ["find", "--help"])
+    assert r.exit_code == 0, r.output
+    assert 'peek find "auth" . --limit 5' in r.output
+
