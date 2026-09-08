@@ -452,6 +452,7 @@ The server exposes the following tools:
 | `peek_find` | Find files by keyword — filename + content + semantic BM25. | `query` (string, required): Search intent/keyword<br/>`path` (string, optional)<br/>`limit` (integer, optional): Max results |
 | `peek_graph` | Export import graph as DOT/SVG/HTML. | `path` (string, optional)<br/>`format` (string, optional): `dot`, `svg`, or `html` |
 | `peek_explain` | Explain a Python traceback with scan-aware hints. | `traceback` (string, optional): Traceback text<br/>`path` (string, optional): Context path<br/>`file` (string, optional): File containing traceback |
+| `peek_trace` | Function call tree — what a function takes and where it goes. | `symbol` (string, optional): name / qualname / file::func<br/>`at` (string, optional): FILE:LINE pinpoint<br/>`depth` (integer, optional, 1-6)<br/>`direction` (string, optional): `callees`, `callers`, or `both`<br/>`path` (string, optional) |
 
 ---
 ## GitHub Action
