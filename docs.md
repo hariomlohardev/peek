@@ -79,6 +79,17 @@ pytest -q  # 129 passed, 1 skipped
 
 Requires **Python 3.11+**. Deps: `typer`, `rich`, `textual`, `pathspec` — all pure Python.
 
+### Distribution
+
+```bash
+brew install hariomlohardev/tap/peek   # macOS (Formula/peek.rb)
+scoop install peek                     # Windows (scoop/peek.json, needs Scoop Main PR)
+winget install hariomlohardev.peek     # Windows (winget/ — needs portable-zip asset + winget-pkgs PR)
+npx @smithery/cli install @hariomlohardev/peek  # MCP (smithery.yaml, needs registry listing)
+```
+
+> Store submissions (`brew audit --strict`, `winget validate`, registry listings) must be run by a maintainer on the target platform before the packages go live — the manifests in this repo are the submission-ready starting point.
+
 ---
 
 ## Demo Video

@@ -1,0 +1,37 @@
+# peek MCP server listing (smithery.ai). Pairs with peek/peek/mcp_server.py + `peek mcp`.
+name: peek
+description: "htop for codebases — scan, rank, pack, find, and graph any repo for AI agents"
+homepage: https://github.com/hariomlohardev/peek
+repository: https://github.com/hariomlohardev/peek
+
+keywords:
+  - codebase
+  - code-map
+  - static-analysis
+  - developer-tools
+
+# How clients launch the server (stdio). Install: npx @smithery/cli install @hariomlohardev/peek
+startCommand:
+  type: stdio
+  commandFunction: |-
+    (config) => ({
+      command: "python",
+      args: ["-m", "peek.mcp_server"],
+      cwd: config.workingDirectory || "."
+    })
+
+configSchema:
+  type: object
+  properties:
+    workingDirectory:
+      type: string
+      description: "Directory to analyze (defaults to the workspace root)"
+      default: "."
+
+tools:
+  - peek_scan
+  - peek_rank
+  - peek_pack
+  - peek_find
+  - peek_graph
+  - peek_explain
