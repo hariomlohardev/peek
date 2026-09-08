@@ -129,7 +129,7 @@ class _PeekGroup(TyperGroup):
         if any(a in ("--help", "-h", "--version", "-V") for a in args):
             if args:
                 first = args[0]
-                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace"}
+                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps"}
                 if first not in known and not first.startswith("-"):
                     args = args[1:]
             return super().parse_args(ctx, args)
@@ -139,7 +139,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Options like --help, --theme, --no-tui etc. should not be treated as subcommand
@@ -1095,6 +1095,36 @@ def watch_command(
             _time.sleep(1)
     except KeyboardInterrupt:
         watcher.stop()
+    raise typer.Exit(0)
+
+
+@app.command("serve")
+def serve_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo to serve"),
+    port: int = typer.Option(4181, "--port", "-p", help="Port to serve on."),
+    open_browser: bool = typer.Option(False, "--open", help="Auto-open browser at http://localhost:PORT."),
+    no_reload: bool = typer.Option(False, "--no-reload", help="Disable rebuild on file change."),
+) -> None:
+    """Serve the HTML report live with rebuild on change. Ctrl+C to quit.
+
+    \b
+    Examples:
+        peek serve --port 4181
+        peek serve --open
+    """
+    from peek.serve import ReportServer
+
+    server = ReportServer(path.resolve(), port=port, open_browser=open_browser, watch=not no_reload)
+    server.start()
+    console.print(f"[green]Serving peek report at {server.url}[/]  [dim](Ctrl+C to stop)[/]")
+    try:
+        import time as _time
+
+        while True:
+            _time.sleep(1)
+    except KeyboardInterrupt:
+        server.stop()
+    console.print("[dim]Stopped.[/]")
     raise typer.Exit(0)
 
 

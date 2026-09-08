@@ -131,3 +131,11 @@ def test_find_help_shows_example():
     assert r.exit_code == 0, r.output
     assert 'peek find "auth" . --limit 5' in r.output
 
+
+def test_all_commands_help_dispatch():
+    """_PeekGroup must route every subcommand's --help (not swallow as path)."""
+    for cmd in ["serve", "deps", "trace", "watch", "diff", "graph"]:
+        r = runner.invoke(app, [cmd, "--help"])
+        assert r.exit_code == 0, (cmd, r.output)
+        assert "Usage: peek [OPTIONS] COMMAND" not in r.output, cmd
+
