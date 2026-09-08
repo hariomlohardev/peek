@@ -1,0 +1,14 @@
+# Run peek as a pre-commit hook — static map on every commit.
+# Usage in your repo's .pre-commit-config.yaml:
+#   repos:
+#     - repo: https://github.com/hariomlohardev/peek
+#       rev: v0.5.0
+#       hooks:
+#         - id: peek-map
+- id: peek-map
+  name: peek codebase map
+  description: "Print peek's static codebase map (Start Here ranking) on each commit."
+  entry: peek --no-tui
+  language: system
+  pass_filenames: false
+  always_run: true

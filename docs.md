@@ -37,6 +37,7 @@
 - [Watch — Live Rescan](#watch--live-rescan)
 - [Config Set](#config-set)
 - [Config](#config)
+- [Pre-commit](#pre-commit)
 - [Architecture](#architecture)
 - [Testing (TDD)](#testing-tdd)
 - [Performance](#performance)
@@ -464,6 +465,22 @@ theme = "dracula"  # any of 10 ids, case-insensitive, _ or - normalized
 - `tomllib` (3.11+) with `tomli` fallback.
 - Persistent via `peek config set theme dracula` (writes `~/.peek/config.toml`, validates via `get_theme`); also `peek config get theme` / `peek config list`. Manual `echo 'theme = "dracula"' > ~/.peek/config.toml` still works.
 - Precedence proof via `test_resolve_precedence` (cli > env > config > default).
+
+---
+
+## Pre-commit
+
+Run `peek` as a `pre-commit` hook to see the `Start Here` ranking on each commit
+(this repo ships `.pre-commit-hooks.yaml` with a `peek-map` hook):
+
+```yaml
+# your repo's .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/hariomlohardev/peek
+    rev: v0.5.0
+    hooks:
+      - id: peek-map   # runs: peek --no-tui (static map, always runs)
+```
 
 ---
 
