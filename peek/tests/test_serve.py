@@ -64,3 +64,38 @@ def test_serve_rebuild_updates_html(tmp_path):
         assert "b.py" in after
     finally:
         server.stop()
+
+
+def _tiny_repo_here(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "a.py").write_text("x = 1\n", encoding="utf-8")
+    return repo
+
+
+def test_serve_reload_injects_meta(tmp_path):
+    from peek.serve import ReportServer
+
+    server = ReportServer(
+        _tiny_repo_here(tmp_path), port=0, watch=False, directory=tmp_path / "out", reload_sec=2
+    )
+    server.start()
+    try:
+        html = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
+        assert '<meta http-equiv="refresh" content="2">' in html
+    finally:
+        server.stop()
+
+
+def test_serve_no_reload_by_default(tmp_path):
+    from peek.serve import ReportServer
+
+    server = ReportServer(
+        _tiny_repo_here(tmp_path), port=0, watch=False, directory=tmp_path / "out"
+    )
+    server.start()
+    try:
+        html = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
+        assert 'http-equiv="refresh"' not in html
+    finally:
+        server.stop()

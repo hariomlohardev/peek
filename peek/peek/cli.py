@@ -1104,6 +1104,7 @@ def serve_command(
     port: int = typer.Option(4181, "--port", "-p", help="Port to serve on."),
     open_browser: bool = typer.Option(False, "--open", help="Auto-open browser at http://localhost:PORT."),
     no_reload: bool = typer.Option(False, "--no-reload", help="Disable rebuild on file change."),
+    reload_sec: int = typer.Option(0, "--reload", help="Auto-refresh browser every N seconds (0 = off)."),
 ) -> None:
     """Serve the HTML report live with rebuild on change. Ctrl+C to quit.
 
@@ -1111,10 +1112,11 @@ def serve_command(
     Examples:
         peek serve --port 4181
         peek serve --open
+        peek serve --open --reload 2
     """
     from peek.serve import ReportServer
 
-    server = ReportServer(path.resolve(), port=port, open_browser=open_browser, watch=not no_reload)
+    server = ReportServer(path.resolve(), port=port, open_browser=open_browser, watch=not no_reload, reload_sec=reload_sec)
     server.start()
     console.print(f"[green]Serving peek report at {server.url}[/]  [dim](Ctrl+C to stop)[/]")
     try:
