@@ -191,6 +191,19 @@ def make_graph_panel(graph: dict[Path, set[Path]], ranked, root: Path, theme: An
     return Panel("\n".join(lines), title=f"[bold {t['ink']}]Import Graph[/]", box=box.ROUNDED, border_style=t["line"], padding=(0, 1), style=f"on {t['panel']}")
 
 
+def _animation_disabled_by_env() -> bool:
+    """True when the environment asks for output with no timing in it.
+
+    PEEK_NO_ANIMATE is the explicit switch. NO_COLOR is honoured too: it already
+    strips styling here, and a caller who wants plain output is not asking for a
+    quarter-second reveal either.
+    """
+    value = os.getenv("PEEK_NO_ANIMATE")
+    if value is not None and value.strip().lower() not in ("", "0", "false", "no"):
+        return True
+    return bool(os.getenv("NO_COLOR"))
+
+
 def render_static(
     scan_result,
     analyzer_result,
@@ -211,6 +224,13 @@ def render_static(
             animate = console.is_terminal and not getattr(console, "_record", False)
         except Exception:
             animate = False
+
+    # An explicit escape hatch, because auto-detection is not enough on its own:
+    # the staggered reveal is ~250ms of time.sleep, and a caller that *does* have a
+    # terminal -- a local test run, or CI on a pty -- has no other way to ask for
+    # deterministic output. Read here rather than at import so a test can set it.
+    if _animation_disabled_by_env():
+        animate = False
 
     if animate and console.is_terminal:
         try:
