@@ -584,6 +584,17 @@ Output pristine except `pathspec` deprecation warnings (dep, not our code).
 - `< 1 s` for 500-file repos, hard cap 2000 (`truncated` flag)
 - `scan` with `pathspec` + manual stack, `analyze` 5-iter PageRank, `render_static` no `Live` (just `time.sleep` stagger)
 
+### 10k-file monorepo ceiling (issue #104)
+
+Measured via `peek/tests/test_benchmark.py` (`PEEK_BENCH=1 pytest peek/tests/test_benchmark.py -v -s`, skipped by default):
+
+| Step | 10,000 files (~20k LOC) |
+|---|---|
+| `scan` (`max_files=20000`) | ~135–155 s |
+| `analyze` (10k nodes) | ~36 s |
+
+Windows laptop, Python 3.13, tiny files — per-file stat/read dominates, not PageRank. Takeaway: the default `max_files=2000` cap is the ceiling for interactive use; raise it explicitly (`scan(root, max_files=...)`) for full-monorepo runs.
+
 ---
 
 ## Troubleshooting
