@@ -134,7 +134,7 @@ def test_find_help_shows_example():
 
 def test_all_commands_help_dispatch():
     """_PeekGroup must route every subcommand's --help (not swallow as path)."""
-    for cmd in ["serve", "deps", "trace", "watch", "diff", "graph"]:
+    for cmd in ["serve", "deps", "trace", "watch", "diff", "graph", "ship", "commit"]:
         r = runner.invoke(app, [cmd, "--help"])
         assert r.exit_code == 0, (cmd, r.output)
         assert "Usage: peek [OPTIONS] COMMAND" not in r.output, cmd

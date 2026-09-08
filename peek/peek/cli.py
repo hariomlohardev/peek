@@ -129,7 +129,7 @@ class _PeekGroup(TyperGroup):
         if any(a in ("--help", "-h", "--version", "-V") for a in args):
             if args:
                 first = args[0]
-                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps"}
+                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit"}
                 if first not in known and not first.startswith("-"):
                     args = args[1:]
             return super().parse_args(ctx, args)
@@ -139,7 +139,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Options like --help, --theme, --no-tui etc. should not be treated as subcommand
@@ -1126,6 +1126,57 @@ def serve_command(
         server.stop()
     console.print("[dim]Stopped.[/]")
     raise typer.Exit(0)
+
+
+@app.command("ship")
+@app.command("commit")
+def ship_command(
+    path: Path = typer.Argument(Path("."), help="Path to repo"),
+    yolo: bool = typer.Option(False, "--yolo", help="Skip preview AND push after committing."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print subject + PR body without committing."),
+    no_llm: bool = typer.Option(False, "--no-llm", help="Skip LLM even if OPENAI_API_KEY is set."),
+) -> None:
+    """Draft a conventional commit from staged diff + Start Here. Ctrl+C to abort.
+
+    \b
+    Examples:
+        peek ship --dry-run
+        peek ship --yolo
+    """
+    import typer as _typer
+
+    from peek.ship import run_ship
+
+    root = path.resolve()
+    if dry_run:
+        res = run_ship(root, dry_run=True, use_llm=not no_llm)
+        if not res["files"]:
+            err_console.print(f"[yellow]{res['note']}[/]")
+            raise _typer.Exit(0)
+        console.print(f"[bold]{res['subject']}[/]\n")
+        console.print(res["body"])
+        console.print("\n[dim](dry-run — nothing committed)[/]")
+        raise _typer.Exit(0)
+    # preview first so --yolo is the only non-interactive commit path
+    res = run_ship(root, dry_run=True, use_llm=not no_llm)
+    if not res["files"]:
+        err_console.print(f"[yellow]{res['note']}[/]")
+        raise _typer.Exit(0)
+    console.print(f"[bold]{res['subject']}[/]\n")
+    console.print(res["body"] + "\n")
+    if not yolo and not _typer.confirm("Commit?", default=False):
+        console.print("[dim]Aborted — nothing committed.[/]")
+        raise _typer.Exit(0)
+    done = run_ship(root, dry_run=False, yolo=yolo, use_llm=not no_llm)
+    if done["committed"]:
+        console.print(f"[green]Committed:[/] {done['subject']}")
+        if done["pushed"]:
+            console.print("[green]Pushed.[/]")
+        elif yolo:
+            err_console.print("[yellow]Committed but push failed.[/]")
+    else:
+        err_console.print(f"[red]{done['note'] or 'Commit failed.'}[/]")
+        raise _typer.Exit(1)
 
 
 @app.command("wtf")

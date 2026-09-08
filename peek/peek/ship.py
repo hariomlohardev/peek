@@ -1,0 +1,173 @@
+"""ship — conventional commit + PR body from staged diff + Start Here (issue #38).
+
+Heuristic first, LLM optional. `peek ship --dry-run` never touches git.
+`--yolo` commits AND pushes; without it, push never happens automatically.
+"""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import time
+from pathlib import Path
+from typing import Optional
+
+DOC_SUFFIXES = {".md", ".rst", ".txt"}
+CONFIG_NAMES = {"pyproject.toml", "setup.cfg", "tox.ini", ".pre-commit-config.yaml"}
+
+
+def _git(args: list[str], cwd: Path, timeout: int = 10) -> Optional[str]:
+    try:
+        out = subprocess.check_output(
+            ["git", *args], cwd=str(cwd), text=True, stderr=subprocess.DEVNULL, timeout=timeout
+        )
+        return out.strip()
+    except Exception:
+        return None
+
+
+def staged_files(root: Path) -> list[str]:
+    out = _git(["diff", "--staged", "--name-only"], root)
+    if out is None:
+        return []
+    return [line.strip() for line in out.splitlines() if line.strip()]
+
+
+def new_files(root: Path) -> set[str]:
+    """Files staged as new (A) or untracked (??) via porcelain status."""
+    out = _git(["status", "--porcelain"], root)
+    found = set()
+    if not out:
+        return found
+    for line in out.splitlines():
+        code, name = line[:2], line[3:].strip()
+        if code in ("A ", "AM", "??"):
+            found.add(name.replace("\\", "/"))
+    return found
+
+
+def _is_test(path: str) -> bool:
+    name = path.split("/")[-1]
+    return "tests" in path.split("/") or name.startswith("test_") or name.endswith("_test.py")
+
+
+def _is_doc(path: str) -> bool:
+    return Path(path).suffix.lower() in DOC_SUFFIXES or path.startswith("docs/")
+
+
+def conventional_type(files: list[str], new: set[str]) -> str:
+    if files and all(_is_doc(f) for f in files):
+        return "docs"
+    if files and all(_is_test(f) for f in files):
+        return "test"
+    if files and all(f.startswith(".github/") or Path(f).name in CONFIG_NAMES for f in files):
+        return "ci"
+    if new & set(files):
+        return "feat"
+    return "fix"
+
+
+def _scope(files: list[str]) -> str:
+    if len(files) == 1:
+        return Path(files[0]).stem
+    parents = {Path(f).parent.as_posix() for f in files}
+    if len(parents) == 1:
+        parent = next(iter(parents))
+        if parent not in (".", ""):
+            return Path(parent).name
+    return ""
+
+
+def heuristic_subject(files: list[str], new: set[str]) -> str:
+    kind = conventional_type(files, new)
+    scope = _scope(files)
+    stems = [Path(f).stem for f in files[:3]]
+    extra = f" +{len(files) - 3} more" if len(files) > 3 else ""
+    if kind == "docs":
+        action = "update docs"
+    elif new & set(files):
+        action = f"add {', '.join(stems)}{extra}"
+    else:
+        action = f"update {', '.join(stems)}{extra}"
+    prefix = f"{kind}({scope})" if scope else kind
+    return f"{prefix}: {action}"
+
+
+def _start_here_block(root: Path, limit: int = 5) -> str:
+    try:
+        from peek.analyzer import analyze
+        from peek.scanner import scan
+
+        ar = analyze(scan(root))
+        lines = [
+            f"{i + 1}. {r.rel} ({r.score:.1f})" for i, r in enumerate(ar.ranked[:limit])
+        ]
+        return "\n".join(lines)
+    except Exception:
+        return "(ranking unavailable)"
+
+
+def _llm_subject(diff_stat: str, files: list[str]) -> Optional[str]:
+    """One-line conventional commit via OpenAI; None when unavailable."""
+    if not os.environ.get("OPENAI_API_KEY"):
+        return None
+    try:
+        from openai import OpenAI  # type: ignore
+
+        client = OpenAI()
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": (
+                        "Write ONE conventional-commit subject line (type(scope): summary, "
+                        f"<=72 chars) for these staged files:\n{', '.join(files)}\n{diff_stat}"
+                    ),
+                }
+            ],
+            max_tokens=60,
+        )
+        line = resp.choices[0].message.content.strip().splitlines()[0].strip()
+        return line or None
+    except Exception:
+        return None
+
+
+def build_message(root: Path, use_llm: bool = True) -> tuple[str, str, list[str]]:
+    """Return (subject, body, staged files). Never touches git state."""
+    files = staged_files(root)
+    if not files:
+        return "", "", []
+    new = new_files(root)
+    subject = heuristic_subject(files, new)
+    if use_llm:
+        llm_subject = _llm_subject(f"{len(files)} files staged", files)
+        if llm_subject:
+            subject = llm_subject
+    body_lines = ["Changed:"]
+    body_lines += [f"- {f}" for f in files]
+    body_lines += ["", "Start Here:"]
+    body_lines.append(_start_here_block(root))
+    body_lines += ["", f"Generated by `peek ship` in {time.strftime('%Y-%m-%d')}."]
+    return subject, "\n".join(body_lines), files
+
+
+def run_ship(
+    root: Path, dry_run: bool = False, yolo: bool = False, use_llm: bool = True
+) -> dict:
+    """Build the message; commit (+push with yolo) unless dry_run."""
+    root = Path(root)
+    subject, body, files = build_message(root, use_llm=use_llm)
+    if not files:
+        return {"subject": "", "body": "", "files": [], "committed": False,
+                "pushed": False, "note": "Nothing staged — `git add` first."}
+    if dry_run:
+        return {"subject": subject, "body": body, "files": files, "committed": False,
+                "pushed": False, "note": "dry-run"}
+    committed = _git(["commit", "-m", subject, "-m", body], root) is not None
+    pushed = False
+    if committed and yolo:
+        pushed = _git(["push"], root) is not None
+    return {"subject": subject, "body": body, "files": files, "committed": committed,
+            "pushed": pushed, "note": "" if committed else "git commit failed"}
