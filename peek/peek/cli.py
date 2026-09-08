@@ -1382,6 +1382,7 @@ def main_callback(
     watch: bool = typer.Option(False, "--watch", "-w", help="Watch mode: auto-rescan on changes (TUI)."),
     clip: bool = typer.Option(False, "--clip", help="Copy pack to clipboard (with --pack)."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Dry-run: show table instead of pack (with --pack)."),
+    share: bool = typer.Option(False, "--share", help="Upload HTML report to gist.github.com (needs GITHUB_TOKEN)."),
     diff: Optional[str] = typer.Option(None, "--diff", help="Pack only diff files (with --pack). e.g. --diff HEAD or --diff main"),
     staged: bool = typer.Option(False, "--staged", help="Pack only staged files (with --pack)."),
     json_output: bool = typer.Option(False, "--json", help="Output JSON instead of Rich table (no TUI, alias for peek scan --json)."),
@@ -1623,6 +1624,9 @@ def main_callback(
     if "--staged" in extra:
         staged = True
         extra = [a for a in extra if a != "--staged"]
+    if "--share" in extra:
+        share = True
+        extra = [a for a in extra if a != "--share"]
     if "--diff" in extra:
         try:
             idx = extra.index("--diff")
@@ -1737,6 +1741,19 @@ def main_callback(
             out = Path("peek.html")
             actual = _write_output_safely(out, html_str)
             console.print(f"[green]HTML written to[/] [bold]{actual}[/] — use -o to specify path")
+        raise typer.Exit(0)
+
+    # --share (issue #31): upload the same HTML report as a secret gist
+    if share:
+        from peek.renderer import build_html as _build_html
+        from peek.share import ShareError, upload_gist
+        html_str = _build_html(scan_result, analyzer_result, elapsed, theme=resolved_theme)
+        try:
+            url = upload_gist(html_str)
+        except ShareError as e:
+            err_console.print(f"[red]{e}[/]")
+            raise typer.Exit(1)
+        console.print(f"[green]Shared →[/] [bold]{url}[/]")
         raise typer.Exit(0)
 
     # --pack
