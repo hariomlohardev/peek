@@ -147,6 +147,16 @@ peek --theme-list
 - **Research pack:** [`docs/research/`](docs/research/) — 8 docs that led to `peek` (viral thesis, candidates, 5-day plan, launch playbook)
 - **Specs & plans:** [`docs/superpowers/`](docs/superpowers/) — theme system spec + implementation plans
 
+## GitHub Action
+
+Post the `Start Here` map as a PR comment — see [`.github/workflows/peek.yml`](.github/workflows/peek.yml):
+
+```yaml
+- uses: hariomlohardev/peek@v1   # outputs: start-here, summary
+  with:
+    path: .
+```
+
 ## Development
 
 ```bash

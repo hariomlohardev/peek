@@ -1,0 +1,31 @@
+# Example: post peek's Start Here map as a PR comment.
+# Copy into your repo as .github/workflows/peek.yml (requires no token config).
+name: peek map
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: peek analyze
+        id: peek
+        uses: hariomlohardev/peek@v1
+        with:
+          path: .
+      - name: Comment Start Here
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## peek map\n${{ steps.peek.outputs.summary }}\n\n**Start Here**\n${{ steps.peek.outputs.start_here }}`
+            });

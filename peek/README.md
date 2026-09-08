@@ -60,6 +60,16 @@ peek config set theme dracula  # persists
 
 > Full CLI → [`docs.md#cli-reference`](../docs.md#cli-reference) · TUI → [`docs.md#tui-guide`](../docs.md#tui-guide) · Semantic → [`docs.md#semantic`](../docs.md#semantic)
 
+## GitHub Action
+
+```yaml
+- uses: hariomlohardev/peek@v1   # posts Start Here as a PR comment (outputs: start-here, summary)
+  with:
+    path: .
+```
+
+> Example workflow → [`.github/workflows/peek.yml`](../.github/workflows/peek.yml) · Full guide → [`docs.md#github-action`](../docs.md#github-action)
+
 ## Demo (by code)
 
 ```bash

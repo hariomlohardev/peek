@@ -1,0 +1,56 @@
+name: "peek codebase map"
+description: "Run peek analyze and expose the Start Here ranking + summary as outputs"
+author: "Hariom Lohar"
+
+inputs:
+  path:
+    description: "Path to analyze"
+    required: false
+    default: "."
+  max-files:
+    description: "Hard cap on files scanned"
+    required: false
+    default: "2000"
+  python-version:
+    description: "Python version for the peek install"
+    required: false
+    default: "3.11"
+
+outputs:
+  start-here:
+    description: "Top-5 Start Here files with scores"
+    value: ${{ steps.analyze.outputs.start_here }}
+  summary:
+    description: "Heuristic codebase summary"
+    value: ${{ steps.analyze.outputs.summary }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install peek
+      shell: bash
+      run: pip install peek-code
+    - name: Analyze
+      id: analyze
+      shell: bash
+      run: |
+        peek analyze "${{ inputs.path }}" --max-files "${{ inputs.max-files }}" --json > peek.json
+        python - <<'PY'
+        import json
+        import os
+        data = json.load(open("peek.json"))
+        ranked = data.get("ranked", [])[:5]
+        start_here = "\n".join(f"{i+1}. {r.get('rel', r.get('path', '?'))} ({r.get('score', 0):.1f})" for i, r in enumerate(ranked))
+        summary = data.get("summary", "")
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+            f.write("start_here<<EOF\n" + start_here + "\nEOF\n")
+            f.write("summary<<EOF\n" + summary + "\nEOF\n")
+        PY
+
+branding:
+  icon: "zap"
+  color: "purple"

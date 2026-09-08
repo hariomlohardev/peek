@@ -33,6 +33,7 @@
 - [Graph](#graph)
 - [Git](#git)
 - [MCP](#mcp)
+- [GitHub Action](#github-action)
 - [WTF — Traceback Explainer](#wtf--traceback-explainer)
 - [Watch — Live Rescan](#watch--live-rescan)
 - [Config Set](#config-set)
@@ -439,6 +440,17 @@ The server exposes the following tools:
 | `peek_find` | Find files by keyword — filename + content + semantic BM25. | `query` (string, required): Search intent/keyword<br/>`path` (string, optional)<br/>`limit` (integer, optional): Max results |
 | `peek_graph` | Export import graph as DOT/SVG/HTML. | `path` (string, optional)<br/>`format` (string, optional): `dot`, `svg`, or `html` |
 | `peek_explain` | Explain a Python traceback with scan-aware hints. | `traceback` (string, optional): Traceback text<br/>`path` (string, optional): Context path<br/>`file` (string, optional): File containing traceback |
+
+---
+## GitHub Action
+
+Post the `Start Here` map as a PR comment (`action.yml` at repo root, example in `.github/workflows/peek.yml`):
+
+```yaml
+- uses: hariomlohardev/peek@v1   # outputs: start-here, summary
+  with:
+    path: .
+```
 
 ---
 ## WTF — Traceback Explainer
