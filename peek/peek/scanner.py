@@ -9,10 +9,9 @@ Design goals for Day 1:
 from __future__ import annotations
 
 import ast
-import fnmatch
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
 import pathspec
 
@@ -148,50 +147,87 @@ ENTRY_FILENAMES = {
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _is_binary(path: Path, blocksize: int = 1024) -> bool:
-    """Heuristic binary check: null bytes in first block."""
+# Cap for the single-pass read: files bigger than this get a streaming LOC
+# fallback instead of a full in-memory decode (same approximation as before).
+_READ_CAP = 1_000_000
+# Main-guard detection only looks at reasonably sized files (same as before).
+_GUARD_MAX = 500_000
+
+
+def _read_file_bytes(path: Path, cap: int = _READ_CAP) -> bytes | None:
+    """Read a file once (up to cap+1 bytes). None when unreadable.
+
+    The +1 byte tells oversize files apart from exactly-cap-sized ones.
+    """
     try:
         with path.open("rb") as f:
-            chunk = f.read(blocksize)
-            if b"\x00" in chunk:
-                return True
-            # Also treat very long single-line files as binary-ish (minified)
-            if len(chunk) == blocksize and b"\n" not in chunk and len(chunk) > 800:
-                return True
+            return f.read(cap + 1)
     except Exception:
+        return None
+
+
+def _is_binary_data(data: bytes, blocksize: int = 1024) -> bool:
+    """Heuristic binary check on in-memory bytes: null bytes in first block."""
+    chunk = data[:blocksize]
+    if b"\x00" in chunk:
         return True
-    return False
+    # Also treat very long single-line files as binary-ish (minified)
+    return len(chunk) == blocksize and b"\n" not in chunk and len(chunk) > 800
+
+
+def _is_binary(path: Path, blocksize: int = 1024) -> bool:
+    """Heuristic binary check: null bytes in first block."""
+    data = _read_file_bytes(path, cap=blocksize)
+    if data is None:
+        return True
+    return _is_binary_data(data, blocksize)
+
+
+def _count_loc_text(text: str, language: str) -> int:
+    """Count LOC from decoded text — non-empty lines, minus Python comments/blanks."""
+    if not text.strip():
+        return 0
+    lines = text.splitlines()
+    if language == "python":
+        count = 0
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("#"):
+                continue
+            count += 1
+        return count
+    # Generic: non-empty lines
+    return sum(1 for line in lines if line.strip())
+
+
+def _read_and_count(path: Path, language: str) -> tuple[int, bytes | None]:
+    """One open per file: returns (loc, raw bytes for guard checks).
+
+    Bytes are returned even for binary/huge files so callers can share the
+    read; None means the file could not be read at all (loc 0).
+    """
+    data = _read_file_bytes(path)
+    if data is None:
+        return 0, None
+    if _is_binary_data(data):
+        return 0, data
+    if len(data) > _READ_CAP:
+        # Guard huge files ( > 1MB ) — approximate via streaming line count
+        try:
+            with path.open("rb") as f:
+                return sum(1 for _ in f), data
+        except Exception:
+            return 0, data
+    return _count_loc_text(data.decode("utf-8", errors="ignore"), language), data
 
 
 def _count_loc(path: Path, language: str) -> int:
     """Count LOC — non-empty lines, stripping Python comments/blank for .py."""
     try:
-        if _is_binary(path):
-            return 0
-        # Guard huge files ( > 1MB ) — approximate
-        if path.stat().st_size > 1_000_000:
-            # Fast fallback: count newlines without loading all
-            try:
-                with path.open("rb") as f:
-                    return sum(1 for _ in f)
-            except Exception:
-                return 0
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        if not text.strip():
-            return 0
-        lines = text.splitlines()
-        if language == "python":
-            count = 0
-            for line in lines:
-                stripped = line.strip()
-                if not stripped:
-                    continue
-                if stripped.startswith("#"):
-                    continue
-                count += 1
-            return count
-        # Generic: non-empty lines
-        return sum(1 for line in lines if line.strip())
+        loc, _ = _read_and_count(path, language)
+        return loc
     except Exception:
         return 0
 
@@ -452,17 +488,22 @@ def detect_tech_stack(root: Path, files: list[FileInfo]) -> dict:
 # Entry point detection
 # ---------------------------------------------------------------------------
 
-def _has_main_guard(path: Path) -> bool:
-    """Check if file contains if __name__ == '__main__' or def main (AST-based)."""
+def _has_main_guard(path: Path, text: str | None = None) -> bool:
+    """Check if file contains if __name__ == '__main__' or def main (AST-based).
+
+    Pass already-read *text* to skip file IO (single-pass scan); when None the
+    file is read here exactly as before.
+    """
     try:
         if path.suffix.lower() not in (".py", ".pyi"):
             return False
-        if path.stat().st_size > 500_000:
-            return False
-        try:
-            text = path.read_text(encoding="utf-8-sig", errors="ignore")
-        except Exception:
-            text = path.read_text(encoding="utf-8", errors="ignore")
+        if text is None:
+            if path.stat().st_size > _GUARD_MAX:
+                return False
+            try:
+                text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            except Exception:
+                text = path.read_text(encoding="utf-8", errors="ignore")
         if text.startswith("﻿"):
             text = text.lstrip("﻿")
         if not text.strip():
@@ -492,8 +533,14 @@ def _has_main_guard(path: Path) -> bool:
     return False
 
 
-def detect_entry_points(root: Path, files: list[FileInfo]) -> list[Path]:
-    """Return ranked list of likely entry points (absolute Paths)."""
+def detect_entry_points(
+    root: Path, files: list[FileInfo], texts: dict[Path, str] | None = None
+) -> list[Path]:
+    """Return ranked list of likely entry points (absolute Paths).
+
+    *texts* maps absolute file paths to already-read source (single-pass scan);
+    missing entries are read from disk as before.
+    """
     scored: list[tuple[float, Path, str]] = []
 
     # Collect script entry points from pyproject.toml
@@ -561,8 +608,9 @@ def detect_entry_points(root: Path, files: list[FileInfo]) -> list[Path]:
         if name == "__main__.py":
             score += 8.0
 
-        # Has main guard
-        if _has_main_guard(f.path):
+        # Has main guard (reuse single-pass text when available)
+        guard_text = texts.get(f.path) if texts else None
+        if _has_main_guard(f.path, guard_text):
             score += 5.0
             reasons.append("main guard")
 
@@ -619,6 +667,9 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
         files: list[FileInfo] = []
         total_bytes = 0
         total_loc = 0
+        # Single-pass reads: absolute path -> decoded source for .py guard checks.
+        # detect_entry_points reuses these instead of re-reading every file.
+        texts: dict[Path, str] = {}
 
         # Walk — manual stack to skip ignored dirs efficiently, with nested .gitignore support
         stack: list[tuple[Path, tuple[tuple[Path, pathspec.PathSpec], ...]]] = [(root, ())]
@@ -689,7 +740,9 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                         rel = entry.relative_to(root)
                         ext = entry.suffix.lower()
                         lang = _language_for(entry)
-                        loc = _count_loc(target, lang)
+                        loc, data = _read_and_count(target, lang)
+                        if data is not None and ext in (".py", ".pyi") and len(data) <= _GUARD_MAX:
+                            texts[target] = data.decode("utf-8-sig", errors="ignore")
                         info = FileInfo(
                             path=target, rel=rel, ext=ext, size=size, loc=loc, language=lang
                         )
@@ -736,8 +789,13 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
                         rel = entry.relative_to(root)
                         ext = entry.suffix.lower()
                         lang = _language_for(entry)
-                        loc = _count_loc(entry, lang)
-                        info = FileInfo(path=entry.resolve(), rel=rel, ext=ext, size=size, loc=loc, language=lang)
+                        loc, data = _read_and_count(entry, lang)
+                        resolved = entry.resolve()
+                        if data is not None and ext in (".py", ".pyi") and len(data) <= _GUARD_MAX:
+                            texts[resolved] = data.decode("utf-8-sig", errors="ignore")
+                        info = FileInfo(
+                            path=resolved, rel=rel, ext=ext, size=size, loc=loc, language=lang
+                        )
                         files.append(info)
                         total_bytes += size
                         total_loc += loc
@@ -748,7 +806,7 @@ def scan(root: Path | str, max_files: int = 2000) -> ScanResult:
         files.sort(key=lambda f: f.rel.as_posix())
 
         tech_stack = detect_tech_stack(root, files)
-        entry_candidates = detect_entry_points(root, files)
+        entry_candidates = detect_entry_points(root, files, texts)
 
         by_lang: dict[str, int] = {}
         for f in files:
