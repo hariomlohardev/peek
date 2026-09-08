@@ -132,3 +132,20 @@ def test_bom_handling():
         sr = scan(root)
         ar = analyze(sr)
         assert ar.stats["graph_edges"] >= 1
+
+
+def test_go_import_graph(tmp_path):
+    """Go files form graph nodes with resolved local edges (regex, offline)."""
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+
+    p = tmp_path / "repo"
+    (p / "b").mkdir(parents=True)
+    (p / "go.mod").write_text("module example.com/t\n\ngo 1.21\n", encoding="utf-8")
+    (p / "a.go").write_text('package t\n\nimport "example.com/t/b"\n\nfunc A() { b.B() }\n', encoding="utf-8")
+    (p / "b" / "b.go").write_text("package b\n\nfunc B() {}\n", encoding="utf-8")
+    ar = analyze(scan(p))
+    assert len(ar.graph) >= 2
+    a_key = next(k for k in ar.graph if str(k).endswith("a.go"))
+    assert any(str(t).endswith(("b/b.go", "b\\b.go")) for t in ar.graph[a_key])
+    assert any(str(r.rel).endswith(".go") for r in ar.ranked)
