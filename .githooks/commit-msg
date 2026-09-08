@@ -1,0 +1,15 @@
+#!/bin/sh
+# Repo policy: NO Claude/AI attribution trailers in commit history.
+# Versioned mirror of .git/hooks/commit-msg.
+# Reinstall from git root: cp .githooks/commit-msg .git/hooks/commit-msg
+# (or: git config core.hooksPath .githooks)
+# Strips any Co-Authored-By line mentioning Claude (case-insensitive). Always exits 0.
+MSG_FILE="$1"
+if [ -z "$MSG_FILE" ] || [ ! -f "$MSG_FILE" ]; then
+  exit 0
+fi
+if grep -qi "co-authored-by.*claude" "$MSG_FILE" 2>/dev/null; then
+  grep -vi "co-authored-by.*claude" "$MSG_FILE" > "$MSG_FILE.tmp" && mv "$MSG_FILE.tmp" "$MSG_FILE"
+  echo "[commit-msg hook] removed Co-Authored-By Claude trailer (repo policy: no AI attribution)" >&2
+fi
+exit 0
