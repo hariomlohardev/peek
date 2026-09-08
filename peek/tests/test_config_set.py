@@ -71,3 +71,84 @@ def test_config_cli_set_invalid_theme(tmp_path, monkeypatch):
     result = runner.invoke(app, ["config", "set", "theme", "bogus"])
     assert result.exit_code == 2, result.output
     assert "Unknown theme" in result.output or "unknown" in result.output.lower()
+
+
+def test_config_init_creates_the_file_with_the_default_theme(tmp_path, monkeypatch):
+    """The acceptance criterion: a config exists with theme = "anthropic-pro"."""
+    from peek.config import init_config, load_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "nested" / "config.toml"))
+    p = init_config()
+
+    assert p.exists()
+    assert load_config()["theme"] == "anthropic-pro"
+
+
+def test_config_init_creates_missing_parent_directories(tmp_path, monkeypatch):
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "a" / "b" / "config.toml"))
+
+    from peek.config import init_config
+
+    assert init_config().exists()
+
+
+def test_config_init_refuses_to_overwrite(tmp_path, monkeypatch):
+    """A config is hand-tuned; `init` must not be a way to lose it by accident."""
+    from peek.config import ConfigExistsError, init_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    init_config()
+    (tmp_path / "config.toml").write_text('theme = "dracula"\n', encoding="utf-8")
+
+    with pytest.raises(ConfigExistsError):
+        init_config()
+
+    # And the user's edit survived the refusal.
+    assert (tmp_path / "config.toml").read_text(encoding="utf-8") == 'theme = "dracula"\n'
+
+
+def test_config_init_force_overwrites(tmp_path, monkeypatch):
+    from peek.config import init_config, load_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    (tmp_path / "config.toml").write_text('theme = "dracula"\n', encoding="utf-8")
+
+    init_config(force=True)
+
+    assert load_config()["theme"] == "anthropic-pro"
+
+
+def test_config_init_output_is_valid_toml_and_round_trips(tmp_path, monkeypatch):
+    """A scaffold that cannot be parsed is worse than no scaffold."""
+    from peek.config import init_config, load_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    init_config()
+
+    # Only `theme` is live; everything else is commented out on purpose, so a
+    # future better default is not silently pinned by a file nobody edited.
+    assert load_config() == {"theme": "anthropic-pro"}
+
+
+def test_config_init_names_a_theme_that_actually_exists(tmp_path, monkeypatch):
+    """The scaffold must not ship a theme name the loader would reject."""
+    from peek.config import init_config, load_config
+    from peek.themes import get_theme
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    init_config()
+
+    get_theme(load_config()["theme"])  # raises ValueError if unknown
+
+
+def test_cli_config_init_exits_2_when_the_file_exists(tmp_path, monkeypatch):
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+
+    first = runner.invoke(app, ["config", "init"])
+    assert first.exit_code == 0
+
+    second = runner.invoke(app, ["config", "init"])
+    assert second.exit_code == 2
+
+    forced = runner.invoke(app, ["config", "init", "--force"])
+    assert forced.exit_code == 0
