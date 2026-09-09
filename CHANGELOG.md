@@ -2,6 +2,13 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.6.0 — 2026-09-09
+- **perf** — single-pass `scan()`: one capped file open per file instead of three (binary sniff + LOC count + entry-guard re-read folded into `_read_and_count`); opens/file 3.0 → 1.0, proven by `test_scan_single_open_per_file` (deterministic) + profiler evidence (92% of scan time was file opens). Wall-clock on a loaded box showed no speedup (syscall cost inflated between runs), so no speedup number is claimed — see `docs.md` Performance note.
+- **trace everywhere** — `peek_trace` MCP tool (`symbol`/`at`/`depth`/`direction`/`cross_file`/`show_externals`, depth clamped 1–6), wired into `TOOLS`, `handle_tool`, `smithery.yaml`, and the MCP docs table.
+- **serve --reload** — `ReportServer(reload_sec=...)` injects `<meta http-equiv="refresh">` into the served HTML; CLI `peek serve --reload N`.
+- **polyglot graph** — Go `import` resolution in `build_graph` (single + block imports, `go.mod` module-relative + tail-segment matching, stdlib/externals match nothing); Rust stays symbols-only.
+- **release** — `pyproject.toml` + `__version__` `0.6.0`, tests badges refreshed (261 passed, 4 skipped). Manifests (`Formula/`, `scoop/`, `winget/`) stay pinned at 0.5.0 + its tarball hash until the maintainer tags `v0.6.0` and refreshes them.
+
 ## 0.5.0 — 2026-08-20
 - **trace v2** — `peek trace` minimal aesthetic terminal UI (quiet hierarchy, accent only on focal, `takes → assign`, `● param ◆ local ◇ literal`, `↺ recursive`, `↗ external`, `Panel ROUNDED` `dim line` `padding (1,2)`, `Tree guide_style dim line`) + premium `--html` viewer (glass hero, file pills, instant 10-theme switch without reload, `localStorage`, search highlight, `copy JSON/Save`, sticky file side-panel, `file://` safe)
 - **--html flag** — `peek trace --html` temp HTML + `webbrowser.open`, `peek trace --html -o trace.html`, polished self-contained `peek/trace/html.py` (412 → 509 lines, 42K)
