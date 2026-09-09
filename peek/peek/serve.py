@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import functools
+import re
 import threading
 import time
 import webbrowser
@@ -12,6 +13,17 @@ from pathlib import Path
 from typing import Any, Optional
 
 DEFAULT_PORT = 4181
+
+
+def _inject_reload(html: str, seconds: int) -> str:
+    """Insert a meta-refresh tag after <head> (prepend fallback when absent)."""
+    tag = f'<meta http-equiv="refresh" content="{seconds}">'
+    new_html, n = re.subn(
+        r"<head[^>]*>", lambda m: m.group(0) + tag, html, count=1, flags=re.IGNORECASE
+    )
+    if n == 0:
+        return tag + html
+    return new_html
 
 
 def build_report_html(root: Path, theme: Any = None) -> str:
@@ -37,6 +49,7 @@ class ReportServer:
         theme: Any = None,
         directory: Optional[Path] = None,
         watch: bool = True,
+        reload_sec: int = 0,
     ) -> None:
         self.root = Path(root)
         if self.root.is_file():
@@ -46,6 +59,7 @@ class ReportServer:
         self.theme = theme
         self.directory = Path(directory) if directory else Path.cwd() / ".peek-serve"
         self.use_watch = watch
+        self.reload_sec = reload_sec
         self._server: Optional[ThreadingHTTPServer] = None
         self._thread: Optional[threading.Thread] = None
         self._watcher = None
@@ -59,9 +73,10 @@ class ReportServer:
         """Regenerate index.html (also used as the watch on_change callback)."""
         try:
             self.directory.mkdir(parents=True, exist_ok=True)
-            (self.directory / "index.html").write_text(
-                build_report_html(self.root, self.theme), encoding="utf-8"
-            )
+            html = build_report_html(self.root, self.theme)
+            if self.reload_sec > 0:
+                html = _inject_reload(html, self.reload_sec)
+            (self.directory / "index.html").write_text(html, encoding="utf-8")
         except Exception:
             pass
 

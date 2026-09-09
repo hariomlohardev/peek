@@ -452,6 +452,7 @@ The server exposes the following tools:
 | `peek_find` | Find files by keyword — filename + content + semantic BM25. | `query` (string, required): Search intent/keyword<br/>`path` (string, optional)<br/>`limit` (integer, optional): Max results |
 | `peek_graph` | Export import graph as DOT/SVG/HTML. | `path` (string, optional)<br/>`format` (string, optional): `dot`, `svg`, or `html` |
 | `peek_explain` | Explain a Python traceback with scan-aware hints. | `traceback` (string, optional): Traceback text<br/>`path` (string, optional): Context path<br/>`file` (string, optional): File containing traceback |
+| `peek_trace` | Function call tree — what a function takes and where it goes. | `symbol` (string, optional): name / qualname / file::func<br/>`at` (string, optional): FILE:LINE pinpoint<br/>`depth` (integer, optional, 1-6)<br/>`direction` (string, optional): `callees`, `callers`, or `both`<br/>`path` (string, optional) |
 
 ---
 ## GitHub Action
@@ -605,10 +606,12 @@ Measured via `peek/tests/test_benchmark.py` (`PEEK_BENCH=1 pytest peek/tests/tes
 
 | Step | 10,000 files (~20k LOC) |
 |---|---|
-| `scan` (`max_files=20000`) | ~135–155 s |
-| `analyze` (10k nodes) | ~36 s |
+| `scan` (`max_files=20000`) | ~135–196 s (run-to-run variance on a loaded box; see note) |
+| `analyze` (10k nodes) | ~33–59 s (same variance) |
 
 Windows laptop, Python 3.13, tiny files — per-file stat/read dominates, not PageRank. Takeaway: the default `max_files=2000` cap is the ceiling for interactive use; raise it explicitly (`scan(root, max_files=...)`) for full-monorepo runs.
+
+**v0.6 single-pass scan:** `scan()` now opens each file once instead of three times (binary sniff + LOC count + entry-guard re-read folded into one capped read). Proven structurally, not by wall clock: `peek/tests/test_scanner.py::test_scan_single_open_per_file` caps opens at files+5, and profiling showed 92% of scan time in file opens. Wall-clock runs on the same loaded box came back 155–196 s vs a 149 s baseline — syscall cost per open inflated between runs (3.8 ms → 15 ms), so the ≤60 s target is **not** claimed here; re-measure on an idle machine before repeating any speedup number.
 
 ---
 

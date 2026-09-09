@@ -3,7 +3,7 @@
 Implements minimal MCP (2024-11-05) over stdio:
   - initialize
   - tools/list
-  - tools/call  -> peek_scan, peek_rank, peek_pack, peek_find, peek_graph, peek_explain
+  - tools/call  -> peek_scan, peek_rank, peek_pack, peek_find, peek_graph, peek_explain, peek_trace
 No hard dep on `mcp` package — stdio JSON lines fallback always works.
 If `mcp` is installed, its server transport could be used later, but not required.
 """
@@ -83,6 +83,23 @@ TOOLS = {
                 "path": {"type": "string", "description": "Repo path for context"},
                 "traceback": {"type": "string", "description": "Traceback text"},
                 "file": {"type": "string", "description": "File containing traceback"},
+            },
+            "required": [],
+        },
+    },
+    "peek_trace": {
+        "name": "peek_trace",
+        "description": "Function call tree — what a Python function takes and where it goes (via peek.trace).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Path to repo"},
+                "symbol": {"type": "string", "description": "Function name, qualname (MyClass.method), or file::func"},
+                "at": {"type": "string", "description": "Pinpoint FILE:LINE instead of symbol"},
+                "depth": {"type": "integer", "description": "Depth 1-6 (default 3)"},
+                "direction": {"type": "string", "enum": ["callees", "callers", "both"]},
+                "cross_file": {"type": "boolean", "description": "Follow cross-file calls (default true)"},
+                "show_externals": {"type": "boolean", "description": "Include external/builtin leaves"},
             },
             "required": [],
         },
@@ -231,6 +248,53 @@ def handle_tool(name: str, args: dict | None) -> dict:
                 return {"explanation": str(explanation)[:6000], "raw": info.raw[:3000]}
             except Exception:
                 return {"explanation": info.raw[:6000], "raw": info.raw[:3000]}
+        elif name == "peek_trace":
+            from peek.scanner import scan
+            from peek.trace import build_trace_graph, find_by_location, find_focals, trace
+            from peek.trace.render import trace_to_json
+
+            sr = scan(path)
+            graph = build_trace_graph(sr)
+            if not graph.nodes:
+                return {"focal": None, "error": "No Python functions found", "root": str(sr.root)}
+            depth = args.get("depth", 3)
+            try:
+                depth = int(depth)
+            except Exception:
+                depth = 3
+            depth = max(1, min(6, depth))
+            direction = str(args.get("direction", "callees") or "callees")
+            if direction not in ("callees", "callers", "both"):
+                direction = "callees"
+            cross_file = bool(args.get("cross_file", True))
+            show_externals = bool(args.get("show_externals", False))
+            focal = None
+            at = args.get("at")
+            if at and ":" in str(at):
+                file_part, _, line_part = str(at).rpartition(":")
+                try:
+                    focal = find_by_location(graph, file_part, int(line_part))
+                except Exception:
+                    focal = None
+            if focal is None:
+                symbol = str(args.get("symbol", "") or "")
+                if not symbol:
+                    return {"error": "pass symbol or at (FILE:LINE)", "root": str(sr.root)}
+                cands = find_focals(graph, symbol, limit=5)
+                if not cands:
+                    return {"focal": None, "error": f"no match for {symbol!r}", "root": str(sr.root)}
+                focal = cands[0]
+            tree = trace(
+                graph,
+                focal,
+                depth=depth,
+                direction=direction,
+                cross_file=cross_file,
+                show_externals=show_externals,
+            )
+            payload = trace_to_json(tree, graph)
+            payload["root"] = str(sr.root)
+            return payload
         else:
             return {"error": f"Unknown tool '{name}'", "available": list(TOOLS.keys())}
     except Exception as e:

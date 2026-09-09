@@ -42,7 +42,7 @@ def test_smithery_yaml():
     text = (ROOT / "smithery.yaml").read_text(encoding="utf-8")
     assert "name: peek" in text
     assert "peek.mcp_server" in text
-    for tool in ("peek_scan", "peek_rank", "peek_pack", "peek_find", "peek_graph", "peek_explain"):
+    for tool in ("peek_scan", "peek_rank", "peek_pack", "peek_find", "peek_graph", "peek_explain", "peek_trace"):
         assert tool in text
 
 

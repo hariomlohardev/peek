@@ -1,5 +1,7 @@
 """Issue #38 — `peek ship` AI commit + PR body (git fully mocked)."""
 
+import re
+
 from typer.testing import CliRunner
 
 from peek import ship as ship_mod
@@ -7,6 +9,13 @@ from peek.cli import app
 from peek.ship import build_message, conventional_type, heuristic_subject, run_ship
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    """Strip ANSI escapes — some CI environments force color in help output."""
+    return _ANSI_RE.sub("", text)
 
 
 def _fake_git_factory(calls, staged="peek/peek/serve.py", status="A  peek/peek/serve.py"):
@@ -94,7 +103,7 @@ def test_ship_help_and_alias():
     for cmd in ("ship", "commit"):
         r = runner.invoke(app, [cmd, "--help"])
         assert r.exit_code == 0, r.output
-        assert "--yolo" in r.output and "--dry-run" in r.output
+        assert "--yolo" in _plain(r.output) and "--dry-run" in _plain(r.output)
 
 
 def test_ship_dry_run_cli_no_repo(monkeypatch, tmp_path):

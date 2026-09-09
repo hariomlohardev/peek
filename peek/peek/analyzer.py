@@ -61,6 +61,63 @@ class AnalyzerResult:
 JS_IMPORT_RE = re.compile(r"""import\s+(?:.*?\s+from\s+)?['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\)""")
 JS_EXPORT_RE = re.compile(r"""export\s+(?:default\s+)?(?:function|class|const|let|var)\s+(\w+)""")
 
+# Go: single-line `import "x"` / `import alias "x/y"` plus `import ( ... )` blocks.
+GO_IMPORT_ONE_RE = re.compile(r'import\s+(?:[\w.]+\s+)?"([^"]+)"')
+GO_IMPORT_BLOCK_RE = re.compile(r"import\s*\((.*?)\)", re.DOTALL)
+GO_QUOTED_RE = re.compile(r'"([^"]+)"')
+GO_MOD_RE = re.compile(r"^\s*module\s+(\S+)", re.MULTILINE)
+
+
+def _extract_go_imports(text: str) -> list[str]:
+    """All quoted import paths from single-line imports and import blocks."""
+    imps = GO_IMPORT_ONE_RE.findall(text)
+    for block in GO_IMPORT_BLOCK_RE.findall(text):
+        imps.extend(GO_QUOTED_RE.findall(block))
+    # de-dupe, preserve order
+    seen: set[str] = set()
+    out = []
+    for imp in imps:
+        if imp not in seen:
+            seen.add(imp)
+            out.append(imp)
+    return out
+
+
+def _go_module_name(root: Path) -> str:
+    """Module prefix from go.mod ('' when absent/unreadable)."""
+    try:
+        text = (root / "go.mod").read_text(encoding="utf-8", errors="ignore")
+    except Exception:
+        return ""
+    try:
+        m = GO_MOD_RE.search(text)
+        return m.group(1) if m else ""
+    except Exception:
+        return ""
+
+
+def _resolve_go_import(
+    imp: str, module: str, by_dir: dict[str, list[Path]], by_stem: dict[str, list[Path]]
+) -> list[Path]:
+    """Resolve a Go import path to scanned .go files (dir package or root file)."""
+    # 1. module-relative: example.com/t/b with module example.com/t -> "b"
+    if module and imp != module and imp.startswith(module + "/"):
+        rel = imp[len(module) + 1 :]
+        if rel in by_dir:
+            return by_dir[rel]
+        stem = rel.rsplit("/", 1)[-1]
+        if "/" not in rel and stem in by_stem:
+            return by_stem[stem]
+        return []
+    # 2. tail match for GOPATH-style repos without go.mod: last segment ==
+    # package dir name, or root-level file stem. Stdlib (fmt, net/http) and
+    # unmatched external domains simply match nothing — no local edge.
+    last = imp.rsplit("/", 1)[-1]
+    if last in by_dir:
+        return by_dir[last]
+    return by_stem.get(last, [])
+
+
 # ---------------------------------------------------------------------------
 # Module index building
 # ---------------------------------------------------------------------------
@@ -242,9 +299,9 @@ def _resolve_local_import(import_name: str, index: dict[str, Path]) -> Path | No
 def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]], set[str], dict[str, Path]]:
     """Build import graph.
 
-    Polyglot: handles python + javascript + typescript.
+    Polyglot: handles python + javascript + typescript + go.
     Returns (graph, external_imports, module_index)
-    - graph: dict absolute Path -> set[absolute Path] (python + js/ts nodes)
+    - graph: dict absolute Path -> set[absolute Path] (python + js/ts + go nodes)
     - external_imports: set of import names not resolved locally (python only)
     """
     index = _build_module_index(files, root)
@@ -252,12 +309,25 @@ def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]
     # Path -> FileInfo for JS/TS resolution (absolute resolved paths)
     path_to_file: dict[Path, FileInfo] = {f.path.resolve(): f for f in files}
 
-    # Init graph nodes for python + js/ts files
+    # Go module prefix + lookup tables for resolving local imports
+    go_module = _go_module_name(root)
+    go_by_dir: dict[str, list[Path]] = {}
+    go_by_stem: dict[str, list[Path]] = {}
+    for f in files:
+        if f.language == "go" and f.path.suffix.lower() == ".go":
+            d = f.rel.parent.as_posix()
+            go_by_dir.setdefault(d, []).append(f.path)
+            if d == ".":
+                go_by_stem.setdefault(f.rel.stem, []).append(f.path)
+
+    # Init graph nodes for python + js/ts + go files
     graph: dict[Path, set[Path]] = {}
     for f in files:
         if f.language == "python" and f.path.suffix.lower() in (".py", ".pyi"):
             graph[f.path] = set()
         elif f.language in ("javascript", "typescript"):
+            graph[f.path] = set()
+        elif f.language == "go" and f.path.suffix.lower() == ".go":
             graph[f.path] = set()
 
     external: set[str] = set()
@@ -349,6 +419,25 @@ def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]
                             except Exception:
                                 continue
                     # non-relative (e.g., 'react') is external — ignored for graph edges
+            except Exception:
+                continue
+        # --- Go ---
+        elif f.language == "go" and f.path.suffix.lower() == ".go":
+            try:
+                try:
+                    text = f.path.read_text(encoding="utf-8-sig", errors="ignore")
+                except Exception:
+                    text = f.path.read_text(encoding="utf-8", errors="ignore")
+                if not text.strip():
+                    continue
+                node = f.path
+                if node not in graph:
+                    graph[node] = set()
+                for imp in _extract_go_imports(text):
+                    for target in _resolve_go_import(imp, go_module, go_by_dir, go_by_stem):
+                        if target == node:
+                            continue
+                        graph[node].add(target)
             except Exception:
                 continue
     return graph, external, index

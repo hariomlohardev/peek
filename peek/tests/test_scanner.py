@@ -178,3 +178,43 @@ def test_symlink_loop():
         assert sr.total_files == 2
         # Ensure loop dir not traversed infinitely — file count stays bounded
         assert not any("loop" in r for r in rels)
+
+
+def test_scan_single_pass_entry_and_loc(tmp_path):
+    """Single-pass read must still detect the __main__ guard and count LOC."""
+    from peek.scanner import scan
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "run.py").write_text(
+        'import os\n\ndef main():\n    pass\n\nif __name__ == "__main__":\n    main()\n',
+        encoding="utf-8",
+    )
+    sr = scan(p)
+    assert sr.total_files == 1
+    assert sr.stats["total_loc"] == 5
+    assert any("run.py" in str(c) for c in sr.entry_candidates)
+
+
+def test_scan_single_open_per_file(tmp_path, monkeypatch):
+    """Single-pass: scanning N files must open ~N files, not ~3N."""
+    import pathlib
+
+    from peek.scanner import scan
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    for i in range(5):
+        (p / f"m{i}.py").write_text(f"x_{i} = {i}\n", encoding="utf-8")
+    (p / "pyproject.toml").write_text("[project]\nname='t'\n", encoding="utf-8")
+    real_open = pathlib.Path.open
+    calls = []
+
+    def counting_open(self, *args, **kwargs):
+        calls.append(1)
+        return real_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(pathlib.Path, "open", counting_open)
+    sr = scan(p)
+    assert sr.total_files == 6
+    assert len(calls) <= 6 + 5, f"{len(calls)} opens for 6 files"

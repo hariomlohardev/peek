@@ -1,5 +1,6 @@
 """Issues #23 (serve) + #75 (--open)."""
 
+import re
 import urllib.request
 
 from typer.testing import CliRunner
@@ -8,6 +9,13 @@ from peek.cli import app
 from peek.serve import ReportServer
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    """Strip ANSI escapes — some CI environments force color in help output."""
+    return _ANSI_RE.sub("", text)
 
 
 def _tiny_repo(tmp_path):
@@ -20,7 +28,7 @@ def _tiny_repo(tmp_path):
 def test_serve_help():
     r = runner.invoke(app, ["serve", "--help"])
     assert r.exit_code == 0, r.output
-    assert "--open" in r.output
+    assert "--open" in _plain(r.output)
     assert "4181" in r.output
 
 
@@ -62,5 +70,40 @@ def test_serve_rebuild_updates_html(tmp_path):
         server.rebuild()
         after = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
         assert "b.py" in after
+    finally:
+        server.stop()
+
+
+def _tiny_repo_here(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "a.py").write_text("x = 1\n", encoding="utf-8")
+    return repo
+
+
+def test_serve_reload_injects_meta(tmp_path):
+    from peek.serve import ReportServer
+
+    server = ReportServer(
+        _tiny_repo_here(tmp_path), port=0, watch=False, directory=tmp_path / "out", reload_sec=2
+    )
+    server.start()
+    try:
+        html = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
+        assert '<meta http-equiv="refresh" content="2">' in html
+    finally:
+        server.stop()
+
+
+def test_serve_no_reload_by_default(tmp_path):
+    from peek.serve import ReportServer
+
+    server = ReportServer(
+        _tiny_repo_here(tmp_path), port=0, watch=False, directory=tmp_path / "out"
+    )
+    server.start()
+    try:
+        html = (tmp_path / "out" / "index.html").read_text(encoding="utf-8")
+        assert 'http-equiv="refresh"' not in html
     finally:
         server.stop()

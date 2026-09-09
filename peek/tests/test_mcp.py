@@ -95,3 +95,34 @@ def test_mcp_handle_explain(tmp_path):
     assert isinstance(out, dict)
     # should contain explanation or raw
     assert any(k in out for k in ("explanation", "raw", "text", "result")) or "ZeroDivisionError" in str(out) or "division" in str(out).lower()
+
+
+def test_peek_trace_tool_listed():
+    from peek.mcp_server import TOOLS
+
+    assert "peek_trace" in TOOLS
+    props = TOOLS["peek_trace"]["inputSchema"]["properties"]
+    assert "symbol" in props and "depth" in props and "direction" in props
+
+
+def test_peek_trace_tool(tmp_path):
+    from peek.mcp_server import handle_tool
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("import b\n\ndef main():\n    b.work()\n", encoding="utf-8")
+    (p / "b.py").write_text("def work():\n    return 1\n", encoding="utf-8")
+    res = handle_tool("peek_trace", {"path": str(p), "symbol": "main", "depth": 2})
+    assert "error" not in res, res
+    assert res["focal"] is not None
+    assert "main" in res["focal"]["qualname"]
+
+
+def test_peek_trace_tool_no_match(tmp_path):
+    from peek.mcp_server import handle_tool
+
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x = 1\n", encoding="utf-8")
+    res = handle_tool("peek_trace", {"path": str(p), "symbol": "nope_nothing"})
+    assert "error" in res
