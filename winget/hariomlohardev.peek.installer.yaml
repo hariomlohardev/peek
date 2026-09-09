@@ -1,18 +1,18 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0
 PackageIdentifier: hariomlohardev.peek
-PackageVersion: 0.5.0
+PackageVersion: 0.6.0
 InstallerType: zip
 InstallModes:
 - interactive
 - silent
 UpgradeBehavior: install
-ReleaseDate: 2026-08-15
+ReleaseDate: 2026-09-09
 Installers:
 - Architecture: neutral
-  InstallerUrl: https://github.com/hariomlohardev/peek/archive/refs/tags/v0.5.0.tar.gz
-  InstallerSha256: 6F3854C79CE0819C032918BA3EA7F011D2E9A2E96D65D0A822E809C1A0D433B0
+  InstallerUrl: https://github.com/hariomlohardev/peek/archive/refs/tags/v0.6.0.tar.gz
+  InstallerSha256: BD62F08423881F9503B292F669F8ACAEB35A7477C1607A6D7B17A16817E9E4A3
   # TODO(submit): winget needs an installable artifact. Attach a portable
-  # peek-0.5.0-win64.zip (with peek.exe launcher) to the GitHub release, point
+  # peek-0.6.0-win64.zip (with peek.exe launcher) to the GitHub release, point
   # InstallerUrl at it, set NestedInstallerType: portable + NestedInstallerFiles,
   # then run `winget validate` before opening the winget-pkgs PR.
 ManifestType: installer

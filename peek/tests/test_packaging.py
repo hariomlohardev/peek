@@ -4,9 +4,9 @@ import json
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 TARBALL = f"https://github.com/hariomlohardev/peek/archive/refs/tags/v{VERSION}.tar.gz"
-TARBALL_SHA = "6f3854c79ce0819c032918ba3ea7f011d2e9a2e96d65d0a822e809c1a0d433b0"
+TARBALL_SHA = "bd62f08423881f9503b292f669f8acaeb35a7477c1607a6d7b17a16817e9e4a3"
 
 
 def test_homebrew_formula():

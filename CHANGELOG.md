@@ -7,7 +7,7 @@ All notable changes to `peek` will be documented here.
 - **trace everywhere** — `peek_trace` MCP tool (`symbol`/`at`/`depth`/`direction`/`cross_file`/`show_externals`, depth clamped 1–6), wired into `TOOLS`, `handle_tool`, `smithery.yaml`, and the MCP docs table.
 - **serve --reload** — `ReportServer(reload_sec=...)` injects `<meta http-equiv="refresh">` into the served HTML; CLI `peek serve --reload N`.
 - **polyglot graph** — Go `import` resolution in `build_graph` (single + block imports, `go.mod` module-relative + tail-segment matching, stdlib/externals match nothing); Rust stays symbols-only.
-- **release** — `pyproject.toml` + `__version__` `0.6.0`, tests badges refreshed (262 passed, 3 skipped on CI). Manifests (`Formula/`, `scoop/`, `winget/`) stay pinned at 0.5.0 + its tarball hash until the maintainer tags `v0.6.0` and refreshes them.
+- **release** — `pyproject.toml` + `__version__` `0.6.0`, tests badges refreshed (262 passed, 3 skipped on CI). Manifests (`Formula/`, `scoop/`, `winget/`) refreshed to the v0.6.0 tarball hash post-tag.
 
 ## 0.5.0 — 2026-08-20
 - **trace v2** — `peek trace` minimal aesthetic terminal UI (quiet hierarchy, accent only on focal, `takes → assign`, `● param ◆ local ◇ literal`, `↺ recursive`, `↗ external`, `Panel ROUNDED` `dim line` `padding (1,2)`, `Tree guide_style dim line`) + premium `--html` viewer (glass hero, file pills, instant 10-theme switch without reload, `localStorage`, search highlight, `copy JSON/Save`, sticky file side-panel, `file://` safe)
