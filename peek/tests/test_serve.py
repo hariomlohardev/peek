@@ -1,5 +1,6 @@
 """Issues #23 (serve) + #75 (--open)."""
 
+import re
 import urllib.request
 
 from typer.testing import CliRunner
@@ -8,6 +9,13 @@ from peek.cli import app
 from peek.serve import ReportServer
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    """Strip ANSI escapes — some CI environments force color in help output."""
+    return _ANSI_RE.sub("", text)
 
 
 def _tiny_repo(tmp_path):
@@ -20,7 +28,7 @@ def _tiny_repo(tmp_path):
 def test_serve_help():
     r = runner.invoke(app, ["serve", "--help"])
     assert r.exit_code == 0, r.output
-    assert "--open" in r.output
+    assert "--open" in _plain(r.output)
     assert "4181" in r.output
 
 

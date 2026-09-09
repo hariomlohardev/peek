@@ -1,9 +1,19 @@
 """Test peek . dot handling — ensures `peek .` and `peek` work as TUI entry points."""
 
+import re
+
 from typer.testing import CliRunner
+
 from peek.cli import app
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    """Strip ANSI escapes — some CI environments force color in help output."""
+    return _ANSI_RE.sub("", text)
 
 
 def test_peek_dot_no_tui():
@@ -129,7 +139,7 @@ def test_find_help_shows_example():
     """Issue #14: `peek find --help` must show a copy-paste example."""
     r = runner.invoke(app, ["find", "--help"])
     assert r.exit_code == 0, r.output
-    assert 'peek find "auth" . --limit 5' in r.output
+    assert 'peek find "auth" . --limit 5' in _plain(r.output)
 
 
 def test_all_commands_help_dispatch():
