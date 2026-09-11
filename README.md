@@ -13,7 +13,7 @@
   <a href="https://github.com/hariomlohardev/peek/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hariomlohardev/peek" alt="License"/></a>
   <a href="https://github.com/hariomlohardev/peek"><img src="https://img.shields.io/github/stars/hariomlohardev/peek?style=social" alt="Stars"/></a>
   <img src="https://img.shields.io/badge/made%20with-Rich%20%2B%20Textual-ff7ed8" alt="Rich+Textual"/>
-  <img src="https://img.shields.io/badge/tests-262%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-263%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
   <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 </p>

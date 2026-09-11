@@ -2,6 +2,10 @@
 
 All notable changes to `peek` will be documented here.
 
+## 0.6.1 — 2026-09-11
+- **fix** — TUI crash on latest Textual (8.x): `_languages_renderable()` returned `Static("")` on empty `by_lang`, which `compose()` wrapped in `Static(..., id="langs")` → `VisualError: unable to display 'Static' type`. Now returns a `Panel("No languages")` like the other empty states; regression covered by `peek/tests/test_tui_langs_bug.py` (empty scan + `Static` wrap check).
+- **release** — `pyproject.toml` + `__version__` `0.6.1`, tests badges refreshed (263 passed, 4 skipped). Manifests (`Formula/`, `scoop/`, `winget/`) stay pinned at 0.6.0 + its tarball hash until the maintainer tags `v0.6.1` and refreshes them.
+
 ## 0.6.0 — 2026-09-09
 - **perf** — single-pass `scan()`: one capped file open per file instead of three (binary sniff + LOC count + entry-guard re-read folded into `_read_and_count`); opens/file 3.0 → 1.0, proven by `test_scan_single_open_per_file` (deterministic) + profiler evidence (92% of scan time was file opens). Wall-clock on a loaded box showed no speedup (syscall cost inflated between runs), so no speedup number is claimed — see `docs.md` Performance note.
 - **trace everywhere** — `peek_trace` MCP tool (`symbol`/`at`/`depth`/`direction`/`cross_file`/`show_externals`, depth clamped 1–6), wired into `TOOLS`, `handle_tool`, `smithery.yaml`, and the MCP docs table.
