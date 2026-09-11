@@ -1,0 +1,819 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/internal/master/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASTER — Archived (merged into docs.md) - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#master-archived-merged-into-docsmd" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASTER — Archived (merged into docs.md)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../research/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="master-archived-merged-into-docsmd">MASTER — Archived (merged into docs.md)<a class="headerlink" href="#master-archived-merged-into-docsmd" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Archived:</strong> This was the final master state doc on branch <code>polish-100</code> (2026-08-11). Its unique <strong>TUI continuous animations</strong> section has been merged into <a href="../docs.md#tui-guide"><code>docs.md</code></a>. Kept here for history — do not edit. For current docs see <code>docs.md</code> and <code>README.md</code>.</p>
+</blockquote>
+<hr />
+<h1 id="master-peek-final">MASTER — peek final<a class="headerlink" href="#master-peek-final" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>peek v0.1.0 — htop for codebases — final master state</strong>
+<code>pip install peek &amp;&amp; peek .</code> — 10 themes, best TUI, all bugs fixed, 74 tests green.
+Branch: <code>polish-100</code> (from <code>themes-10</code> → <code>main</code>) ready. No push. All local commits.</p>
+</blockquote>
+<p align="center">
+  <img src="../../peek/assets/themes/anthropic-pro.svg" width="800" alt="peek master — anthropic-pro" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/master-ready-brightgreen" alt="master"/>
+  <img src="https://img.shields.io/badge/tests-74%20passed-brightgreen" alt="tests"/>
+  <img src="https://img.shields.io/badge/themes-10-blueviolet" alt="themes"/>
+  <img src="https://img.shields.io/badge/UI-fixed-success" alt="ui"/>
+  <img src="https://img.shields.io/badge/TUI-best%20with%20animations-ff7ed8" alt="tui"/>
+</p>
+
+<hr />
+<h2 id="tldr-whats-in-master">TL;DR — What’s in master<a class="headerlink" href="#tldr-whats-in-master" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Best TUI</strong> — warm professional (anthropic-pro default) with <strong>subtle + continuous animations</strong>: 220 ms fade, 160 ms list stagger, <strong>live pulse</strong> <code>◐◑◒◓</code> every 0.28 s, <strong>rotating tips</strong> every 3 s, <strong>border pulse</strong> every 1.8 s — feels alive, not noisy.</li>
+<li><strong>10 themes</strong> — <code>peek --theme-list</code> → anthropic-pro, cinematic, dracula, nord, catppuccin-mocha, tokyo-night, solarized-dark, github-dark, monokai, minimal-mono — same layout, only tokens change, TUI + static + HTML all themed.</li>
+<li><strong>All UI fixed</strong> — 3 shipped bugs + 1 TDD-found fixed, CSS now <code>linear</code>, <code>asyncio</code> import, <code>/tmp</code> Win, <code>SpinnerColumn</code> API.</li>
+<li><strong>Tests: 74 passed, 1 skipped</strong> — TDD: watch fail → minimal green → refactor. 43 before + 14 themes + 29 comprehensive + 2 demo = 74.</li>
+<li><strong>Continuous change</strong> — TUI never static: spinner rotates, tip cycles, border breathes, list staggers, panels fade. Static <code>peek --no-tui</code> staggers 40/30/30 ms.</li>
+<li><strong>Demo by code</strong> — <code>peek/assets/demo.gif</code> (800×450, Pillow, &lt;3 MB, ~15 s) + <code>demo.svg</code> + <code>demo.html</code> — all code-generated via <code>python -m peek.tools.gen_demo</code>.</li>
+<li><strong>Docs + screenshots</strong> — <code>docs.md</code> + 10 SVGs in <code>peek/assets/themes/*.svg</code> (800×420) — all generated, embedded.</li>
+</ul>
+<hr />
+<h2 id="ui-fixed-all-4">UI Fixed — All 4<a class="headerlink" href="#ui-fixed-all-4" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Bug</th>
+<th>Symptom</th>
+<th>Fix</th>
+<th>Commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>ease-out</code> invalid</td>
+<td><code>CSS parsing failed: expected easing function; found 'ease-out'</code> at <code>tui.py:29</code> — TUI would not start</td>
+<td><code>ease-out</code> → <code>linear</code> (Textual valid: <code>linear</code>, <code>in_out_cubic</code>…) in <code>tui.py</code> 4 places</td>
+<td><code>8dfb76a</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>asyncio</code> missing</td>
+<td><code>NameError: name 'asyncio' is not defined</code> at <code>tui.py:500</code> when filtering <code>hellp</code> → <code>filtered=[]</code></td>
+<td><code>import asyncio</code> at top of <code>tui.py</code></td>
+<td><code>2b55926</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>/tmp</code> on Windows</td>
+<td><code>FileNotFoundError: '\\tmp\\cinematic.html'</code> at <code>cli.py:716</code> — <code>peek --html -o /tmp/x.html</code> on Win</td>
+<td><code>_write_output_safely</code> maps <code>/tmp</code> → <code>tempfile.gettempdir()</code>, <code>mkdir -p</code>, fallback <code>peek.html</code></td>
+<td><code>5fb8e0d</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>SpinnerColumn</code> API</td>
+<td><code>TypeError: got unexpected keyword 'spinner'</code> in <code>animations.py:66</code> and <code>cli.py:62</code></td>
+<td><code>spinner="dots"</code> → <code>spinner_name="dots"</code> (Rich <code>SpinnerColumn(spinner_name, style)</code>)</td>
+<td><code>f558d64</code></td>
+</tr>
+</tbody>
+</table>
+<p>All verified via <code>pytest -q</code> and <code>Stylesheet().add_source(CSS)</code> parse check.</p>
+<hr />
+<h2 id="best-tui-ui-how-it-looks-and-feels">Best TUI UI — How it looks and feels<a class="headerlink" href="#best-tui-ui-how-it-looks-and-feels" title="Permanent link">&para;</a></h2>
+<p><strong>Layout</strong> (Textual, <code>peek/assets/themes/*.svg</code> mocks this):</p>
+<div class="highlight"><pre><span></span><code>Header  [peek v0.1.0 — ./demo 0.12s          anthropic-pro]
+Pulse   [ ◐  Tip: / filter • q quit • o open  •  anthropic-pro ]  ← continuous
+Filter  [Filter — try 'auth' — Enter to apply, Esc to clear]    ← hidden until /
+Main:
+  Left (1.28fr):  Summary → Tech Stack → Import Graph → Languages → Detail
+  Right (1fr):    Start Here (ranked list, 12 max) → Detail bottom
+Footer  [q Quit  o Open  / Filter  ? Help]
+</code></pre></div>
+<p><strong>Colors:</strong> Every panel uses theme tokens <code>bg</code>/<code>bg2</code>/<code>surface</code>/<code>panel</code>/<code>line</code>/<code>ink</code>/<code>muted</code>/<code>accent</code>/<code>cyan</code>. No hard-coded <code>ANTHRO</code>. <code>PeekApp.__init__(theme)</code> templates <code>self.CSS</code> from <code>theme.tokens</code> — so <code>peek --theme dracula</code> instantly re-skins header, panels, list highlight (<code>border-left: solid accent</code>), input focus, footer.</p>
+<p><strong>Keys:</strong> <code>q</code>/<code>Ctrl+C</code> quit, <code>j/k</code> or arrows nav, <code>o</code> open in <code>$EDITOR</code>/<code>notepad</code>, <code>/</code> filter, <code>Enter</code> details toast, <code>Esc</code> clear, <code>?</code> help (<code>Theme: dracula • ...</code>).</p>
+<hr />
+<h2 id="animations-subtle-continuous-the-interesting-part">Animations — Subtle + Continuous (the interesting part)<a class="headerlink" href="#animations-subtle-continuous-the-interesting-part" title="Permanent link">&para;</a></h2>
+<p><strong>Static (<code>peek --no-tui</code>):</strong> No <code>Live</code> — just <strong>staggered reveal</strong> when TTY:</p>
+<div class="highlight"><pre><span></span><code>header 0ms → +40ms stats → +30ms Languages → +30ms Summary → +30ms Tech → +30ms Ranked → +30ms Graph → +20ms Largest → tip
+</code></pre></div>
+<p><code>render_static(..., animate=True)</code> only when <code>is_terminal</code> and not <code>record</code>. Feels precise, not flashy.</p>
+<p><strong>TUI — 3 continuous loops</strong> (all <code>linear</code>, not <code>ease-out</code>):</p>
+<ol>
+<li><strong>Live pulse spinner</strong> — <code>◐ ◑ ◒ ◓</code> in <code>#pulse</code> dock top, <code>set_interval(0.28s, _tick_pulse)</code> → rotates, <code>accent</code> colored, always moving — tells user it’s alive.</li>
+<li><strong>Rotating tips</strong> — <code>self._tips = ["Tip: / filter…", "j/k nav…", "Theme: X…", "peek --no-tui…"]</code>, <code>set_interval(3.0s, _tick_tip)</code> → cycles, so footer/pulse never static. Text: <code>◐  Tip: / filter • q quit • o open  •  dracula</code>.</li>
+<li><strong>Border breathe</strong> — <code>set_interval(1.8s, _tick_border)</code> toggles <code>right</code> panel <code>pulse</code> class → <code>border: solid accent</code> ↔ <code>line</code>. Subtle breathing, not flashy.</li>
+<li><strong>Panel fade</strong> — on mount: <code>left/right/detail</code> <code>opacity 0→1 220ms linear</code> (<code>right +60ms</code> delay), <code>left.in</code> etc.</li>
+<li><strong>List stagger</strong> — <code>_stagger_list</code> async: <code>await asyncio.sleep(0.016 + idx*0.008)</code> per <code>ListItem</code>, <code>opacity 0→1 160ms linear, background 120ms linear</code>, highlight <code>border-left: solid accent</code>.</li>
+<li><strong>Scanner spinner</strong> — <code>cli._scan_with_spinner</code> Rich <code>Progress(SpinnerColumn(spinner_name="dots", style=accent))</code> + <code>TextColumn</code> + <code>threading</code> 0.12 s min visible, themed <code>accent</code>.</li>
+</ol>
+<p><strong>Why continuous?</strong> Viral screenshot needs wow, but pro user needs calm. Continuous <code>◐</code> + tip rotation + border breathe makes TUI feel like <code>htop</code> — alive, not dead static, but never auto-typing or flashing.</p>
+<hr />
+<h2 id="10-themes-all-in-master">10 Themes — All in master<a class="headerlink" href="#10-themes-all-in-master" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>--theme-list
+peek<span class="w"> </span>--theme<span class="w"> </span>dracula
+peek<span class="w"> </span>--theme<span class="w"> </span>nord<span class="w"> </span>--no-tui
+peek<span class="w"> </span>--theme<span class="w"> </span>dracula<span class="w"> </span>--html<span class="w"> </span>-o<span class="w"> </span>out.html
+<span class="nv">PEEK_THEME</span><span class="o">=</span>tokyo-night<span class="w"> </span>peek
+<span class="nb">echo</span><span class="w"> </span><span class="s1">'theme = "dracula"'</span><span class="w"> </span>&gt;<span class="w"> </span>~/.peek/config.toml
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Accent → Bg</th>
+<th>Label</th>
+<th>Preview</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>anthropic-pro</td>
+<td><code>#D4A27F</code> → <code>#141413</code></td>
+<td>Warm editorial (default)</td>
+<td><img alt="anthropic-pro" src="../../peek/assets/themes/anthropic-pro.svg" /></td>
+</tr>
+<tr>
+<td>cinematic</td>
+<td><code>#FFE600</code> → <code>#070A14</code></td>
+<td>Neon viral</td>
+<td><img alt="cinematic" src="../../peek/assets/themes/cinematic.svg" /></td>
+</tr>
+<tr>
+<td>dracula</td>
+<td><code>#BD93F9</code> → <code>#282A36</code></td>
+<td>Purple haze</td>
+<td><img alt="dracula" src="../../peek/assets/themes/dracula.svg" /></td>
+</tr>
+<tr>
+<td>nord</td>
+<td><code>#88C0D0</code> → <code>#2E3440</code></td>
+<td>Arctic</td>
+<td><img alt="nord" src="../../peek/assets/themes/nord.svg" /></td>
+</tr>
+<tr>
+<td>catppuccin-mocha</td>
+<td><code>#CBA6F7</code> → <code>#1E1E2E</code></td>
+<td>Pastel cozy</td>
+<td><img alt="catppuccin-mocha" src="../../peek/assets/themes/catppuccin-mocha.svg" /></td>
+</tr>
+<tr>
+<td>tokyo-night</td>
+<td><code>#7AA2F7</code> → <code>#1A1B26</code></td>
+<td>Electric storm</td>
+<td><img alt="tokyo-night" src="../../peek/assets/themes/tokyo-night.svg" /></td>
+</tr>
+<tr>
+<td>solarized-dark</td>
+<td><code>#268BD2</code> → <code>#002B36</code></td>
+<td>Teal classic</td>
+<td><img alt="solarized-dark" src="../../peek/assets/themes/solarized-dark.svg" /></td>
+</tr>
+<tr>
+<td>github-dark</td>
+<td><code>#58A6FF</code> → <code>#0D1117</code></td>
+<td>Familiar</td>
+<td><img alt="github-dark" src="../../peek/assets/themes/github-dark.svg" /></td>
+</tr>
+<tr>
+<td>monokai</td>
+<td><code>#F92672</code> → <code>#272822</code></td>
+<td>Hot pink</td>
+<td><img alt="monokai" src="../../peek/assets/themes/monokai.svg" /></td>
+</tr>
+<tr>
+<td>minimal-mono</td>
+<td><code>#E5E5E5</code> → <code>#111111</code></td>
+<td>Grayscale</td>
+<td><img alt="minimal-mono" src="../../peek/assets/themes/minimal-mono.svg" /></td>
+</tr>
+</tbody>
+</table>
+<p><code>peek/assets/themes/*.svg</code> are 800×420 generated previews (real layout).</p>
+<hr />
+<h2 id="tests-74-passed-tdd">Tests — 74 passed, TDD<a class="headerlink" href="#tests-74-passed-tdd" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pytest -q
+74 passed, 1 skipped, 8104 warnings
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>n</th>
+<th>Proves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_scanner.py</code></td>
+<td>8</td>
+<td>empty, ignores, gitignore, binary/huge, symlink, max_files, tech/entry, never crashes</td>
+</tr>
+<tr>
+<td><code>test_analyzer.py</code></td>
+<td>9</td>
+<td>graph, relative, circular, syntax error, non-python, empty, frameworks, entry bonus, BOM</td>
+</tr>
+<tr>
+<td><code>test_renderer_pack_find.py</code></td>
+<td>12</td>
+<td>render no crash, html, scan-only, tokens, pack basic/query/budget, find, llm fallback, cli import</td>
+</tr>
+<tr>
+<td><code>test_themes.py</code></td>
+<td>14</td>
+<td>10 registry, tokens 15×hex, case-insensitive, unknown, fallback, resolve precedence, config missing/malformed, render/html per-theme, tui CSS, cli list+unknown, compat</td>
+</tr>
+<tr>
+<td><code>test_comprehensive_tdd.py</code></td>
+<td>29+1 skip</td>
+<td>Full integration</td>
+</tr>
+<tr>
+<td><code>test_demo_assets.py</code></td>
+<td>2</td>
+<td>GIF valid + HTML exists</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture-final-master">Architecture — Final master<a class="headerlink" href="#architecture-final-master" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph LR
+  CLI[cli.py&lt;br/&gt;--theme resolve] --&gt; SCAN[scanner.py]
+  SCAN --&gt; ANA[analyzer.py&lt;br/&gt;PageRank]
+  ANA --&gt; REN[renderer.py&lt;br/&gt;themed Rich]
+  ANA --&gt; TUI[tui.py&lt;br/&gt;Textual + pulse]
+  CLI --&gt; PACK[pack.py]
+  CLI --&gt; FIND[find.py]
+  CLI --&gt; LLM[llm.py]
+  THEMES[themes.py&lt;br/&gt;10 Theme] --&gt; CLI
+  THEMES --&gt; REN
+  THEMES --&gt; TUI
+  CONFIG[config.py] --&gt; THEMES</code></pre>
+<hr />
+<h2 id="how-to-run-master">How to run master<a class="headerlink" href="#how-to-run-master" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>polish-100
+pytest<span class="w"> </span>-q<span class="w">                </span><span class="c1"># 74 passed</span>
+peek<span class="w"> </span>--theme-list
+peek<span class="w"> </span>--theme<span class="w"> </span>dracula<span class="w"> </span>--no-tui<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+peek<span class="w"> </span>--theme<span class="w"> </span>dracula<span class="w"> </span>--html<span class="w"> </span>-o<span class="w"> </span>/tmp/preview.html<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>start<span class="w"> </span>/tmp/preview.html
+peek<span class="w">                     </span><span class="c1"># TUI — watch pulse ◐ rotate + tips cycle + border breathe, q to quit</span>
+<span class="nv">PEEK_THEME</span><span class="o">=</span>nord<span class="w"> </span>peek
+cat<span class="w"> </span>docs.md<span class="w">              </span><span class="c1"># full manual</span>
+</code></pre></div>
+<p>Branch <code>polish-100</code> is master-ready + demo. No push per rule.</p>
+<hr />
+<h2 id="demo-video-by-code">Demo Video (by code)<a class="headerlink" href="#demo-video-by-code" title="Permanent link">&para;</a></h2>
+<p align="center">
+  <img src="../../peek/assets/demo.gif" width="800" alt="peek demo — code-generated 800x450" />
+</p>
+
+<p>GIF is 800×450, ~15 s, 10 fps, 145 frames, 529 KB, loop, themed <code>anthropic-pro</code>.</p>
+<hr />
+<h2 id="screenshots">Screenshots<a class="headerlink" href="#screenshots" title="Permanent link">&para;</a></h2>
+<p>All SVG previews in <code>peek/assets/themes/</code>.</p>
+<p><em>Archived from <code>master.md</code> 2026-08-11 — see <code>docs.md#tui-guide</code> for current. Branch <code>polish-100</code>. Author Hariom Lohar.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

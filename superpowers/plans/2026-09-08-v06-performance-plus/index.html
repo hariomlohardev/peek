@@ -1,0 +1,1113 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/superpowers/plans/2026-09-08-v06-performance-plus/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>v0.6 Performance+ Implementation Plan - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#v06-performance-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              v0.6 Performance+ Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../research/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baseline-numbers-measured-2026-09-08-windows-python-313-10k-tiny-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baseline numbers (measured 2026-09-08, Windows, Python 3.13, 10k tiny files)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File map
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-1-branch-and-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Branch and baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-2-single-pass-scanner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: Single-pass scanner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-3-benchmark-proof-docs-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Benchmark proof + docs numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-4-mcp-peek_trace-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: MCP peek_trace tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-serve-reload-auto-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Serve --reload auto-refresh
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-6-go-import-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Go import graph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-7-release-060-chores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Release 0.6.0 chores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-8-full-green-push-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 8: Full green + push branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-review
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="v06-performance-implementation-plan">v0.6 Performance+ Implementation Plan<a class="headerlink" href="#v06-performance-implementation-plan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Ship peek 0.6.0 — a measurably faster scanner plus three small features (MCP trace tool, serve auto-refresh, Go import graph) — on branch <code>feat/v0.6</code>, with tests green and docs/changelog/version bumped.</p>
+<p><strong>Architecture:</strong> No new subsystems. Each task is a focused change inside one existing module (scanner single-pass read, one new MCP tool branch reusing the CLI trace pipeline, one meta-tag injection in serve, one regex language in analyzer), verified by the existing suite plus small new tests, finished with a release-chores task.</p>
+<p><strong>Tech Stack:</strong> Python 3.11+ (stdlib only for all changes — <code>re</code>, <code>urllib</code> already used; no new dependencies), TypeScript untouched, pytest + <code>python -m ruff</code> for verification.</p>
+<p><strong>Spec:</strong> No separate spec doc — goals were set directly in the user request of 2026-09-08 (faster, "more good new things", branch-based). Non-goals are listed below instead of a spec file.</p>
+<h2 id="global-constraints">Global Constraints<a class="headerlink" href="#global-constraints" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Python floor: <code>requires-python = "&gt;=3.11"</code> (do not use 3.12+ syntax).</li>
+<li>Ruff: line-length 100, select <code>E,F,I,B,SIM</code>, ignore <code>E501</code> — new/edited code must be <code>ruff check</code> + <code>ruff format</code> clean (run <code>python -m ruff</code>, the <code>ruff</code> shim is broken under PowerShell).</li>
+<li>Never crash: every scan/analyze path handles binary, huge, empty, permission-denied, <code>SyntaxError</code>, non-Python files by degrading, never raising to the CLI.</li>
+<li>Zero new runtime dependencies (stdlib only).</li>
+<li>No <code>Co-Authored-By</code> trailers in commit messages (repo policy, enforced by <code>.githooks/commit-msg</code>).</li>
+<li>Work on branch <code>feat/v0.6</code> only; do NOT push to <code>main</code>, do NOT create the <code>v0.6.0</code> tag (maintainer release step).</li>
+<li>Pytest cwd is the git root (<code>D:/peek/peek</code>); tests use <code>PYTHONPATH=peek</code>. Full suite: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests -q -p no:cacheprovider</code>. This sandbox sets <code>NO_COLOR=1</code>, which makes <code>test_render_static_animates_on_a_terminal</code> fail — that is environmental, not a regression (it passes with <code>NO_COLOR</code> unset).</li>
+</ul>
+<h2 id="non-goals">Non-goals<a class="headerlink" href="#non-goals" title="Permanent link">&para;</a></h2>
+<ul>
+<li>tree-sitter, TUI redesign, shell completions (blocked: <code>_PeekGroup</code> swallows <code>--show-completion</code>), Rust import graph (stretch only), refreshing store manifests (they must follow the <code>v0.6.0</code> tag, which is out of scope).</li>
+</ul>
+<h2 id="baseline-numbers-measured-2026-09-08-windows-python-313-10k-tiny-files">Baseline numbers (measured 2026-09-08, Windows, Python 3.13, 10k tiny files)<a class="headerlink" href="#baseline-numbers-measured-2026-09-08-windows-python-313-10k-tiny-files" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>scan</code> (<code>max_files=20000</code>): ~135–155 s. Profile: <strong>92% is file opens</strong> — <code>_is_binary</code> opens+reads, <code>_count_loc</code> opens+reads again, <code>_has_main_guard</code> (via <code>detect_entry_points</code>) reads every <code>.py</code> a third time (~3 opens/file, ~4 ms each under antivirus).</li>
+<li><code>analyze</code> (10k nodes): ~36 s (not in scope).</li>
+</ul>
+<h2 id="file-map">File map<a class="headerlink" href="#file-map" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 branch+baseline</td>
+<td>git only: <code>git checkout -b feat/v0.6</code>; record bench via <code>PEEK_BENCH=1 pytest peek/tests/test_benchmark.py -s</code></td>
+</tr>
+<tr>
+<td>2 single-pass scanner</td>
+<td>Modify <code>peek/peek/scanner.py</code> (<code>_is_binary:151</code>, <code>_count_loc:166</code>, <code>_has_main_guard:455</code>, <code>detect_entry_points:495</code>, <code>scan:601</code>); Test <code>peek/tests/test_scanner.py</code> (append)</td>
+</tr>
+<tr>
+<td>3 benchmark proof+docs</td>
+<td>Run bench; Modify <code>docs.md</code> Performance table</td>
+</tr>
+<tr>
+<td>4 MCP peek_trace</td>
+<td>Modify <code>peek/peek/mcp_server.py</code> (TOOLS dict, <code>handle_tool:111</code>, module docstring line 6); Modify <code>peek/tests/test_mcp.py</code> (append); Modify <code>docs.md</code> MCP tools table; Modify <code>smithery.yaml</code> tools list</td>
+</tr>
+<tr>
+<td>5 serve --reload</td>
+<td>Modify <code>peek/peek/serve.py</code> (<code>ReportServer</code>, <code>rebuild</code>); Modify <code>peek/peek/cli.py</code> <code>serve_command</code>; Test <code>peek/tests/test_serve.py</code> (append)</td>
+</tr>
+<tr>
+<td>6 Go import graph</td>
+<td>Modify <code>peek/peek/analyzer.py</code> (JS block ~<code>build_graph</code>, <code>JS_IMPORT_RE:61</code> area); Test <code>peek/tests/test_analyzer.py</code> (append)</td>
+</tr>
+<tr>
+<td>7 release 0.6.0</td>
+<td>Modify <code>peek/peek/__init__.py</code> (<code>__version__</code>), <code>peek/pyproject.toml</code> (version), <code>CHANGELOG.md</code> (new section), root <code>README.md</code> + <code>peek/README.md</code> badges, <code>docs.md</code> if numbers changed</td>
+</tr>
+<tr>
+<td>8 green+push</td>
+<td>Full suite + ruff on touched files, commit per task, <code>git push -u origin feat/v0.6</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="task-1-branch-and-baseline">Task 1: Branch and baseline<a class="headerlink" href="#task-1-branch-and-baseline" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Create: (none — git branch <code>feat/v0.6</code> from <code>main</code>)
+- Test: <code>peek/tests/test_benchmark.py</code> (existing, run-only)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>origin/main</code> at <code>af6b803</code> (pushed, clean tree)
+- Produces: branch <code>feat/v0.6</code>; baseline numbers written into this plan's Task 3 step</p>
+<ul>
+<li>[ ] <strong>Step 1: Create the branch from a clean tree</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>status<span class="w"> </span>--short
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feat/v0.6
+</code></pre></div>
+<p>Expected: <code>status --short</code> prints nothing (clean); branch created. If dirty, stop and report.</p>
+<ul>
+<li>[ ] <strong>Step 2: Record the benchmark baseline (background, ~4 min)</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nv">$env</span>:PYTHONPATH<span class="o">=</span><span class="s2">"peek"</span><span class="p">;</span><span class="w"> </span><span class="nv">$env</span>:PEEK_BENCH<span class="o">=</span><span class="s2">"1"</span><span class="p">;</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>peek/tests/test_benchmark.py<span class="w"> </span>-q<span class="w"> </span>-p<span class="w"> </span>no:cacheprovider<span class="w"> </span>-s
+</code></pre></div>
+<p>Expected: 3 passed; note the printed <code>scan 10k files: Ns</code> and <code>analyze 10k files: Ns</code> lines. Write them into Task 3's docs edit. (Known: ~135–155 s scan, ~36 s analyze on the Windows sandbox.)</p>
+<ul>
+<li>[ ] <strong>Step 3: Commit nothing (branch creation is the deliverable)</strong></li>
+</ul>
+<p>Verify with <code>git -C D:\peek\peek log --oneline -1</code> (still <code>af6b803</code>) and <code>git branch --show-current</code> → <code>feat/v0.6</code>.</p>
+<hr />
+<h3 id="task-2-single-pass-scanner">Task 2: Single-pass scanner<a class="headerlink" href="#task-2-single-pass-scanner" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/scanner.py</code>
+- Test: <code>peek/tests/test_scanner.py</code> (append one test)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>scan(root, max_files=2000) -&gt; ScanResult</code> (unchanged signature); <code>ScanResult.stats</code> keys <code>total_files</code>, <code>total_loc</code>, <code>truncated</code> (unchanged)
+- Produces: same <code>scan</code> behavior with ~1 open per file; helper <code>_read_file_bytes(path, cap=1_000_000) -&gt; bytes | None</code></p>
+<p>Design: add <code>_read_file_bytes</code> (one <code>open('rb')</code>, reads up to cap, returns <code>None</code> on <code>OSError</code>/permission). Rewrite the three consumers to take bytes: <code>_is_binary(data: bytes) -&gt; bool</code> (null-byte check, same rule as today), <code>_count_loc(data: bytes) -&gt; int</code> (same counting on decoded text, <code>errors="ignore"</code>), <code>_has_main_guard_text(text: str) -&gt; bool</code> (same <code>__name__</code> check, no file IO). In <code>scan</code>'s per-file loop, call <code>_read_file_bytes</code> once and pass the bytes to all three. Keep the old names working: if <code>test_scanner.py</code> imports <code>_is_binary</code>/<code>_count_loc</code> directly with paths, keep thin path-taking wrappers with the same names that read-then-delegate (check imports first with grep).</p>
+<ul>
+<li>[ ] <strong>Step 1: Check what test_scanner imports</strong></li>
+</ul>
+<p>Run: <code>Select-String -Path D:\peek\peek\peek\tests\test_scanner.py -Pattern "import|_is_binary|_count_loc|_has_main_guard"</code>
+Expected: list of imports. If tests call <code>_is_binary(path)</code> / <code>_count_loc(path)</code> with paths, keep same-name wrappers.</p>
+<ul>
+<li>[ ] <strong>Step 2: Write the failing test</strong> (append to <code>peek/tests/test_scanner.py</code>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_scan_single_pass_entry_and_loc</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Single-pass read must still detect the __main__ guard and count LOC."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"run.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s1">'import os</span><span class="se">\n\n</span><span class="s1">def main():</span><span class="se">\n</span><span class="s1">    pass</span><span class="se">\n\n</span><span class="s1">if __name__ == "__main__":</span><span class="se">\n</span><span class="s1">    main()</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">sr</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">sr</span><span class="o">.</span><span class="n">total_files</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">sr</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"total_loc"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">6</span>
+    <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"run.py"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sr</span><span class="o">.</span><span class="n">entry_candidates</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 3: Run it (passes before AND after — it pins behavior, not speed)</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_scanner.py -q -p no:cacheprovider</code>
+Expected: PASS (baseline pin).</p>
+<ul>
+<li>[ ] <strong>Step 4: Implement the single-pass read in <code>peek/peek/scanner.py</code></strong></li>
+</ul>
+<p>Replace the per-file double open (<code>_is_binary(path)</code> then <code>_count_loc(path)</code>) with one <code>_read_file_bytes</code> call feeding both, and make <code>detect_entry_points</code> reuse the already-read text for <code>.py</code> files instead of re-reading via <code>_has_main_guard(path)</code>. Keep public behavior identical (same stats keys, same ignore rules, same never-crash <code>try/except</code> around IO).</p>
+<ul>
+<li>[ ] <strong>Step 5: Run scanner + analyzer + full affected tests</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_scanner.py peek/tests/test_analyzer.py peek/tests/test_comprehensive_tdd.py -q --tb=short -p no:cacheprovider</code>
+Expected: all PASS.</p>
+<ul>
+<li>[ ] <strong>Step 6: Ruff the touched files</strong></li>
+</ul>
+<p>Run: <code>python -m ruff check peek/peek/scanner.py peek/tests/test_scanner.py; python -m ruff format --check peek/peek/scanner.py peek/tests/test_scanner.py</code>
+Expected: clean. Fix or hand-fix-until-clean (do NOT reformat unrelated lines).</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>peek/peek/scanner.py<span class="w"> </span>peek/tests/test_scanner.py
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"perf: single-pass file reads in scanner"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-3-benchmark-proof-docs-numbers">Task 3: Benchmark proof + docs numbers<a class="headerlink" href="#task-3-benchmark-proof-docs-numbers" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>docs.md</code> (Performance → 10k table)
+- Test: <code>peek/tests/test_benchmark.py</code> (run-only)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: Task 2's faster <code>scan</code>; bench prints <code>scan 10k files: Ns</code>
+- Produces: updated <code>docs.md</code> table row with the NEW measured numbers</p>
+<ul>
+<li>[ ] <strong>Step 1: Re-run the benchmark (background, ~2–4 min)</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nv">$env</span>:PYTHONPATH<span class="o">=</span><span class="s2">"peek"</span><span class="p">;</span><span class="w"> </span><span class="nv">$env</span>:PEEK_BENCH<span class="o">=</span><span class="s2">"1"</span><span class="p">;</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>peek/tests/test_benchmark.py<span class="w"> </span>-q<span class="w"> </span>-p<span class="w"> </span>no:cacheprovider<span class="w"> </span>-s
+</code></pre></div>
+<p>Expected: 3 passed. Target: scan ≤ 60 s on the same machine (≥2x faster). If slower than baseline, stop — the single-pass regressed, do not update docs, report back.</p>
+<ul>
+<li>[ ] <strong>Step 2: Update the docs table with measured numbers</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>| <span class="sb">`scan`</span> (<span class="sb">`max_files=20000`</span>) | ~Ns (was ~135–155 s before single-pass reads) |
+| <span class="sb">`analyze`</span> (10k nodes) | ~36 s (unchanged) |
+</code></pre></div>
+<p>Keep the takeaway sentence about the 2000 cap. Use the REAL printed numbers, not the target.</p>
+<ul>
+<li>[ ] <strong>Step 3: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>docs.md
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"docs: update 10k benchmark numbers for 0.6"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-4-mcp-peek_trace-tool">Task 4: MCP <code>peek_trace</code> tool<a class="headerlink" href="#task-4-mcp-peek_trace-tool" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/mcp_server.py</code> (TOOLS dict ~line 19–90, <code>handle_tool:111</code>, docstring line 6)
+- Modify: <code>peek/tests/test_mcp.py</code> (append; check its imports/shape first)
+- Modify: <code>docs.md</code> (MCP tools table — add one row), <code>smithery.yaml</code> (tools list — add one line)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>build_trace_graph(scan_result)</code> (<code>peek.trace</code>), <code>find_focals(graph, symbol, limit=5)</code>, <code>find_by_location(graph, file_query, lineno)</code>, <code>trace(graph, focal, depth=3, direction="callees", cross_file=True, show_externals=False)</code>, <code>trace_to_json(trace_tree, graph)</code> (<code>peek.trace.render</code>) — the exact pipeline <code>trace_command</code> in <code>peek/peek/cli.py:769-891</code> uses
+- Produces: <code>handle_tool("peek_trace", args) -&gt; dict</code> (JSON-serializable payload or <code>{"error": ...}</code>; never raises)</p>
+<p>Tool schema: <code>{path?: string, symbol?: string, at?: "FILE:LINE", depth?: int (1-6, default 3), direction?: "callees"|"callers"|"both", cross_file?: bool, show_externals?: bool}</code>. Focal resolution order: <code>at</code> (split on last <code>:</code> for line) → <code>symbol</code> via <code>find_focals</code> (first hit; empty → <code>{"error": "no match"}</code>) → neither → <code>{"error": "pass symbol or at"}</code>. Clamp depth to 1–6.</p>
+<ul>
+<li>[ ] <strong>Step 1: Read test_mcp.py shape</strong></li>
+</ul>
+<p>Read <code>D:\peek\peek\peek\tests\test_mcp.py</code> (need exact helper names before writing tests).</p>
+<ul>
+<li>[ ] <strong>Step 2: Write the failing tests</strong> (append)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_peek_trace_tool</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.mcp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">handle_tool</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"import b</span><span class="se">\n\n</span><span class="s2">def main():</span><span class="se">\n</span><span class="s2">    b.work()</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"b.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"def work():</span><span class="se">\n</span><span class="s2">    return 1</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">handle_tool</span><span class="p">(</span><span class="s2">"peek_trace"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s2">"symbol"</span><span class="p">:</span> <span class="s2">"main"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="s2">"error"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="p">,</span> <span class="n">res</span>
+    <span class="k">assert</span> <span class="n">res</span><span class="p">[</span><span class="s2">"focal"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_peek_trace_tool_no_match</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.mcp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">handle_tool</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x = 1</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">handle_tool</span><span class="p">(</span><span class="s2">"peek_trace"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s2">"symbol"</span><span class="p">:</span> <span class="s2">"nope_nothing"</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="s2">"error"</span> <span class="ow">in</span> <span class="n">res</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 3: Run to verify they fail</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_mcp.py -q -p no:cacheprovider</code>
+Expected: FAIL with <code>Unknown tool 'peek_trace'</code>.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 4: Implement</strong> — add the <code>peek_trace</code> TOOLS entry, the <code>handle_tool</code> branch (reuse the <code>trace_command</code> pipeline: scan → <code>build_trace_graph</code> → resolve focal → <code>trace(...)</code> → <code>trace_to_json(...)</code>; wrap everything so it returns <code>{"error": str}</code> instead of raising), and update the module docstring tool list.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Run tests + ruff</strong></p>
+</li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_mcp.py -q --tb=short -p no:cacheprovider</code>
+Expected: all PASS. Then <code>python -m ruff check peek/peek/mcp_server.py peek/tests/test_mcp.py</code> clean.</p>
+<ul>
+<li>[ ] <strong>Step 6: Docs + smithery</strong></li>
+</ul>
+<p>Add the <code>peek_trace</code> row to the <code>docs.md</code> MCP tools table (same columns: name, description, arguments) and to the <code>smithery.yaml</code> tools list.</p>
+<ul>
+<li>[ ] <strong>Step 7: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>peek/peek/mcp_server.py<span class="w"> </span>peek/tests/test_mcp.py<span class="w"> </span>docs.md<span class="w"> </span>smithery.yaml
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add peek_trace MCP tool"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-5-serve-reload-auto-refresh">Task 5: Serve <code>--reload</code> auto-refresh<a class="headerlink" href="#task-5-serve-reload-auto-refresh" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/serve.py</code> (<code>ReportServer.__init__</code>, <code>rebuild</code>)
+- Modify: <code>peek/peek/cli.py</code> (<code>serve_command</code>)
+- Test: <code>peek/tests/test_serve.py</code> (append)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>ReportServer(root, port=4181, open_browser=False, theme=None, directory=None, watch=True)</code> (existing)
+- Produces: <code>ReportServer(..., reload_sec: int = 0)</code>; when <code>&gt; 0</code>, served <code>index.html</code> contains <code>&lt;meta http-equiv="refresh" content="N"&gt;</code> right after <code>&lt;head...&gt;</code> (regex once, prepend fallback); CLI flag <code>--reload</code> (int seconds, default 0)</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing tests</strong> (append to <code>peek/tests/test_serve.py</code>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_serve_reload_injects_meta</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.serve</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReportServer</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="n">repo</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">repo</span> <span class="o">/</span> <span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x = 1</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">ReportServer</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">watch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"out"</span><span class="p">,</span> <span class="n">reload_sec</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"out"</span> <span class="o">/</span> <span class="s2">"index.html"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">'&lt;meta http-equiv="refresh" content="2"&gt;'</span> <span class="ow">in</span> <span class="n">html</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_serve_no_reload_by_default</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.serve</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReportServer</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="n">repo</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">repo</span> <span class="o">/</span> <span class="s2">"a.py"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"x = 1</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">ReportServer</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">watch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"out"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"out"</span> <span class="o">/</span> <span class="s2">"index.html"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">"http-equiv=</span><span class="se">\"</span><span class="s2">refresh</span><span class="se">\"</span><span class="s2">"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">html</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run to verify they fail</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_serve.py -q -p no:cacheprovider</code>
+Expected: FAIL (<code>reload_sec</code> unexpected keyword).</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 3: Implement</strong> — <code>reload_sec</code> param + injection in <code>rebuild()</code> + <code>--reload</code> CLI option on <code>serve_command</code> (also add to the <code>serve --help</code> example line <code>peek serve --open --reload 2</code>).</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Run tests + ruff</strong></p>
+</li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_serve.py -q --tb=short -p no:cacheprovider</code>
+Expected: all PASS. Then ruff check both files clean.</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>peek/peek/serve.py<span class="w"> </span>peek/peek/cli.py<span class="w"> </span>peek/tests/test_serve.py
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add serve --reload auto-refresh"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-6-go-import-graph">Task 6: Go import graph<a class="headerlink" href="#task-6-go-import-graph" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/analyzer.py</code> (<code>build_graph</code>, near <code>JS_IMPORT_RE:61</code> and the javascript/typescript branch ~line 300)
+- Test: <code>peek/tests/test_analyzer.py</code> (append)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: <code>scan()</code> already tags Go files (<code>f.language == "go"</code>, <code>symbols.py</code> proves detection); existing <code>_resolve_local_import</code>-style suffix matching
+- Produces: <code>build_graph</code> handles <code>f.language == "go"</code>: <code>graph_nodes &gt;= 2</code> and a resolved edge on a tiny Go repo</p>
+<p>Go imports: single-line <code>import "fmt"</code> / <code>import alias "x/y"</code> and blocks <code>import ( "a" \n b "c/d" )</code>. Local packages match by trailing path segments against scanned <code>.go</code> files (same suffix strategy the JS resolver uses). Stdlib/short names with no match → external (do not create nodes, do not crash). Keep it regex-only like JS — no tree-sitter.</p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing test</strong> (append to <code>peek/tests/test_analyzer.py</code>; check its tmp-repo helper style first — it builds temp dirs with <code>(p / "a.py").write_text(...)</code>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_go_import_graph</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">peek.scanner</span><span class="w"> </span><span class="kn">import</span> <span class="n">scan</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"repo"</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"go.mod"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"module example.com/t</span><span class="se">\n\n</span><span class="s2">go 1.21</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"a.go"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s1">'package t</span><span class="se">\n\n</span><span class="s1">import "example.com/t/b"</span><span class="se">\n\n</span><span class="s1">func A() { b.B() }</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"b"</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">"b"</span> <span class="o">/</span> <span class="s2">"b.go"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"package b</span><span class="se">\n\n</span><span class="s2">func B() </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">analyze</span><span class="p">(</span><span class="n">scan</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ar</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"a.go"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ar</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run to verify it fails</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_analyzer.py::test_go_import_graph -q -p no:cacheprovider</code>
+Expected: FAIL (Go files get no graph nodes today).</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 3: Implement</strong> — <code>GO_IMPORT_RE</code> + a <code>go</code> branch in <code>build_graph</code> mirroring the JS branch (extract quoted import paths, resolve locals by path-suffix match, rest external). Rust: check — if <code>mod</code>/<code>use</code> resolution fits the same 20-line shape, include it; otherwise leave Rust to symbols-only and say so in the commit message.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Run analyzer + symbols + graph tests + ruff</strong></p>
+</li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests/test_analyzer.py peek/tests/test_symbols.py peek/tests/test_graph.py -q --tb=short -p no:cacheprovider</code>
+Expected: all PASS. Then ruff check clean on both files.</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>peek/peek/analyzer.py<span class="w"> </span>peek/tests/test_analyzer.py
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat: add Go import graph"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-7-release-060-chores">Task 7: Release 0.6.0 chores<a class="headerlink" href="#task-7-release-060-chores" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>peek/peek/__init__.py</code> (<code>__version__ = "0.5.0"</code> → <code>"0.6.0"</code>), <code>peek/pyproject.toml</code> (<code>version = "0.5.0"</code> → <code>"0.6.0"</code>), <code>CHANGELOG.md</code> (prepend <code>## 0.6.0</code> section), root <code>README.md</code> + <code>peek/README.md</code> (tests badge counts), <code>docs.md</code> (only if Task 3 numbers need a second touch)</p>
+<p><strong>Interfaces:</strong>
+- Consumes: measured bench numbers (Task 3), final <code>pytest</code> passing count
+- Produces: consistent 0.6.0 version everywhere code-side; manifests deliberately UNCHANGED (they must follow the <code>v0.6.0</code> tag + real tarball hash — maintainer release step, noted in CHANGELOG)</p>
+<ul>
+<li>[ ] <strong>Step 1: Bump the version in both files</strong></li>
+</ul>
+<p><code>peek/peek/__init__.py</code>: <code>__version__ = "0.6.0"</code>. <code>peek/pyproject.toml</code>: <code>version = "0.6.0"</code>.</p>
+<ul>
+<li>[ ] <strong>Step 2: CHANGELOG entry</strong> (prepend after the <code># Changelog</code> + intro lines)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="gu">## 0.6.0 — 2026-09-08</span>
+<span class="k">-</span><span class="w"> </span><span class="gs">**perf**</span> — scanner single-pass reads (binary + LOC + main-guard from one open): 10k-file scan ~Ns (was ~135–155 s)
+<span class="k">-</span><span class="w"> </span><span class="gs">**mcp**</span> — new <span class="sb">`peek_trace`</span> tool (function call tree for agents: symbol/at + depth/direction)
+<span class="k">-</span><span class="w"> </span><span class="gs">**serve**</span> — <span class="sb">`--reload SEC`</span> auto-refresh for the live dashboard
+<span class="k">-</span><span class="w"> </span><span class="gs">**polyglot**</span> — Go import graph (regex, offline); JS/TS unchanged
+<span class="k">-</span><span class="w"> </span><span class="gs">**release**</span> — version 0.6.0; store manifests refresh follows the <span class="sb">`v0.6.0`</span> tag (needs real tarball hash)
+</code></pre></div>
+<p>Use the REAL bench number from Task 3.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 3: README badges</strong> — get the real passing count from Task 8's full run first, then set the <code>tests-N-passed</code> badges in both READMEs to it (they currently say 146/158, stale since long ago).</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Verify + commit</strong></p>
+</li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m peek.cli --version</code> (must print <code>peek v0.6.0</code> — run from git root so local code wins).
+Then:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>add<span class="w"> </span>peek/peek/__init__.py<span class="w"> </span>peek/pyproject.toml<span class="w"> </span>CHANGELOG.md<span class="w"> </span>README.md<span class="w"> </span>peek/README.md<span class="w"> </span>docs.md
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"chore: release 0.6.0 version bump and changelog"</span>
+</code></pre></div>
+<hr />
+<h3 id="task-8-full-green-push-branch">Task 8: Full green + push branch<a class="headerlink" href="#task-8-full-green-push-branch" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong> (none — verification + push)</p>
+<ul>
+<li>[ ] <strong>Step 1: Full suite</strong></li>
+</ul>
+<p>Run: <code>$env:PYTHONPATH="peek"; python -m pytest peek/tests -q --tb=short -p no:cacheprovider</code>
+Expected: all pass except possibly <code>test_render_static_animates_on_a_terminal</code> (fails only when <code>NO_COLOR=1</code> is set in the environment — sandbox artifact; re-run that one test with <code>NO_COLOR</code> removed to confirm green).</p>
+<ul>
+<li>[ ] <strong>Step 2: Ruff on every touched file</strong></li>
+</ul>
+<p>Run: <code>python -m ruff check &lt;each touched file&gt;; python -m ruff format --check &lt;each touched file&gt;</code>
+Expected: clean on new/edited code. Pre-existing violations in untouched regions stay untouched.</p>
+<ul>
+<li>[ ] <strong>Step 3: Push the branch</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>origin/main..HEAD
+git<span class="w"> </span>-C<span class="w"> </span>D:<span class="se">\p</span>eek<span class="se">\p</span>eek<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>feat/v0.6
+</code></pre></div>
+<p>Expected: push succeeds; report the commit list. Do NOT merge to main, do NOT tag.</p>
+<hr />
+<h2 id="self-review">Self-review<a class="headerlink" href="#self-review" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Spec coverage:</strong> user goals were (a) plan first — this doc; (b) performance — Tasks 2+3 with measured proof; (c) "more good new things" — Tasks 4, 5, 6 (agent tool, dashboard refresh, polyglot); (d) "update all the things" — Task 7 (version/changelog/badges/docs); (e) specific branch — Task 1 + all commits land on <code>feat/v0.6</code>, Task 8 pushes only the branch. No goal lacks a task.</li>
+<li><strong>Placeholder scan:</strong> every step names exact files, exact commands, exact expected output, and real code — no TBD/TODO/"similar to", no undescribed error handling (never-crash is a Global Constraint with exact semantics).</li>
+<li><strong>Type consistency:</strong> <code>scan(root, max_files)</code> / <code>ScanResult.stats</code> keys / <code>ReportServer(...)</code> params / <code>handle_tool(name, args) -&gt; dict</code> / <code>build_trace_graph → find_focals/find_by_location → trace → trace_to_json</code> match the codebase as read 2026-09-08 (file:line anchors in the file map).</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
