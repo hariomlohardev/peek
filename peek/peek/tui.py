@@ -449,7 +449,7 @@ if TEXTUAL_AVAILABLE:
             by_lang = stats.get("by_lang", {})
             t = self._tokens
             if not by_lang:
-                return Static("")
+                return Panel(f"[dim {t['muted']}]No languages[/]", title=f"[bold {t['ink']}]Languages[/]", box=box.ROUNDED, border_style=t["line"], padding=(0, 1))
             tbl = Table(box=box.SIMPLE_HEAD, show_header=True, header_style=f"bold {t['muted']}", padding=(0, 1), border_style=t["line"])
             tbl.add_column("Lang", style=t["ink"])
             tbl.add_column("Files", justify="right", style=t["ink"])
