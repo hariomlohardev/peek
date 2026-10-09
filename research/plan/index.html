@@ -1,0 +1,1269 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The htop for codebases — understand any repo in 5 seconds">
+      
+      
+      
+        <link rel="canonical" href="https://hariomlohardev.github.io/peek/research/plan/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>plan.md — peek : Full 5-Day Build Plan (Day 1 → Launch) - peek — htop for codebases</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#planmd-peek-full-5-day-build-plan-day-1-launch" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="peek — htop for codebases" class="md-header__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            peek — htop for codebases
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              plan.md — peek : Full 5-Day Build Plan (Day 1 → Launch)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Install
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Research
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="peek — htop for codebases" class="md-nav__button md-logo" aria-label="peek — htop for codebases" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    peek — htop for codebases
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hariomlohardev/peek" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hariomlohardev/peek
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-before-day-1-setup-2-hours-do-this-tonight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Before Day 1 — Setup (2 hours, do this tonight)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. Before Day 1 — Setup (2 hours, do this tonight)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-to-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tech-stack-what-to-use-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tech stack — what to use and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-structure-to-create-on-day-1-morning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project structure to create on Day 1 morning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyprojecttoml-create-this-day-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyproject.toml — create this Day 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-1-scanner-9-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 1 — Scanner (9 hours)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-2-analyzer-10-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 2 — Analyzer (10 hours)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-3-renderer-static-tui-10-hours-most-important-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 3 — Renderer: Static + TUI (10 hours) ⭐ Most important day
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-4-polish-p1-features-tests-9-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 4 — Polish + P1 Features + Tests (9 hours)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-5-package-demo-docs-launch-prep-8-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 5 — Package, Demo, Docs, Launch Prep (8 hours)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Day 5 — Package, Demo, Docs, Launch Prep (8 hours)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#readme-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        README template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eod-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EOD checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#day-6-launch-day-not-a-build-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Day 6 — Launch Day (not a build day)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#daily-commands-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daily Commands Cheat Sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-you-fall-behind-scope-cuts-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If You Fall Behind — Scope Cuts (in order)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-check-are-you-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Check — Are You Done?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="planmd-peek-full-5-day-build-plan-day-1-launch">plan.md — <code>peek</code> : Full 5-Day Build Plan (Day 1 → Launch)<a class="headerlink" href="#planmd-peek-full-5-day-build-plan-day-1-launch" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Project:</strong> <code>peek</code> — htop for codebases<br />
+<strong>One-liner:</strong> <code>pip install peek &amp;&amp; peek .</code> → beautiful map of any repo in 5 seconds<br />
+<strong>Stack:</strong> Python + Rich + Textual + AST (no backend, no API key needed)<br />
+<strong>Time:</strong> 5 days × 10-12h/day = ~46h · <strong>LOC:</strong> ~1,000 · <strong>Team:</strong> 1 person<br />
+<strong>Result:</strong> PyPI package + GitHub repo + demo GIF + launch posts<br />
+<strong>Portfolio:</strong> https://hariomlohardev.github.io/</p>
+</blockquote>
+<hr />
+<h2 id="0-before-day-1-setup-2-hours-do-this-tonight">0. Before Day 1 — Setup (2 hours, do this tonight)<a class="headerlink" href="#0-before-day-1-setup-2-hours-do-this-tonight" title="Permanent link">&para;</a></h2>
+<h3 id="what-to-install">What to install<a class="headerlink" href="#what-to-install" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Python 3.11+ (check: python --version)</span>
+python<span class="w"> </span>--version<span class="w">  </span><span class="c1"># need 3.11+</span>
+
+<span class="c1"># 2. Tools</span>
+pip<span class="w"> </span>install<span class="w"> </span>uv<span class="w">              </span><span class="c1"># faster pip (optional but recommended)</span>
+pip<span class="w"> </span>install<span class="w"> </span>build<span class="w"> </span>twine<span class="w">     </span><span class="c1"># for PyPI publishing</span>
+pip<span class="w"> </span>install<span class="w"> </span>ruff<span class="w">            </span><span class="c1"># linter (optional)</span>
+
+<span class="c1"># 3. Check name on PyPI (do FIRST — if taken, rename now)</span>
+pip<span class="w"> </span>index<span class="w"> </span>versions<span class="w"> </span>peek<span class="w">          </span><span class="c1"># if taken, use: codepeek / peek-code / repeek</span>
+<span class="c1"># Alternatives in order: peek &gt; codepeek &gt; peek-code &gt; repeek</span>
+
+<span class="c1"># 4. GitHub repo (create empty, don't push yet)</span>
+<span class="c1"># Go to github.com/new → name: peek → Public → MIT License → Create</span>
+</code></pre></div>
+<h3 id="tech-stack-what-to-use-and-why">Tech stack — what to use and why<a class="headerlink" href="#tech-stack-what-to-use-and-why" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it does</th>
+<th>Why this one</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python 3.11+</strong></td>
+<td>Language</td>
+<td>Your audience is Python devs, AST is native</td>
+</tr>
+<tr>
+<td><strong>Typer</strong></td>
+<td>CLI (<code>peek .</code>, <code>peek --help</code>)</td>
+<td>Best CLI lib, auto --help, minimal boilerplate</td>
+</tr>
+<tr>
+<td><strong>Rich</strong></td>
+<td>Beautiful terminal output</td>
+<td>Makes every output screenshot-worthy</td>
+</tr>
+<tr>
+<td><strong>Textual</strong></td>
+<td>Interactive TUI (<code>peek .</code>)</td>
+<td>Rich's sister — showcase TUI, the wow factor</td>
+</tr>
+<tr>
+<td><strong>pathspec</strong></td>
+<td><code>.gitignore</code> handling</td>
+<td>Respects .gitignore correctly</td>
+</tr>
+<tr>
+<td><strong>pyperclip</strong></td>
+<td>Copy to clipboard (<code>--pack</code>)</td>
+<td>For <code>peek --pack</code> feature</td>
+</tr>
+<tr>
+<td><strong>openai / anthropic</strong></td>
+<td>Optional LLM summary</td>
+<td>Only if user has API key — never required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No heavy deps:</strong> No networkx, no ML models, no database. Keep <code>pip install peek</code> under 10 seconds.</p>
+<h3 id="project-structure-to-create-on-day-1-morning">Project structure to create on Day 1 morning<a class="headerlink" href="#project-structure-to-create-on-day-1-morning" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>peek/
+├── pyproject.toml
+├── README.md
+├── LICENSE (MIT)
+├── .gitignore
+├── peek/
+│   ├── __init__.py        # version = "0.1.0"
+│   ├── cli.py             # Typer app — entry point
+│   ├── scanner.py         # File walk + tech stack + entry points
+│   ├── analyzer.py        # AST graph + ranking + summary
+│   ├── renderer.py        # Rich static output
+│   ├── tui.py             # Textual TUI
+│   ├── llm.py             # Optional LLM summary (Day 4)
+│   └── _ascii_graph.py    # Tiny graph → ASCII helper
+├── tests/
+│   ├── test_scanner.py
+│   ├── test_analyzer.py
+│   └── fixtures/          # 3 sample repos (create Day 1)
+├── assets/
+│   ├── demo.gif           # Record on Day 5
+│   └── screenshot.png
+└── scripts/
+    └── record_demo.py
+</code></pre></div>
+<h3 id="pyprojecttoml-create-this-day-1"><code>pyproject.toml</code> — create this Day 1<a class="headerlink" href="#pyprojecttoml-create-this-day-1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"peek"</span><span class="w">  </span><span class="c1"># or codepeek if peek taken</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"0.1.0"</span>
+<span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"The htop for codebases — understand any repo in 5 seconds"</span>
+<span class="n">readme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"README.md"</span>
+<span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&gt;=3.11"</span>
+<span class="n">license</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">text</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"MIT"</span><span class="p">}</span>
+<span class="n">authors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[{</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"Hari Om Lohar"</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"your@email.com"</span><span class="p">}]</span>
+<span class="n">keywords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"cli"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tui"</span><span class="p">,</span><span class="w"> </span><span class="s2">"codebase"</span><span class="p">,</span><span class="w"> </span><span class="s2">"visualization"</span><span class="p">,</span><span class="w"> </span><span class="s2">"developer-tools"</span><span class="p">,</span><span class="w"> </span><span class="s2">"textual"</span><span class="p">,</span><span class="w"> </span><span class="s2">"rich"</span><span class="p">]</span>
+<span class="n">classifiers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"Programming Language :: Python :: 3"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"Environment :: Console"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"Topic :: Software Development"</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"typer&gt;=0.12"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"rich&gt;=13.0"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"textual&gt;=0.80"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"pathspec&gt;=0.12"</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="k">[project.urls]</span>
+<span class="n">Homepage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"https://github.com/YOUR_USERNAME/peek"</span>
+<span class="n">Repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"https://github.com/YOUR_USERNAME/peek"</span>
+
+<span class="k">[project.scripts]</span>
+<span class="n">peek</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"peek.cli:app"</span>
+
+<span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"hatchling"</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hatchling.build"</span>
+</code></pre></div>
+<hr />
+<h2 id="day-1-scanner-9-hours">Day 1 — Scanner (9 hours)<a class="headerlink" href="#day-1-scanner-9-hours" title="Permanent link">&para;</a></h2>
+<p><strong>Goal by EOD:</strong> <code>peek scan .</code> prints file stats + tech stack + entry points for any repo.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Hours</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Scaffold</td>
+<td>1h</td>
+<td>Create structure above, <code>pyproject.toml</code>, <code>peek/__init__.py</code>, <code>peek/cli.py</code> stub with <code>typer.Typer()</code>, <code>pip install -e .</code> and test <code>peek --help</code> works</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>.gitignore</td>
+<td>1.5h</td>
+<td>Use <code>pathspec</code>: load <code>.gitignore</code> + default ignores (<code>__pycache__</code>, <code>.git</code>, <code>.venv</code>, <code>node_modules</code>, <code>dist</code>, <code>build</code>, <code>.pytest_cache</code>, <code>*.pyc</code>) + <code>.peekignore</code>. Test on real repos (clone <code>requests</code>)</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>File walker</td>
+<td>2h</td>
+<td><code>scanner.py</code>: <code>scan(root: Path) -&gt; ScanResult</code> — walk, collect <code>FileInfo(path, ext, loc, size)</code>, count LOC (non-empty lines), language breakdown. Benchmark on 500-file repo — must be &lt;1 sec</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Tech stack</td>
+<td>1.5h</td>
+<td><code>detect_tech_stack()</code> — check for <code>pyproject.toml</code>, <code>requirements.txt</code>, <code>package.json</code>, <code>Cargo.toml</code>, <code>Dockerfile</code>, <code>Makefile</code> → dict. Parse <code>pyproject.toml</code> for deps</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>Entry points</td>
+<td>2h</td>
+<td><code>detect_entry_points()</code> — heuristics: (1) filename <code>main.py/app.py/cli.py/__main__.py</code>, (2) <code>if __name__ == "__main__"</code>, (3) <code>pyproject.toml [project.scripts]</code>, (4) <code>Dockerfile CMD</code>. Return ranked list</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>CLI + test</td>
+<td>1h</td>
+<td><code>peek scan .</code> prints Rich table. Test: <code>peek scan .</code> on current repo + <code>peek scan /tmp/requests</code> — must work on any path</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EOD check:</strong>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>scan<span class="w"> </span>.<span class="w">                      </span><span class="c1"># Rich table: files, LOC, tech, entries</span>
+peek<span class="w"> </span>scan<span class="w"> </span>/tmp/requests<span class="w">          </span><span class="c1"># works on any repo</span>
+</code></pre></div></p>
+<p><strong>If behind, cut:</strong> LOC accuracy (use file size), <code>pyproject.toml</code> script parsing.</p>
+<hr />
+<h2 id="day-2-analyzer-10-hours">Day 2 — Analyzer (10 hours)<a class="headerlink" href="#day-2-analyzer-10-hours" title="Permanent link">&para;</a></h2>
+<p><strong>Goal by EOD:</strong> <code>peek analyze .</code> builds import graph, ranks files, generates summary.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Hours</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>AST imports</td>
+<td>2.5h</td>
+<td><code>analyzer.py</code>: <code>ast.parse</code> each <code>.py</code> → <code>Import</code>/<code>ImportFrom</code> → resolve to local files vs external. Handle <code>from . import</code>, relative imports. Skip <code>SyntaxError</code> gracefully</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>Graph</td>
+<td>2h</td>
+<td><code>dict[Path, set[Path]]</code> — <code>file → {imported files}</code> + <code>reverse_graph</code> for in-degree. Handle <code>__init__.py</code> packages</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>Ranking</td>
+<td>2h</td>
+<td><code>rank_files()</code> — score = entry bonus ×3 + in-degree ×2 + PageRank-lite (5 iterations) ×1.5 - size/depth penalty. Return <code>RankedFile(path, score, reasons)</code>. Test: does <code>main.py</code> rank top?</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>Summary</td>
+<td>1.5h</td>
+<td><code>summarize()</code> — template: detect framework (<code>fastapi</code>→"FastAPI-based", <code>django</code>→"Django"), DB, queue → sentence. Fallback: "Python project with N modules, entry at X"</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>Wire CLI</td>
+<td>1h</td>
+<td><code>peek analyze .</code> prints ranked list + summary as Rich. <code>AnalyzerResult</code> dataclass</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>Test real repos</td>
+<td>1h</td>
+<td>Clone <code>requests</code>, <code>fastapi</code>, <code>textual</code> → verify ranking makes sense, fix circular imports</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EOD check:</strong>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>analyze<span class="w"> </span>.
+<span class="c1"># Summary: FastAPI-based API with Postgres...</span>
+<span class="c1"># Start Here:</span>
+<span class="c1">#   1. app/main.py (entry, hub) — 9.2</span>
+<span class="c1">#   2. app/core/executor.py (hub) — 8.1</span>
+</code></pre></div></p>
+<p><strong>If behind, cut:</strong> PageRank (use in-degree only), framework detection (generic summary).</p>
+<hr />
+<h2 id="day-3-renderer-static-tui-10-hours-most-important-day">Day 3 — Renderer: Static + TUI (10 hours) ⭐ Most important day<a class="headerlink" href="#day-3-renderer-static-tui-10-hours-most-important-day" title="Permanent link">&para;</a></h2>
+<p><strong>Goal by EOD:</strong> <code>peek .</code> is beautiful. This is the viral day.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Hours</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Rich static</td>
+<td>3h</td>
+<td><code>renderer.py</code>: <code>render_static(result)</code> → 4 panels (Summary, Architecture, Start Here, Stats/Stack) using <code>rich.panel</code>, <code>rich.table</code>, <code>rich.columns</code>. <code>peek . --no-tui</code> must be tweet-ready</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>ASCII graph</td>
+<td>1h</td>
+<td><code>_ascii_graph.py</code>: <code>graph → "cli → api → core → db"</code> one-liner. Keep simple — ranked list IS the graph for MVP</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>TUI skeleton</td>
+<td>2.5h</td>
+<td><code>tui.py</code>: <code>class PeekApp(App)</code> — layout: header + 4 panels + footer, <code>q</code> quit, <code>j/k</code> nav. Mount Rich panels as <code>Static</code> widgets</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>TUI interactivity</td>
+<td>2.5h</td>
+<td>Navigate Start Here list, <code>enter</code> drill into file (show imports/dependents), <code>o</code> open in <code>$EDITOR</code>, <code>/</code> filter</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>Wire <code>peek .</code></td>
+<td>1h</td>
+<td><code>cli.py</code>: <code>peek [PATH]</code> → scan → analyze → render or TUI. Default = TUI, <code>--no-tui</code> = static. Test both</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EOD check:</strong>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>.<span class="w">              </span><span class="c1"># TUI appears, navigable, beautiful — screenshot this</span>
+peek<span class="w"> </span>.<span class="w"> </span>--no-tui<span class="w">     </span><span class="c1"># Static output — also beautiful, pipeable</span>
+<span class="c1"># Both must be tweet-ready at 80x24 and 120x40</span>
+</code></pre></div></p>
+<p><strong>If behind, cut:</strong> <code>enter</code> drill-in, <code>/</code> filter — just nav + quit for MVP.</p>
+<hr />
+<h2 id="day-4-polish-p1-features-tests-9-hours">Day 4 — Polish + P1 Features + Tests (9 hours)<a class="headerlink" href="#day-4-polish-p1-features-tests-9-hours" title="Permanent link">&para;</a></h2>
+<p><strong>Goal by EOD:</strong> P1 features + tests + edge cases handled.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Hours</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td><code>--html</code></td>
+<td>1.5h</td>
+<td><code>peek . --html -o map.html</code> — self-contained HTML (Jinja or Rich <code>export_html</code>) — shareable</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td><code>--pack</code></td>
+<td>2h</td>
+<td><code>peek . --pack</code> — concatenates top-N ranked files within token budget → clipboard (<code>pyperclip</code>) or stdout. <code>peek . --pack --ask "auth"</code> filters by keyword. This is your gitingest-killer</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><code>--find</code></td>
+<td>1h</td>
+<td><code>peek --find "auth" .</code> — keyword search over filenames + content, ranked by analyzer score</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>LLM summary</td>
+<td>1h</td>
+<td><code>llm.py</code> — if <code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code> set, call cheap model for better summary. Never blocks main flow, fallback to heuristic</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>Tests</td>
+<td>2h</td>
+<td><code>tests/test_scanner.py</code>, <code>test_analyzer.py</code> — fixtures: tiny 5-file repo, medium 30-file repo, clone of <code>requests</code>. Assert scan count, ranking, no crash</td>
+</tr>
+<tr>
+<td>4.6</td>
+<td>Edge cases</td>
+<td>1.5h</td>
+<td>Handle: non-Python repos (graceful), huge repos (cap at 2k files), binary files, <code>SyntaxError</code>, empty repos, permission errors. Benchmark: &lt;2 sec for 500 files</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EOD check:</strong>
+<div class="highlight"><pre><span></span><code>peek<span class="w"> </span>.<span class="w"> </span>--html<span class="w"> </span>-o<span class="w"> </span>/tmp/peek.html<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>open<span class="w"> </span>/tmp/peek.html
+peek<span class="w"> </span>.<span class="w"> </span>--pack<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-c
+peek<span class="w"> </span>--find<span class="w"> </span><span class="s2">"auth"</span><span class="w"> </span>.
+pytest<span class="w"> </span>-q<span class="w">  </span><span class="c1"># all green</span>
+</code></pre></div></p>
+<p><strong>If behind, cut:</strong> <code>--find</code>, LLM summary (heuristic is fine for v0.1.0).</p>
+<hr />
+<h2 id="day-5-package-demo-docs-launch-prep-8-hours">Day 5 — Package, Demo, Docs, Launch Prep (8 hours)<a class="headerlink" href="#day-5-package-demo-docs-launch-prep-8-hours" title="Permanent link">&para;</a></h2>
+<p><strong>Goal by EOD:</strong> <code>pip install peek</code> works + GitHub ready + launch posts drafted. <strong>Don't launch today — launch tomorrow 08:00 UTC.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Hours</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td>PyPI publish</td>
+<td>1.5h</td>
+<td>Finalize <code>pyproject.toml</code> metadata → <code>python -m build</code> → <code>twine check dist/*</code> → <code>twine upload --repository testpypi</code> test → <code>twine upload</code> real → verify <code>pip install peek</code> in fresh venv (test on 2 machines or Docker)</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>README</td>
+<td>2h</td>
+<td>GIF at top (5.3), one-liner + install + usage in first 200px, features, comparison table, badges (PyPI, stars, MIT). Use template below</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>Demo GIF</td>
+<td>1.5h</td>
+<td>Record with <code>vhs</code> (charmbracelet/vhs) or screen record + gifski. Script: <code>git clone requests</code> → <code>peek .</code> → TUI nav → <code>peek . --no-tui</code> → <code>peek --find</code>. 15-20 sec, 800px, &lt;3MB, loops, no audio. Also static <code>screenshot.png</code></td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>GitHub polish</td>
+<td>1h</td>
+<td><code>LICENSE</code> (MIT), repo description: "The htop for codebases — understand any repo in 5 seconds", topics: <code>python cli tui textual rich codebase visualization developer-tools</code>, social preview image, pin repo</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>Launch posts</td>
+<td>1.5h</td>
+<td>Draft (don't publish): HN Show HN post, X thread (3 tweets + GIF), Reddit r/Python post, Product Hunt draft. Use <code>08_launch_playbook.md</code></td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>Smoke test + tag</td>
+<td>0.5h</td>
+<td>Fresh VM: <code>pipx install peek</code> → <code>peek .</code> on 2 repos → <code>peek --help</code> → <code>git tag v0.1.0 &amp;&amp; git push --tags</code> → GitHub Release with notes + GIF</td>
+</tr>
+</tbody>
+</table>
+<h3 id="readme-template">README template<a class="headerlink" href="#readme-template" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>&lt;p align="center"&gt;
+  &lt;img src="assets/demo.gif" width="800" /&gt;
+&lt;/p&gt;
+
+&lt;h1 align="center"&gt;peek — htop for codebases&lt;/h1&gt;
+&lt;p align="center"&gt;Understand any codebase in 5 seconds. &lt;code&gt;pip install peek &amp;&amp; peek .&lt;/code&gt;&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;a href="https://pypi.org/project/peek/"&gt;&lt;img src="https://img.shields.io/pypi/v/peek" /&gt;&lt;/a&gt;
+  &lt;img src="https://img.shields.io/github/stars/YOUR_USERNAME/peek?style=social" /&gt;
+&lt;/p&gt;
+
+<span class="gu">## Install</span>
+\`\`\`bash
+pip install peek        # or: pipx install peek / uv tool install peek
+\`\`\`
+
+<span class="gu">## Usage</span>
+\`\`\`bash
+peek .                  # interactive TUI
+peek . --no-tui         # static output (for screenshots/CI)
+peek . --html -o map.html
+peek --find "auth" .
+peek . --pack           # ranked files for LLM
+\`\`\`
+
+<span class="gu">## Why peek?</span>
+[Comparison table + features]
+
+<span class="gu">## Portfolio</span>
+Built by Hari Om Lohar — https://hariomlohardev.github.io/
+</code></pre></div>
+<h3 id="eod-checklist">EOD checklist<a class="headerlink" href="#eod-checklist" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>pip install peek</code> works in fresh venv (macOS + Linux)</li>
+<li>[ ] <code>peek .</code> TUI beautiful at 80×24 and 120×40</li>
+<li>[ ] <code>peek . --no-tui</code> screenshot tweet-ready</li>
+<li>[ ] <code>demo.gif</code> &lt;3MB, &lt;20 sec, autoplay</li>
+<li>[ ] README GIF visible without scrolling</li>
+<li>[ ] <code>pytest -q</code> green, <code>ruff check</code> clean</li>
+<li>[ ] GitHub Release <code>v0.1.0</code> created</li>
+<li>[ ] Launch posts drafted (not yet published)</li>
+</ul>
+<hr />
+<h2 id="day-6-launch-day-not-a-build-day">Day 6 — Launch Day (not a build day)<a class="headerlink" href="#day-6-launch-day-not-a-build-day" title="Permanent link">&para;</a></h2>
+<p><strong>Best days: Tuesday, Wednesday, or Thursday. If you finish Friday, wait until Tuesday.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Time (UTC)</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>08:00</td>
+<td><strong>HN Show HN</strong> — Title: <code>Show HN: peek — htop for codebases (understand any repo in 5 seconds)</code> — reply to every comment within 15 min for 2 hours</td>
+</tr>
+<tr>
+<td>08:30</td>
+<td><strong>X/Twitter</strong> — 3-tweet thread + GIF, pin first tweet, tag @willmcgugan (Rich/Textual)</td>
+</tr>
+<tr>
+<td>10:00</td>
+<td><strong>Reddit r/Python</strong> — same demo, tailored title</td>
+</tr>
+<tr>
+<td>12:00</td>
+<td>Monitor GitHub stars/issues — fix <code>pip install</code> breakage IMMEDIATELY</td>
+</tr>
+<tr>
+<td>Day 2</td>
+<td>Product Hunt + newsletters (PyCoder's Weekly, TLDR)</td>
+</tr>
+<tr>
+<td>24-48h</td>
+<td>Reply to every issue, tweet "peek hit X stars 🎉", triage PRs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Full launch playbook:</strong> <code>08_launch_playbook.md</code> (hour-by-hour + copy-paste templates)</p>
+<hr />
+<h2 id="daily-commands-cheat-sheet">Daily Commands Cheat Sheet<a class="headerlink" href="#daily-commands-cheat-sheet" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Every morning</span>
+git<span class="w"> </span>pull
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w">  </span><span class="c1"># after pyproject changes</span>
+
+<span class="c1"># Test during day</span>
+peek<span class="w"> </span>scan<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>peek<span class="w"> </span>analyze<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>peek<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>peek<span class="w"> </span>.<span class="w"> </span>--no-tui
+pytest<span class="w"> </span>-q<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>peek/
+
+<span class="c1"># End of day</span>
+git<span class="w"> </span>add<span class="w"> </span>-A<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Day N: what you did"</span>
+git<span class="w"> </span>push
+
+<span class="c1"># Day 5 publish</span>
+python<span class="w"> </span>-m<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>twine<span class="w"> </span>check<span class="w"> </span>dist/*<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>twine<span class="w"> </span>upload
+pip<span class="w"> </span>install<span class="w"> </span>peek<span class="w">  </span><span class="c1"># in fresh venv to verify</span>
+</code></pre></div>
+<hr />
+<h2 id="if-you-fall-behind-scope-cuts-in-order">If You Fall Behind — Scope Cuts (in order)<a class="headerlink" href="#if-you-fall-behind-scope-cuts-in-order" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Cut <code>--find</code> (nice but not P0)</li>
+<li>Cut LLM summary (heuristic is fine)</li>
+<li>Cut <code>--html</code> (add in v0.1.1)</li>
+<li>Cut TUI drill-in (just nav + quit)</li>
+<li>Cut PageRank (use in-degree only)</li>
+</ol>
+<p><strong>Never cut:</strong> <code>peek .</code> beautiful output, <code>peek . --no-tui</code>, scanner, ranking, PyPI publish, demo GIF.</p>
+<hr />
+<h2 id="final-check-are-you-done">Final Check — Are You Done?<a class="headerlink" href="#final-check-are-you-done" title="Permanent link">&para;</a></h2>
+<p>You are done when:
+- <code>pip install peek</code> works for a stranger in a fresh venv
+- <code>peek .</code> on <code>requests</code> makes them say "whoa"
+- README GIF stops scrolling
+- <code>git tag v0.1.0</code> is pushed</p>
+<p>Then wait 24h and launch 08:00 UTC Tue-Thu.</p>
+<p><strong>You've got this. 5 days → viral dev tool → portfolio star.</strong> 🔭</p>
+<p>Portfolio: https://hariomlohardev.github.io/</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
