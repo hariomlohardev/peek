@@ -299,3 +299,44 @@ def test_symbols_java_lineno_is_the_declaration_line():
 
         assert by_name["Foo"].lineno == 3
         assert by_name["bar"].lineno == 5
+
+
+def test_symbols_js_ts_async_exports():
+    from peek.scanner import scan
+    from peek.symbols import index_symbols
+
+    src = (
+        "export async function fetchData() {}\n"
+        "export default async function loadAll() {}\n"
+        "export function plain() {}\n"
+        "export class Widget {}\n"
+        "export const answer = 42;\n"
+    )
+    for ext in ("js", "ts"):
+        with tempfile.TemporaryDirectory() as td:
+            p = pathlib.Path(td)
+            (p / f"mod.{ext}").write_text(src)
+            by_name = {s.name: s for s in index_symbols(scan(p))}
+            for name, lineno in (
+                ("fetchData", 1),
+                ("loadAll", 2),
+                ("plain", 3),
+                ("Widget", 4),
+                ("answer", 5),
+            ):
+                assert name in by_name, f"{ext}: missing {name}, got {sorted(by_name)}"
+                assert by_name[name].kind == "def"
+                assert str(by_name[name].rel) == f"mod.{ext}"
+                assert by_name[name].lineno == lineno
+
+
+def test_symbols_js_anonymous_default_async_has_no_name():
+    from peek.scanner import scan
+    from peek.symbols import index_symbols
+
+    with tempfile.TemporaryDirectory() as td:
+        p = pathlib.Path(td)
+        (p / "anon.js").write_text(
+            "export default async function () {}\nexport default function () {}\n"
+        )
+        assert index_symbols(scan(p)) == []

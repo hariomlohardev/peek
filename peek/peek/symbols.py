@@ -22,7 +22,7 @@ class Symbol:
 
 
 JS_IMPORT_RE = re.compile(r"""import\s+(?:.*?\s+from\s+)?['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\)""")
-JS_EXPORT_RE = re.compile(r"""export\s+(?:default\s+)?(?:function|class|const|let|var)\s+(\w+)""")
+JS_EXPORT_RE = re.compile(r"""export\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let|var)\s+(\w+)""")
 
 # Go — declarations are always at column 0, so anchoring to the line start is
 # what keeps closures (`f := func() {}`) and commented-out code out of the index.
