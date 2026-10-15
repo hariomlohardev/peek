@@ -106,6 +106,8 @@ Warm clay `anthropic-pro` → neon `cinematic` → `dracula` → `nord`. 15 toke
 
 ## Documentation
 
+- **Language support:** [Scanning, import graphs, symbols and Python tracing](../docs.md#language-support) - capabilities and limits by language.
+
 - **Full manual:** [`docs.md`](../docs.md) — Install, Demo, Features, Themes, CLI, TUI, Symbols, Semantic, Graph, Git, MCP, WTF, Watch, Config
 
 ## v3 Highlights
