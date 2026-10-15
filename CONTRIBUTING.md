@@ -2,7 +2,7 @@
 
 Thanks for wanting to contribute! :tada: `peek` is small, fast, and zero-config — we keep the bar high for simplicity, but low for newcomers.
 
-> **New here?** Start with a **Good First Issue** — 20 issues, each ~30 min, one file, copy-paste steps:
+> **New here?** Start with a **Good First Issue** — browse the open ones, each with clear steps:
 >
 > [![Good First Issues](https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff)](https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 >
@@ -11,13 +11,33 @@ Thanks for wanting to contribute! :tada: `peek` is small, fast, and zero-config 
 See **[`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md)** for the full guide (Quick Start, How to Contribute, Project Structure, Guidelines).
 
 **Quick Start (from repo root):**
+
+Requires Python 3.11+.
+
+Create and activate a virtual environment:
+
 ```bash
-git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e ".[dev]"
-pytest -q          # 146 passed, 1 skipped
-peek --no-tui && peek  # static + TUI (peek . also works)
-ruff check peek    # lint
+# macOS / Linux
+python3 -m venv .venv
+source .venv/bin/activate
+
+# PowerShell
+python -m venv .venv
+.venv\\Scripts\\Activate.ps1
 ```
+
+Then install and run checks from the Git root (package lives in `peek/`):
+
+```bash
+git clone https://github.com/YOUR-USERNAME/peek && cd peek
+python -m pip install -e "./peek[dev]"
+cd peek
+python -m pytest -q
+ruff check peek
+# demo generator (optional): python -m peek.tools.gen_demo
+```
+
+Fork the repository, clone *your* fork, create a branch (`git checkout -b fix/thing`), and open a PR against the upstream `main`.
 
 **Workflow:**
 1. Fork → `git checkout -b fix/thing`

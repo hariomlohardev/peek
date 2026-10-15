@@ -2,25 +2,49 @@
 
 Thanks for wanting to contribute! `peek` is a small, fast, zero-config codebase — we keep the bar high for simplicity.
 
-> **New here?** Start with a **Good First Issue** — 20 issues, each ~30 min, one file, copy-paste steps. They rank high on GitHub search and get priority review:
+> **New here?** Start with a **Good First Issue** — browse the open ones (they rank high on GitHub search and get priority review):
 >
 > <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 >
 > **Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 >
-> - **20 Good First Issue (30 min):** docstrings, `peek wtf --help` example, `peek --version` test — perfect for first PR
-> - **10 Intermediate (60-90 min):** `tiktoken`, `peek diff`, `peek serve`
-> - **5 Complex (1-2 days):** `peek-mcp`, polyglot, `peek-vscode`
+> - **Good First Issues (beginner):** docstrings, `peek wtf --help` example, `peek --version` test — perfect for first PR
+> - **Intermediate (60-90 min):** `tiktoken`, `peek diff`, `peek serve`
+> - **Complex (1-2 days):** `peek-mcp`, polyglot, `peek-vscode`
 
 ## Quick Start
 
+Requires Python 3.11+.
+
+Create and activate a virtual environment:
+
 ```bash
-git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e ".[dev]"
-pytest -q
-peek --no-tui   # static
-peek            # TUI (q to quit)
+# macOS / Linux
+python3 -m venv .venv
+source .venv/bin/activate
+
+# PowerShell
+python -m venv .venv
+.venv\\Scripts\\Activate.ps1
 ```
+
+Install from the Git root (the package directory is `peek/`):
+
+```bash
+git clone https://github.com/YOUR-USERNAME/peek && cd peek
+python -m pip install -e "./peek[dev]"
+```
+
+Change into `peek/` before running tests, lint, or the demo generator:
+
+```bash
+cd peek
+python -m pytest -q
+ruff check peek
+# optional demo: python -m peek.tools.gen_demo
+```
+
+To contribute: fork the repo, clone your fork, create a branch (`git checkout -b fix/thing`), make changes, and open a PR to upstream `main`.
 
 ## How to Contribute
 
@@ -48,43 +72,21 @@ peek/peek/
   wtf.py          — wtf traceback explainer
   watch.py        — watch_repo polling + watchfiles
   mcp_server.py   — MCP stdio for Claude Code (peek mcp)
-  llm.py          — optional LLM summary
-  config.py       — themes + .peek.toml (peek config)
-  themes.py       — 10 themes (15 tokens)
-  cli.py          — Typer app (scan, analyze, find, graph, watch, wtf, config, mcp, index, diff, hot)
-  tools/gen_demo.py — Pillow demo GIF (800×450)
-peek/tests/
-  test_scanner.py, test_analyzer.py, test_renderer_pack_find.py, test_themes.py,
-  test_comprehensive_tdd.py, test_demo_assets.py, test_cli_dot.py,
-  test_symbols.py, test_embeddings.py, test_graph.py, test_pack_v3.py,
-  test_mcp.py, test_git.py, test_tui_live.py, test_watch.py, test_wtf.py
-.github/
-  workflows/ci.yml, release.yml — CI + PyPI publish
-  ISSUE_TEMPLATE/ — bug_report, feature_request, good_first_issue
-  pull_request_template.md
-  CODEOWNERS
+  llm.py          — LLM helpers
+  cli.py          — Typer entry
+  config.py       — config
+  themes.py       — 10 themes
+  tools/          — gen_demo.py
+  tests/          — pytest
 ```
-
-## Workflows & Automation
-
-- **CI** (`.github/workflows/ci.yml`): runs on `push`/`PR` to `main`/`v3` — `ruff check`, `pytest -q` (3× Python 3.11-3.13, Ubuntu + Windows), `twine check`, demo asset check. Must be green to merge.
-- **Release** (`.github/workflows/release.yml`): on `git tag v*` — builds `peek/dist` and publishes to PyPI + GitHub Release (via `pypa/gh-action-pypi-publish`).
-- **Issue templates:** `bug_report`, `feature_request`, `good_first_issue` (with `good first issue` + `help wanted` labels) — use them so issues rank.
-- **PR template:** `.github/pull_request_template.md` — fill What/Why/How/Tests/Screenshots.
-
-## Good First Issue Workflow (for maintainers)
-
-1. Label `good first issue` + `help wanted` → appears in https://github.com/search?q=label%3A%22good+first+issue%22+language%3Apython
-2. Keep to **one file, 30 min, copy-paste steps**, with `### Files` + `### Acceptance` checkboxes.
-3. PRs with `good first issue` get priority review (48h) and are featured in release notes.
 
 ## Guidelines
 
-- **Never crash** — every `scan`/`analyze` must handle weird files gracefully
-- **Zero config** — works on any path, Python or not, offline, no API key required
-- **Fast** — <2 sec for 500 files, cap at 2000 for MVP
-- **Beautiful** — every `peek --no-tui` output should be screenshot-ready (test in 80x24 and 120x40)
-- **No push in PRs** — don't `git push` to upstream; fork it
+- Zero-config default. Flags for power users.
+- Offline-first. No network in the happy path.
+- Rich for static, Textual for TUI.
+- Tests for every new feature.
+- Keep the CLI surface small.
 
 ## Who We Welcome (and What We Don’t)
 
