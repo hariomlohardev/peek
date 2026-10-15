@@ -152,3 +152,29 @@ def test_cli_config_init_exits_2_when_the_file_exists(tmp_path, monkeypatch):
 
     forced = runner.invoke(app, ["config", "init", "--force"])
     assert forced.exit_code == 0
+
+
+def test_config_env_expands_home_shortcut(tmp_path, monkeypatch):
+    """PEEK_CONFIG with a leading ~/ resolves against the isolated home directory."""
+    from peek.config import config_path
+    # POSIX reads HOME; Windows expanduser() reads USERPROFILE first.
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
+    # A competing XDG location proves PEEK_CONFIG still takes precedence.
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))
+    monkeypatch.setenv("PEEK_CONFIG", "~/peek-example/config.toml")
+    p = config_path()
+    assert p == tmp_path / "peek-example" / "config.toml"
+    assert not str(p).startswith("~")
+
+
+def test_config_env_absolute_path_unchanged(tmp_path, monkeypatch):
+    from peek.config import config_path
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "cfg.toml"))
+    assert config_path() == tmp_path / "cfg.toml"
+
+
+def test_config_env_relative_path_unchanged(monkeypatch):
+    from peek.config import config_path
+    monkeypatch.setenv("PEEK_CONFIG", "relative-dir/config.toml")
+    assert config_path() == pathlib.Path("relative-dir/config.toml")

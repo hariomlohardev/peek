@@ -9,7 +9,7 @@ from typing import Any
 
 def config_path() -> Path:
     if p := os.environ.get("PEEK_CONFIG"):
-        return Path(p)
+        return Path(p).expanduser()
     if xdg := os.environ.get("XDG_CONFIG_HOME"):
         return Path(xdg) / "peek" / "config.toml"
     p2 = Path.home() / ".config" / "peek" / "config.toml"
