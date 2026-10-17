@@ -43,13 +43,18 @@ def parse_traceback(text: str) -> TracebackInfo | None:
         return None
     return TracebackInfo(frames, exc_type, exc_msg, text)
 
+def _same_path(rel: str, name: str) -> bool:
+    """True if one path equals the other or ends with it at a path-component boundary."""
+    return rel == name or rel.endswith("/" + name) or name.endswith("/" + rel)
+
 def find_relevant_files(info: TracebackInfo, scan_result) -> list[Path]:
     # map frame filename to scanned files by suffix match, shortest rel path wins
     out = []
     scanned = {f.rel.as_posix(): f.path for f in scan_result.files}
     for fr in info.frames:
-        # try exact rel, else suffix
-        cand = [p for rel,p in scanned.items() if rel.endswith(fr.filename) or fr.filename.endswith(rel)]
+        # compare with "/" separators (a Windows frame uses "\\") and on path-component boundaries
+        name = fr.filename.replace("\\", "/")
+        cand = [p for rel,p in scanned.items() if _same_path(rel, name)]
         if cand:
             out.append(cand[0])
     return out

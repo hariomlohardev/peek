@@ -83,6 +83,38 @@ def test_find_relevant_files():
         assert out2 == []
 
 
+def _frame_matches(frame_path: str, files: list[str]) -> list[str]:
+    from peek.wtf import parse_traceback, find_relevant_files
+    from peek.scanner import scan
+    # a traceback writes the path as is, with the single backslashes of a Windows path
+    tb = f'Traceback (most recent call last):\n  File "{frame_path}", line 1, in foo\n    x\nNameError: name \'x\' is not defined\n'
+    info = parse_traceback(tb)
+    assert info is not None
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        for f in files:
+            (root / f).parent.mkdir(parents=True, exist_ok=True)
+            (root / f).write_text("x=1\n")
+        return [p.relative_to(root).as_posix() for p in find_relevant_files(info, scan(root))]
+
+
+def test_find_relevant_files_windows_frame_paths():
+    # Windows-style strings on every OS; no real C: drive is needed
+    assert _frame_matches(r"C:\project\src\app.py", ["src/app.py", "src/other.py"]) == ["src/app.py"]
+    assert _frame_matches(r"src\app.py", ["src/app.py"]) == ["src/app.py"]
+
+
+def test_find_relevant_files_posix_paths_still_match():
+    assert _frame_matches("/home/me/project/src/app.py", ["src/app.py"]) == ["src/app.py"]
+    assert _frame_matches("src/app.py", ["src/app.py"]) == ["src/app.py"]
+
+
+def test_find_relevant_files_matches_on_path_component_boundaries():
+    assert _frame_matches(r"C:\project\src\myapp.py", ["src/app.py"]) == []
+    assert _frame_matches("myapp.py", ["app.py"]) == []
+    assert _frame_matches(r"C:\project\src\app.py", ["src/myapp.py"]) == []
+
+
 def test_cli_file_read():
     tb = 'Traceback (most recent call last):\n  File "a.py", line 10, in foo\n    x = 1/0\nZeroDivisionError: division by zero\n'
     with tempfile.TemporaryDirectory() as td:
