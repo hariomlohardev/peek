@@ -1,6 +1,7 @@
 import tempfile
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from peek.cli import app
@@ -124,3 +125,95 @@ def test_cli_no_traceback_exits_one():
     help_result = runner.invoke(app, ["wtf", "--help"])
     assert help_result.exit_code == 0
     assert "wtf" in help_result.output.lower() or "traceback" in help_result.output.lower()
+
+
+@pytest.mark.parametrize(
+    ("terminal", "exc_type", "exc_msg"),
+    [
+        ("Exception: bad", "Exception", "bad"),
+        ("StopIteration", "StopIteration", ""),
+        ("KeyboardInterrupt", "KeyboardInterrupt", ""),
+        ("pkg.CustomFailure: bad", "pkg.CustomFailure", "bad"),
+        ("ValueError: bad", "ValueError", "bad"),
+        ("pkg.CustomError: bad", "pkg.CustomError", "bad"),
+        ("RuntimeError:", "RuntimeError", ""),
+        ("pkg.CustomFailure", "pkg.CustomFailure", ""),
+        ("ValueError: bad\nextra", "ValueError", "bad"),
+        ("Exception: bad\nNote: extra context", "Exception", "bad"),
+    ],
+)
+def test_parse_exception_names_and_optional_messages(terminal, exc_type, exc_msg):
+    from peek.wtf import parse_traceback
+
+    tb = (
+        'Traceback (most recent call last):\n'
+        '  File "a.py", line 10, in foo\n'
+        '    raise Exception("bad")\n'
+        f"{terminal}\n"
+    )
+    info = parse_traceback(tb)
+    assert info is not None
+    assert (info.exc_type, info.exc_msg) == (exc_type, exc_msg)
+    assert info.frames[0].code == 'raise Exception("bad")'
+
+
+@pytest.mark.parametrize(
+    "tail",
+    [
+        "",
+        "    ValueError: str\n",
+        "    StopIteration\n",
+        "    pkg.CustomFailure: bad\n",
+        "    raise Exception('bad')\n",
+        "    value = 1\n",
+        "This is just prose, not an exception.\n",
+    ],
+)
+def test_parse_requires_unindented_exception_after_frame(tail):
+    from peek.wtf import parse_traceback
+
+    tb = 'Traceback (most recent call last):\n  File "a.py", line 1, in foo\n' + tail
+    assert parse_traceback(tb) is None
+
+
+@pytest.mark.parametrize(
+    "separator",
+    [
+        "During handling of the above exception, another exception occurred:",
+        "The above exception was the direct cause of the following exception:",
+    ],
+)
+def test_parse_chained_traceback_uses_final_exception(separator):
+    from peek.wtf import parse_traceback
+
+    tb = (
+        'Traceback (most recent call last):\n'
+        '  File "a.py", line 1, in foo\n'
+        '    int("bad")\n'
+        'ValueError: bad\n\n'
+        f"{separator}\n\n"
+        'Traceback (most recent call last):\n'
+        '  File "b.py", line 2, in bar\n'
+        '    next(iter([]))\n'
+    )
+    assert parse_traceback(tb) is None
+    info = parse_traceback(tb + "StopIteration\n")
+    assert info is not None
+    assert (info.exc_type, info.exc_msg) == ("StopIteration", "")
+    assert [frame.filename for frame in info.frames] == ["a.py", "b.py"]
+
+
+def test_cli_explains_message_free_exception(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "a.py").write_text("next(iter([]))\n", encoding="utf-8")
+    tb = (
+        'Traceback (most recent call last):\n'
+        '  File "a.py", line 1, in <module>\n'
+        '    next(iter([]))\n'
+        'StopIteration\n'
+    )
+    result = runner.invoke(app, ["wtf"], input=tb)
+    assert result.exit_code == 0
+    assert "StopIteration" in result.output
+    assert "No traceback" not in result.output
+    assert "a.py:1" in result.output

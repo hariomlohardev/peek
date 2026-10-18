@@ -18,7 +18,7 @@ class TracebackInfo:
     raw: str
 
 _TB_RE = re.compile(r'File "([^"]+)", line (\d+), in (\S+)')
-_EXC_RE = re.compile(r'^(\w+(?:\.\w+)*Error|\w+Exception|\w+Error):\s*(.*)$', re.M)
+_EXC_RE = re.compile(r"^([^\W\d]\w*(?:\.[^\W\d]\w*)*)(?::[ \t]*(.*))?$")
 
 def parse_traceback(text: str) -> TracebackInfo | None:
     if "Traceback" not in text:
@@ -32,12 +32,12 @@ def parse_traceback(text: str) -> TracebackInfo | None:
         frames.append(Frame(fn, int(ln), func, code))
     if not frames:
         return None
-    # last line that matches exc
+    # Search after the final frame without stripping source indentation.
     exc_type = exc_msg = ""
-    for line in reversed(text.strip().splitlines()):
-        mm = _EXC_RE.match(line.strip())
+    for line in after:
+        mm = _EXC_RE.match(line)
         if mm:
-            exc_type, exc_msg = mm.groups()
+            exc_type, exc_msg = mm.group(1), mm.group(2) or ""
             break
     if not exc_type:
         return None
