@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import Any
@@ -34,16 +35,31 @@ def load_config() -> dict[str, Any]:
         return {}
 
 
+def _toml_string(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False).replace("\x7f", "\\u007f")
+
+
 def save_config(data: dict[str, Any]) -> Path:
+    lines = []
+    for key, value in data.items():
+        if not isinstance(key, str):
+            raise ValueError("Config keys must be strings")
+        if isinstance(value, str):
+            encoded = _toml_string(value)
+        elif isinstance(value, bool):
+            encoded = "true" if value else "false"
+        elif type(value) in (int, float):
+            encoded = str(value)
+        else:
+            raise ValueError(
+                f"Unsupported config value for {key!r}: {type(value).__name__}. "
+                "Only strings, booleans, and numbers can be saved."
+            )
+        lines.append(f"{_toml_string(key)} = {encoded}")
+    content = ("\n".join(lines) + "\n").encode("utf-8")
     p = config_path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    lines = []
-    for k, v in data.items():
-        if isinstance(v, str):
-            lines.append(f'{k} = "{v}"')
-        else:
-            lines.append(f'{k} = {v}')
-    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    p.write_bytes(content)
     return p
 
 
@@ -84,8 +100,7 @@ class ConfigExistsError(Exception):
 
     def __init__(self, path: Path) -> None:
         super().__init__(
-            f"{path} already exists. Re-run with --force to overwrite it, "
-            f"or edit it directly."
+            f"{path} already exists. Re-run with --force to overwrite it, or edit it directly."
         )
         self.path = path
 
@@ -109,6 +124,7 @@ def init_config(force: bool = False) -> Path:
 def set_config_value(key: str, value: str) -> Path:
     if key == "theme":
         from peek.themes import get_theme
+
         get_theme(value)  # validates, raises ValueError if unknown
     data = load_config()
     data[key] = value

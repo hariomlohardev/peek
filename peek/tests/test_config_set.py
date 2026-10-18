@@ -152,3 +152,74 @@ def test_cli_config_init_exits_2_when_the_file_exists(tmp_path, monkeypatch):
 
     forced = runner.invoke(app, ["config", "init", "--force"])
     assert forced.exit_code == 0
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        'say "hello"',
+        "back\\slash",
+        r"C:\Users\name\src",
+        "line one\nline two",
+        "a\tb",
+        "café 🐍",
+        "control\x00\x1f\x7f",
+    ],
+)
+def test_config_string_round_trip(value, tmp_path, monkeypatch):
+    from peek.config import load_config, save_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    save_config({"note": value})
+    assert load_config() == {"note": value}
+
+
+@pytest.mark.parametrize("key", ["window.title", "user name", 'say "hello"', "", "line\nkey"])
+def test_config_quotes_literal_keys(key, tmp_path, monkeypatch):
+    from peek.config import load_config, save_config
+
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    save_config({key: "value"})
+    assert load_config() == {key: "value"}
+
+
+def test_config_update_preserves_boolean_and_numeric_types(tmp_path, monkeypatch):
+    from peek.config import load_config, set_config_value
+
+    path = tmp_path / "config.toml"
+    monkeypatch.setenv("PEEK_CONFIG", str(path))
+    path.write_text(
+        "enabled = true\ndisabled = false\nmax_files = 1250\nratio = 1.25\nwhole_float = 2.0\n",
+        encoding="utf-8",
+    )
+    before = load_config()
+    set_config_value("note", 'say "hello"')
+    after = load_config()
+    assert after == {**before, "note": 'say "hello"'}
+    for key, value in before.items():
+        assert type(after[key]) is type(value)
+
+
+@pytest.mark.parametrize(
+    "original",
+    ['[group]\nname = "value"\n', 'items = ["one", "two"]\n', "when = 2026-10-18\n"],
+)
+def test_config_rejects_unsupported_values_before_overwriting(original, tmp_path, monkeypatch):
+    path = tmp_path / "config.toml"
+    monkeypatch.setenv("PEEK_CONFIG", str(path))
+    path.write_text(original, encoding="utf-8")
+    before = path.read_bytes()
+    result = runner.invoke(app, ["config", "set", "note", "new value"])
+    assert result.exit_code == 2
+    assert "Unsupported config value" in result.output
+    assert path.read_bytes() == before
+
+
+def test_config_cli_round_trips_quoted_string(tmp_path, monkeypatch):
+    monkeypatch.setenv("PEEK_CONFIG", str(tmp_path / "config.toml"))
+    value = 'say "hello"'
+    result = runner.invoke(app, ["config", "set", "note", value])
+    assert result.exit_code == 0, result.output
+    result = runner.invoke(app, ["config", "get", "note"])
+    assert result.exit_code == 0, result.output
+    assert result.output.strip() == value
