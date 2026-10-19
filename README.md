@@ -142,6 +142,8 @@ peek --theme-list
 
 ## Documentation
 
+- **Language support:** [Scanning, import graphs, symbols and Python tracing](docs.md#language-support) - capabilities and limits by language.
+
 - **Full manual:** [`docs.md`](docs.md) — Install, 10 Themes, CLI/TUI, Pack/Find/LLM, Config, Architecture, Testing, Troubleshooting
 - **Final state:** [`master.md`](master.md) — UI fixes, TUI animations, themes, tests, demo video
 - **Research pack:** [`docs/research/`](docs/research/) — 8 docs that led to `peek` (viral thesis, candidates, 5-day plan, launch playbook)

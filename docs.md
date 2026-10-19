@@ -28,6 +28,7 @@
 - [CLI Reference](#cli-reference)
 - [TUI Guide](#tui-guide)
 - [Pack, Find, LLM](#pack-find-llm)
+- [Language support](#language-support)
 - [Symbols](#symbols)
 - [Semantic](#semantic)
 - [Graph](#graph)
@@ -329,6 +330,39 @@ peek analyze . --llm
 
 ---
 
+
+## Language support
+
+Language detection, import graphs, symbol indexing and function-call tracing are
+separate features. A file being counted by the scanner does not mean its imports
+or declarations can be analyzed.
+
+| Language | Detection and LOC | Local import graph | Symbol index | Function-call tracing |
+| --- | --- | --- | --- | --- |
+| Python (`.py`, `.pyi`) | Extension-based; non-blank, non-comment lines | AST-based imports with local module resolution | AST-based functions, async functions and classes | Python-only static call graph |
+| JavaScript / TypeScript (`.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`) | Extension-based; non-blank lines | Regex-based `import` / `require`, resolving relative paths | Regex-based named exports; currently recorded as `def` symbols | Not supported |
+| Go (`.go`) | Extension-based; non-blank lines | Regex-based imports with local package resolution, including `go.mod` module paths | Regex-based functions, methods, structs and interfaces | Not supported |
+| Rust (`.rs`) | Extension-based; non-blank lines | Not supported | Regex-based functions, types and modules | Not supported |
+| Java (`.java`) | Extension-based; non-blank lines | Not supported | Regex-based types, modified methods and constructors | Not supported |
+| Other detected languages (for example C/C++, C#, Ruby, PHP, Swift, Kotlin and shell) | Extension-based; non-blank lines | Not supported | Not supported | Not supported |
+| Unrecognized extensions | Classified as `other`; non-blank lines where readable | Not supported | Not supported | Not supported |
+
+These are lightweight static analyses, not complete language parsers. Python
+uses `ast`; the other supported graph and symbol paths use regular expressions
+and can miss syntax or match text that is not a declaration. JavaScript/TypeScript
+symbol indexing covers named exports, not every local declaration. Go, Rust and Java have their own limited
+patterns. Detected languages and suffixes are defined in `EXT_TO_LANG` in
+`peek/peek/scanner.py`; `.mts`, `.cts` and `.kts` are not currently mapped.
+Binary files have zero LOC, and large files use approximate counts.
+
+`peek trace` is Python-only. Its call graph is inferred from source, not recorded
+by executing the program, so dynamic imports, runtime dispatch and indirect calls
+may remain unresolved or be matched heuristically. Text search with `peek find`
+is separate from symbol indexing: it can match readable scanned files even when
+that language has no symbol index or import graph. Scanner ignore rules and file
+limits still apply.
+
+---
 
 ## Symbols
 
