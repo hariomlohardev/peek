@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 
 def build_dot(ar) -> str:
@@ -33,7 +34,7 @@ def build_svg(ar) -> str:
         out = subprocess.check_output(["dot", "-Tsvg", fname], timeout=2).decode()
         return out
     except Exception:
-        return f'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="800" height="400" fill="#141413"/><text x="20" y="30" fill="#E8E6E3" font-family="monospace" font-size="12">{dot[:200]}</text></svg>'
+        return f'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="800" height="400" fill="#141413"/><text x="20" y="30" fill="#E8E6E3" font-family="monospace" font-size="12">{escape(dot[:200])}</text></svg>'
 
 
 def _sanitize_id(rel: str) -> str:
