@@ -7,6 +7,14 @@ from pathlib import Path
 def build_dot(ar) -> str:
     lines = ["digraph G {", "  rankdir=LR;", "  node [shape=box, style=filled, fillcolor=\"#232320\", fontcolor=\"#E8E6E3\", color=\"#3A3936\"];"]
     nodes = list(ar.graph.keys())[:15]
+    # Declare every selected source node, including sources with no outgoing
+    # edges, so an isolated file still appears in the export (issue #178).
+    for src in nodes:
+        try:
+            s = src.relative_to(ar.root).as_posix()
+        except ValueError:
+            s = src.name
+        lines.append(f'  "{s}";')
     for src in nodes:
         for dst in ar.graph.get(src, set()):
             try:
