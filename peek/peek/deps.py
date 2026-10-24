@@ -8,17 +8,12 @@ there from the outside.
 
 from __future__ import annotations
 
+import ast
 import re
 from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 
-# The top-level name of an import, which is what a package is called in a
-# requirements file. `from rich.console import Console` is a use of `rich`.
-_PY_IMPORT_RE = re.compile(
-    r"^[ \t]*(?:from[ \t]+([A-Za-z_][\w.]*)[ \t]+import|import[ \t]+([A-Za-z_][\w.]*))",
-    re.MULTILINE,
-)
 _JS_IMPORT_RE = re.compile(
     r"""(?:from|require\()\s*['"]([^'"]+)['"]""",
 )
@@ -49,7 +44,8 @@ def direct_importers(scan_result, package: str) -> dict[Path, int]:
 
     Matched on the top-level name, so `from rich.console import Console`
     counts as a use of `rich` -- that is the name in the lockfile, and the
-    name someone asking this question types.
+    name someone asking this question types. Unreadable or unparseable
+    Python files are skipped: they provide no reliable import evidence.
     """
     wanted = _top_level(package.strip()).lower()
     found: dict[Path, int] = {}
@@ -65,8 +61,25 @@ def direct_importers(scan_result, package: str) -> dict[Path, int]:
         except Exception:
             continue
 
-        pattern = _PY_IMPORT_RE if suffix == ".py" else _JS_IMPORT_RE
-        for match in pattern.finditer(text):
+        if suffix == ".py":
+            try:
+                tree = ast.parse(text)
+            except (SyntaxError, ValueError, RecursionError):
+                continue
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    names = [alias.name for alias in node.names]
+                elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                    names = [node.module]
+                else:
+                    continue
+                if any(_top_level(name).lower() == wanted for name in names):
+                    # ast.walk is breadth-first, so a nested import may occur
+                    # earlier in the source than one visited before it.
+                    found[file.path] = min(found.get(file.path, node.lineno), node.lineno)
+            continue
+
+        for match in _JS_IMPORT_RE.finditer(text):
             name = next((g for g in match.groups() if g), "")
             if _top_level(name).lower() != wanted:
                 continue
