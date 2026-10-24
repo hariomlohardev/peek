@@ -218,3 +218,40 @@ def test_scan_single_open_per_file(tmp_path, monkeypatch):
     sr = scan(p)
     assert sr.total_files == 6
     assert len(calls) <= 6 + 5, f"{len(calls)} opens for 6 files"
+def test_language_for_mts_cts_kts(tmp_path):
+    """Recognize TypeScript and Kotlin source suffixes added in #156."""
+    from peek.scanner import scan, _language_for
+    from pathlib import Path
+    assert _language_for(Path("sample.mts")) == "typescript"
+    assert _language_for(Path("sample.cts")) == "typescript"
+    assert _language_for(Path("sample.kts")) == "kotlin"
+    assert _language_for(Path("SAMPLE.MTS")) == "typescript"
+    assert _language_for(Path("sample.ts")) == "typescript"
+    assert _language_for(Path("sample.kt")) == "kotlin"
+    assert _language_for(Path("sample.xyz")) == "other"
+    root = tmp_path / "repo"
+    root.mkdir()
+    (root / "a.mts").write_text("// ts
+", encoding="utf-8")
+    (root / "b.cts").write_text("// ts
+", encoding="utf-8")
+    (root / "c.kts").write_text("// kt
+", encoding="utf-8")
+    (root / "d.TS").write_text("// ts
+", encoding="utf-8")
+    (root / "e.kt").write_text("// kt
+", encoding="utf-8")
+    (root / "unknown.xyz").write_text("x
+", encoding="utf-8")
+    sr = scan(root)
+    by_file = {f.rel.name: f.language for f in sr.files}
+    assert by_file["a.mts"] == "typescript"
+    assert by_file["b.cts"] == "typescript"
+    assert by_file["c.kts"] == "kotlin"
+    assert by_file["d.TS"] == "typescript"
+    assert by_file["e.kt"] == "kotlin"
+    assert by_file["unknown.xyz"] == "other"
+    by_lang = sr.stats["by_lang"]
+    assert by_lang.get("typescript", 0) == 3
+    assert by_lang.get("kotlin", 0) == 2
+    assert by_lang.get("other", 0) == 1
