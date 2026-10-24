@@ -13,8 +13,8 @@ def test_fallback_svg_escapes_xml_sensitive_filenames(tmp_path, monkeypatch):
     import xml.etree.ElementTree as ET
     from peek.graph import build_svg
 
-    for name in ("a&b.py", "a<b.py", "a>b.py"):
-        (tmp_path / name).write_text("x=1\n", encoding="utf-8")
+    # build_svg only consumes the analyzer's paths, so no files need to exist:
+    # Windows forbids creating names containing < or > (issue #179).
     ar = _FakeAnalyzer(
         {
             pathlib.Path(tmp_path / "a&b.py"): {
@@ -59,14 +59,15 @@ def test_graphviz_success_path_preserved(tmp_path, monkeypatch):
 def test_fallback_keeps_size_limit(tmp_path, monkeypatch):
     import pathlib
     import subprocess
-    from peek.graph import build_svg
+    import xml.etree.ElementTree as ET
+    from peek.graph import build_dot, build_svg
 
     # a wide graph whose DOT text exceeds the 200-character display window
     graph = {}
     for i in range(20):
-        src = tmp_path / f"file_{i:02d}.py"
-        src.write_text("x=1\n", encoding="utf-8")
-        graph[pathlib.Path(src)] = {pathlib.Path(tmp_path / f"dep_{i:02d}.py")}
+        graph[pathlib.Path(tmp_path / f"file_{i:02d}.py")] = {
+            pathlib.Path(tmp_path / f"dep_{i:02d}.py")
+        }
     ar = _FakeAnalyzer(graph, tmp_path)
 
     monkeypatch.setattr(
@@ -74,6 +75,6 @@ def test_fallback_keeps_size_limit(tmp_path, monkeypatch):
     )
 
     svg = build_svg(ar)
-    import xml.etree.ElementTree as ET
-
-    ET.fromstring(svg)  # truncated text must still be escaped and well formed
+    text_el = ET.fromstring(svg).find("{http://www.w3.org/2000/svg}text")
+    assert text_el is not None
+    assert text_el.text == build_dot(ar)[:200]
