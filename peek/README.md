@@ -123,29 +123,42 @@ Warm clay `anthropic-pro` → neon `cinematic` → `dracula` → `nord`. 15 toke
 ## Development
 
 ```bash
-git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e ".[dev]"
-pytest -q          # 146 passed, 1 skipped
-peek --no-tui && peek  # static + TUI
+# 1. Fork the repository on GitHub, then clone YOUR fork and create a branch
+git clone https://github.com/<your-username>/peek && cd peek
+git checkout -b fix/thing
+
+# 2. Create a virtual environment (Python 3.11+)
+python -m venv .venv
+source .venv/bin/activate        # macOS/Linux
+# .venv\Scripts\Activate.ps1      # Windows PowerShell
+
+# 3. Install from the Git root - the package manifest is peek/pyproject.toml
+python -m pip install -e "./peek[dev]"
+
+# 4. Tests, lint, and the demo generator run from peek/
+cd peek
+python -m pytest -q
+ruff check peek
+python -m peek.tools.gen_demo    # optional: regenerate the demo GIF
 ```
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). `ruff` + `pytest` before PR. Branch `v3`.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Run `ruff` + `pytest` (from `peek/`) before opening a PR.
 
 ## Contributing — Good First Issues
 
-New to open source? Start here — **20 `good first issue`s, each ~30 min, one file, copy-paste steps:**
+New to open source? Start with a `good first issue` — small, one-file changes with copy-paste steps (live list below):
 
 <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 
 **Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 
-- **Beginner (30 min):** docstrings, typo fixes, `--help` examples, `peek --version` test — pick any, no setup beyond `pip install -e ".[dev]"`
+- **Beginner (~30 min):** docstrings, typo fixes, `--help` examples, `peek --version` test — pick any, no setup beyond the dev install above
 - **Intermediate (60-90 min):** `tiktoken` tokens, `peek diff`, `peek serve`, symbol index
 - **Complex (1-2 days):** `peek-mcp` for Claude Code, polyglot `tree-sitter`, semantic embeddings, `peek-vscode`
 
 Every issue has **exact file**, **acceptance checkboxes**, and `pytest -q` gate. PRs with `good first issue` label get priority review.
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for `ruff` + `pytest` workflow. Branch `v3` is the big upshift (polyglot + semantic + MCP).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the `ruff` + `pytest` workflow.
 
 ## Why peek?
 

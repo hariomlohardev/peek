@@ -2,7 +2,7 @@
 
 Thanks for wanting to contribute! :tada: `peek` is small, fast, and zero-config — we keep the bar high for simplicity, but low for newcomers.
 
-> **New here?** Start with a **Good First Issue** — 20 issues, each ~30 min, one file, copy-paste steps:
+> **New here?** Start with a **Good First Issue** — small, one-file changes with copy-paste steps:
 >
 > [![Good First Issues](https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff)](https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 >
@@ -10,13 +10,25 @@ Thanks for wanting to contribute! :tada: `peek` is small, fast, and zero-config 
 
 See **[`peek/CONTRIBUTING.md`](peek/CONTRIBUTING.md)** for the full guide (Quick Start, How to Contribute, Project Structure, Guidelines).
 
-**Quick Start (from repo root):**
+**Quick Start (from the Git root):**
 ```bash
-git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e ".[dev]"
-pytest -q          # 146 passed, 1 skipped
-peek --no-tui && peek  # static + TUI (peek . also works)
-ruff check peek    # lint
+# 1. Fork the repository on GitHub, then clone YOUR fork and create a branch
+git clone https://github.com/<your-username>/peek && cd peek
+git checkout -b fix/thing
+
+# 2. Create a virtual environment (Python 3.11+)
+python -m venv .venv
+source .venv/bin/activate        # macOS/Linux
+# .venv\Scripts\Activate.ps1      # Windows PowerShell
+
+# 3. Install from the Git root - the package manifest is peek/pyproject.toml
+python -m pip install -e "./peek[dev]"
+
+# 4. Tests, lint, and the demo generator run from peek/
+cd peek
+python -m pytest -q
+ruff check peek
+python -m peek.tools.gen_demo    # optional: regenerate the demo GIF
 ```
 
 **Workflow:**

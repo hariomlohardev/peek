@@ -2,24 +2,34 @@
 
 Thanks for wanting to contribute! `peek` is a small, fast, zero-config codebase — we keep the bar high for simplicity.
 
-> **New here?** Start with a **Good First Issue** — 20 issues, each ~30 min, one file, copy-paste steps. They rank high on GitHub search and get priority review:
+> **New here?** Start with a **Good First Issue** — small, one-file changes with copy-paste steps. They rank high on GitHub search and get priority review:
 >
 > <a href="https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hariomlohardev/peek/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good First Issues"/></a>
 >
 > **Browse:** https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 >
-> - **20 Good First Issue (30 min):** docstrings, `peek wtf --help` example, `peek --version` test — perfect for first PR
-> - **10 Intermediate (60-90 min):** `tiktoken`, `peek diff`, `peek serve`
-> - **5 Complex (1-2 days):** `peek-mcp`, polyglot, `peek-vscode`
+> Live lists: [`good first issue`](https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) (~30 min, one file — perfect for a first PR) and [`help wanted`](https://github.com/hariomlohardev/peek/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) (intermediate and complex).
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/hariomlohardev/peek && cd peek
-pip install -e ".[dev]"
-pytest -q
-peek --no-tui   # static
-peek            # TUI (q to quit)
+# 1. Fork the repository on GitHub, then clone YOUR fork and create a branch
+git clone https://github.com/<your-username>/peek && cd peek
+git checkout -b fix/thing
+
+# 2. Create a virtual environment (Python 3.11+)
+python -m venv .venv
+source .venv/bin/activate        # macOS/Linux
+# .venv\Scripts\Activate.ps1      # Windows PowerShell
+
+# 3. Install from the Git root - the package manifest is peek/pyproject.toml
+python -m pip install -e "./peek[dev]"
+
+# 4. Tests, lint, and the demo generator run from peek/
+cd peek
+python -m pytest -q
+ruff check peek
+python -m peek.tools.gen_demo    # optional: regenerate the demo GIF
 ```
 
 ## How to Contribute
