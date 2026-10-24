@@ -192,3 +192,90 @@ def test_cli_explains_a_dependency_after_a_comma(tmp_path):
         "worker.py",
     ]
     assert payload["chains"][0]["lineno"] == 2
+
+
+@pytest.mark.parametrize(
+    ("suffix", "source"),
+    [
+        (".js", 'import "reflect-metadata";\n'),
+        (".ts", "import 'reflect-metadata';\n"),
+        (".jsx", 'import "reflect-metadata";\n'),
+        (".tsx", "import 'reflect-metadata';\n"),
+        (".mjs", 'import "reflect-metadata";\n'),
+        (".cjs", "import 'reflect-metadata';\n"),
+    ],
+)
+def test_js_side_effect_imports_keep_the_source_line(tmp_path, suffix, source):
+    target = tmp_path / f"worker{suffix}"
+    target.write_text("// heading\n" + source, encoding="utf-8")
+
+    assert direct_importers(scan(tmp_path), "reflect-metadata") == {target: 2}
+
+
+def test_js_scoped_side_effect_import_is_normalized(tmp_path):
+    target = tmp_path / "worker.ts"
+    target.write_text('import "@scope/package/setup";\n', encoding="utf-8")
+
+    assert direct_importers(scan(tmp_path), "@scope/package") == {target: 1}
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        'import api from "real-package";\n',
+        'import { api } from "real-package";\n',
+        "const api = require('real-package');\n",
+    ],
+)
+def test_js_existing_import_forms_still_match(tmp_path, source):
+    target = tmp_path / "worker.js"
+    target.write_text(source, encoding="utf-8")
+
+    assert direct_importers(scan(tmp_path), "real-package") == {target: 1}
+
+
+def test_js_comments_strings_and_relative_imports_are_not_packages(tmp_path):
+    target = tmp_path / "worker.ts"
+    target.write_text(
+        '// import "fake-line";\n'
+        '/* import "fake-block";\n'
+        'import "fake-multiline"; */\n'
+        'const example = \'import "fake-string";\';\n'
+        'const template = `import "fake-template";`;\n'
+        'const url = "https://example.org/";\n'
+        'import "./local";\n'
+        'import "../sibling";\n'
+        'import "real-package/setup"; // still a real import\n'
+        'const other = require("real-package");\n',
+        encoding="utf-8",
+    )
+
+    scanned = scan(tmp_path)
+    false_positives = (
+        "fake-line",
+        "fake-block",
+        "fake-multiline",
+        "fake-string",
+        "fake-template",
+        "local",
+        "sibling",
+    )
+    for package in false_positives:
+        assert direct_importers(scanned, package) == {}
+    assert direct_importers(scanned, "real-package") == {target: 9}
+
+
+def test_cli_explains_js_side_effect_import(tmp_path):
+    import json
+
+    target = tmp_path / "worker.ts"
+    target.write_text('// note\nimport "reflect-metadata";\n', encoding="utf-8")
+
+    result = runner.invoke(app, ["deps", str(tmp_path), "--why", "reflect-metadata", "--json"])
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert payload["package"] == "reflect-metadata"
+    assert len(payload["chains"]) == 1
+    assert pathlib.Path(payload["chains"][0]["files"][-1]).name == "worker.ts"
+    assert payload["chains"][0]["lineno"] == 2
