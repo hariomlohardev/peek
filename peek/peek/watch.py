@@ -14,6 +14,9 @@ WATCH_PATTERNS = (
     "*.go", "*.rs", "*.java",
     "*.toml", "*.json", "*.yaml", "*.yml",
     "*.md", "*.txt", "*.cfg", "*.ini",
+    # Issue #182: build files the scanner already recognizes but the
+    # polling fallback never snapshotted, so their edits went unnoticed.
+    "Dockerfile", "Dockerfile.*", "Makefile", "GNUmakefile",
 )
 
 
