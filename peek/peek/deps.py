@@ -15,8 +15,54 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _JS_IMPORT_RE = re.compile(
-    r"""(?:from|require\()\s*['"]([^'"]+)['"]""",
+    r"""(?<![\w$])(?:from|require\s*\(|import)\s*(['"])([^'"\r\n]+)\1""",
 )
+
+
+def _js_without_comments(text: str) -> tuple[str, str]:
+    """Mask JS comments without changing offsets or line breaks.
+
+    The second string masks quoted literals too, so an import-like phrase
+    inside a string is not counted. This is a static scan, not a JS parser:
+    regex literals and template interpolation are not interpreted.
+    """
+    visible = list(text)
+    code = list(text)
+    quote = None
+    escaped = False
+    i = 0
+    while i < len(text):
+        char = text[i]
+        next_char = text[i + 1] if i + 1 < len(text) else ""
+        if quote is not None:
+            code[i] = "\n" if char == "\n" else " "
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            i += 1
+            continue
+        if char in ("'", '"', "`"):
+            quote = char
+            code[i] = " "
+            i += 1
+            continue
+        if char == "/" and next_char in ("/", "*"):
+            line_comment = next_char == "/"
+            end = text.find("\n", i + 2) if line_comment else text.find("*/", i + 2)
+            if end == -1:
+                end = len(text)
+            elif not line_comment:
+                end += 2
+            for index in range(i, end):
+                if text[index] != "\n":
+                    visible[index] = code[index] = " "
+            i = end
+            continue
+        i += 1
+    return "".join(visible), "".join(code)
 
 
 @dataclass
@@ -79,11 +125,14 @@ def direct_importers(scan_result, package: str) -> dict[Path, int]:
                     found[file.path] = min(found.get(file.path, node.lineno), node.lineno)
             continue
 
-        for match in _JS_IMPORT_RE.finditer(text):
-            name = next((g for g in match.groups() if g), "")
+        visible, code = _js_without_comments(text)
+        for match in _JS_IMPORT_RE.finditer(visible):
+            if code[match.start()].isspace():
+                continue
+            name = match.group(2)
             if _top_level(name).lower() != wanted:
                 continue
-            lineno = text[: match.start()].count("\n") + 1
+            lineno = visible.count("\n", 0, match.start()) + 1
             # The first import is the one to show: a file importing the same
             # package twice does not have two reasons.
             found.setdefault(file.path, lineno)
