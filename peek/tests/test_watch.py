@@ -127,3 +127,78 @@ def test_watch_js_triggers(tmp_path):
     time.sleep(0.5)
     watcher.stop()
     assert len(calls) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Issue #182: the polling fallback must notice build files (Dockerfile,
+# Dockerfile.*, Makefile, GNUmakefile) that the scanner already recognizes.
+# These tests force the polling backend even when watchfiles is installed.
+
+
+def _polling_watcher(p, calls, monkeypatch):
+    import sys
+
+    from peek.watch import watch_repo
+
+    monkeypatch.setitem(sys.modules, "watchfiles", None)  # force the polling fallback
+    return watch_repo(p, lambda sr, ar: calls.append(1), debounce=0.1, poll_interval=0.1)
+
+
+def _wait_for_count(calls, n, timeout=2.0):
+    import time
+
+    deadline = time.monotonic() + timeout
+    while len(calls) < n and time.monotonic() < deadline:
+        time.sleep(0.02)
+    return len(calls)
+
+
+def test_watch_build_files_modify_polling(tmp_path, monkeypatch):
+    """Editing Dockerfile, Dockerfile.prod, Makefile and GNUmakefile each trigger on_change."""
+    p = tmp_path / "repo"
+    p.mkdir()
+    for name in ("Dockerfile", "Dockerfile.prod", "Makefile", "GNUmakefile"):
+        (p / name).write_text("# v1\n")
+    calls = []
+    watcher = _polling_watcher(p, calls, monkeypatch)
+    try:
+        time.sleep(0.3)
+        for name in ("Dockerfile", "Dockerfile.prod", "Makefile", "GNUmakefile"):
+            before = len(calls)
+            (p / name).write_text("# v2\n")
+            assert _wait_for_count(calls, before + 1) > before, (
+                f"no callback after editing {name}"
+            )
+    finally:
+        watcher.stop()
+
+
+def test_watch_build_file_created_polling(tmp_path, monkeypatch):
+    """A newly created Makefile triggers on_change in the polling fallback."""
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x=1\n")
+    calls = []
+    watcher = _polling_watcher(p, calls, monkeypatch)
+    try:
+        time.sleep(0.3)
+        (p / "Makefile").write_text("all:\n\ttrue\n")
+        assert _wait_for_count(calls, 1) >= 1
+    finally:
+        watcher.stop()
+
+
+def test_watch_build_file_deleted_polling(tmp_path, monkeypatch):
+    """Deleting a Dockerfile triggers on_change in the polling fallback."""
+    p = tmp_path / "repo"
+    p.mkdir()
+    (p / "a.py").write_text("x=1\n")
+    (p / "Dockerfile").write_text("FROM scratch\n")
+    calls = []
+    watcher = _polling_watcher(p, calls, monkeypatch)
+    try:
+        time.sleep(0.3)
+        (p / "Dockerfile").unlink()
+        assert _wait_for_count(calls, 1) >= 1
+    finally:
+        watcher.stop()
