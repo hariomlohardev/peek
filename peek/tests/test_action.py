@@ -1,8 +1,13 @@
 """Issues #30 (peek-action) + #81 (README GitHub Action example)."""
 
 import json
+import os
 import pathlib
+import shutil
+import subprocess
+import textwrap
 
+import pytest
 from typer.testing import CliRunner
 
 from peek.cli import app
@@ -24,6 +29,67 @@ def test_peek_example_workflow_posts_comment():
     assert "actions/github-script" in workflow
     assert "hariomlohardev/peek@v1" in workflow
     assert "start_here" in workflow or "start-here" in workflow
+    assert "PEEK_SUMMARY: ${{ steps.peek.outputs.summary }}" in workflow
+    assert "PEEK_START_HERE: ${{ steps.peek.outputs.start_here }}" in workflow
+    assert "if: github.event.pull_request.head.repo.full_name == github.repository" in workflow
+
+
+@pytest.mark.parametrize(
+    "summary,start_here",
+    [
+        ("", ""),
+        (
+            "Uses `peek`, 'quotes', \"double quotes\", and C:\\src\\app\nSecond line",
+            "1. ${process.exit(42)}\n2. `module` \\ path — 日本語",
+        ),
+    ],
+)
+def test_peek_comment_preserves_report_text(summary, start_here):
+    result = _run_comment_script(summary, start_here)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {
+        "owner": "example",
+        "repo": "repo",
+        "issue_number": 183,
+        "body": f"## peek map\n{summary}\n\n**Start Here**\n{start_here}",
+    }
+
+
+def test_peek_comment_propagates_api_failure():
+    result = _run_comment_script("summary", "start here", fail=True)
+    assert result.returncode != 0
+    assert "comment API failed" in result.stderr
+
+
+def _run_comment_script(summary, start_here, *, fail=False):
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is needed to execute the github-script regression check")
+    workflow = (ROOT / ".github" / "workflows" / "peek.yml").read_text(encoding="utf-8")
+    script = textwrap.dedent(workflow.split("script: |\n", 1)[1])
+    # Model Actions' expression substitution to reproduce the original bug too.
+    script = script.replace("${{ steps.peek.outputs.summary }}", summary)
+    script = script.replace("${{ steps.peek.outputs.start_here }}", start_here)
+    harness = """
+const context = {repo: {owner: 'example', repo: 'repo'}, issue: {number: 183}};
+const github = {rest: {issues: {createComment: async (comment) => {
+  if (process.env.FAIL_COMMENT === '1') throw new Error('comment API failed');
+  console.log(JSON.stringify(comment));
+}}}};
+"""
+    return subprocess.run(
+        [node, "--input-type=module", "-e", harness + script],
+        env={
+            **os.environ,
+            "PEEK_SUMMARY": summary,
+            "PEEK_START_HERE": start_here,
+            "FAIL_COMMENT": "1" if fail else "0",
+        },
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
 
 
 def test_action_parse_matches_analyze_json(tmp_path):
