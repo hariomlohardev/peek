@@ -101,3 +101,26 @@ def test_build_dot_empty_graph_is_valid_dot(tmp_path):
     dot = build_dot(ar)
     assert dot.startswith("digraph")
     assert dot.rstrip().endswith("}")
+
+
+def test_fallback_svg_escapes_xml_and_preserves_filenames(tmp_path, monkeypatch):
+    import pathlib
+    import subprocess
+    import xml.etree.ElementTree as ET
+
+    from peek.graph import build_svg
+
+    def _no_dot(*args, **kwargs):
+        raise FileNotFoundError("dot not found")
+
+    monkeypatch.setattr(subprocess, "check_output", _no_dot)
+
+    files = [tmp_path / "a&b.py", tmp_path / "c<d>.py"]
+    ar = _FakeAnalyzer({pathlib.Path(p): set() for p in files}, tmp_path)
+    svg = build_svg(ar)
+
+    root = ET.fromstring(svg)
+    text = "".join(root.itertext())
+    assert "a&b.py" in text
+    assert "c<d>.py" in text
+    assert len(text) <= 200  # fallback keeps existing size limit on DOT text
