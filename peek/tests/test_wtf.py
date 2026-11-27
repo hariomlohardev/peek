@@ -249,3 +249,42 @@ def test_cli_explains_message_free_exception(tmp_path, monkeypatch):
     assert "StopIteration" in result.output
     assert "No traceback" not in result.output
     assert "a.py:1" in result.output
+
+
+_SYNTAX_ERROR_TB = (
+    'Traceback (most recent call last):\n'
+    '  File "a.py", line 1, in <module>\n    import b\n'
+    '  File "b.py", line 3\n    def f(\n         ^\n'
+    "SyntaxError: '(' was never closed\n"
+)
+
+
+def test_parse_syntax_error_keeps_frame_without_function():
+    # The frame a SyntaxError points at has no ", in <func>" part.
+    from peek.wtf import parse_traceback
+    info = parse_traceback(_SYNTAX_ERROR_TB)
+    assert info is not None
+    assert [(f.filename, f.lineno, f.func) for f in info.frames] == [
+        ("a.py", 1, "<module>"),
+        ("b.py", 3, ""),
+    ]
+    assert info.frames[-1].code == "def f("
+    assert info.exc_type == "SyntaxError"
+    assert info.exc_msg == "'(' was never closed"
+
+
+def test_explain_syntax_error_lists_the_broken_file_first():
+    from peek.analyzer import analyze
+    from peek.scanner import scan
+    from peek.wtf import explain_tb, find_relevant_files, parse_traceback
+    info = parse_traceback(_SYNTAX_ERROR_TB)
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td).resolve()
+        (root / "a.py").write_text("import b\n")
+        (root / "b.py").write_text("x = 1\n")
+        sr = scan(root)
+        assert [p.name for p in find_relevant_files(info, sr)] == ["a.py", "b.py"]
+        out = explain_tb(info, sr, analyze(sr))
+    frame_lines = [line for line in out.splitlines() if line.startswith("- ")]
+    assert frame_lines[0] == "- `b.py:3` — `def f(`"
+    assert frame_lines[1].startswith("- `a.py:1` in `<module>`")
