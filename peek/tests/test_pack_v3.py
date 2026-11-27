@@ -182,6 +182,45 @@ def test_pack_diff_filters_changed(tmp_path, monkeypatch):
         os.chdir(old)
 
 
+def test_pack_diff_from_subdirectory(tmp_path):
+    """--diff/--staged still match when the scan root is a subdirectory of the git repo."""
+    import shutil
+    import subprocess
+
+    import pytest
+
+    from peek.analyzer import analyze
+    from peek.pack import build_pack
+    from peek.scanner import scan
+
+    if shutil.which("git") is None:
+        pytest.skip("git not available")
+
+    def git(*args):
+        subprocess.check_call(["git", *args], cwd=str(tmp_path), stdout=subprocess.DEVNULL)
+
+    git("init")
+    git("config", "user.email", "test@test.com")
+    git("config", "user.name", "test")
+    (tmp_path / "sub").mkdir()
+    (tmp_path / "other").mkdir()
+    (tmp_path / "sub" / "a.py").write_text("a=1\n")
+    (tmp_path / "sub" / "b.py").write_text("b=1\n")
+    (tmp_path / "other" / "c.py").write_text("c=1\n")
+    git("add", ".")
+    git("commit", "-m", "init")
+    (tmp_path / "sub" / "a.py").write_text("a=2\n")
+    (tmp_path / "other" / "c.py").write_text("c=2\n")
+
+    sr = scan(tmp_path / "sub")
+    _, files, _ = build_pack(sr, analyze(sr), diff="HEAD")
+    assert [f.name for f in files] == ["a.py"]
+
+    git("add", "sub/a.py")
+    _, staged_files, _ = build_pack(sr, analyze(sr), staged=True)
+    assert [f.name for f in staged_files] == ["a.py"]
+
+
 def test_pack_url_fetch(monkeypatch):
     """URL fetch via --ask https:// handles mocked fetch."""
     import io

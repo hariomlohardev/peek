@@ -86,30 +86,32 @@ def _get_diff_files(root: Path, diff, staged: bool) -> set[str] | None:
         # Check if .git exists or git repo
         # We still try, let git error return None
         if staged:
-            cmd = ["git", "diff", "--staged", "--name-only"]
+            cmd = ["git", "diff", "--relative", "--staged", "--name-only"]
         else:
             if diff is None and not staged:
                 return None
             # diff handling
             if diff is True:
-                cmd = ["git", "diff", "--name-only", "HEAD"]
+                cmd = ["git", "diff", "--relative", "--name-only", "HEAD"]
             elif isinstance(diff, bool) and diff is False:
                 # diff=False means no diff filter
                 return None
             elif isinstance(diff, str):
                 d = diff.strip()
                 if not d:
-                    cmd = ["git", "diff", "--name-only"]
+                    cmd = ["git", "diff", "--relative", "--name-only"]
                 elif d.lower() == "true":
-                    cmd = ["git", "diff", "--name-only", "HEAD"]
+                    cmd = ["git", "diff", "--relative", "--name-only", "HEAD"]
                 elif d.lower() == "false":
                     return None
                 else:
-                    cmd = ["git", "diff", "--name-only", d]
+                    cmd = ["git", "diff", "--relative", "--name-only", d]
             else:
                 # unknown diff type, treat as HEAD
-                cmd = ["git", "diff", "--name-only", "HEAD"]
-        # Run git diff
+                cmd = ["git", "diff", "--relative", "--name-only", "HEAD"]
+        # --relative: git prints paths from the repository top level by default,
+        # but the caller compares them with paths relative to the scan root,
+        # which may be a subdirectory of the repository.
         out = subprocess.check_output(cmd, cwd=str(root), text=True, stderr=subprocess.DEVNULL, timeout=6)
         changed: set[str] = set()
         for line in out.splitlines():
