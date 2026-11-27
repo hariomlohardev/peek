@@ -17,7 +17,9 @@ class TracebackInfo:
     exc_msg: str
     raw: str
 
-_TB_RE = re.compile(r'File "([^"]+)", line (\d+), in (\S+)')
+# ", in <func>" is optional: the frame a SyntaxError points at has no function,
+# and it is the frame that names the file to fix.
+_TB_RE = re.compile(r'File "([^"]+)", line (\d+)(?:, in (\S+))?')
 _EXC_RE = re.compile(r"^([^\W\d]\w*(?:\.[^\W\d]\w*)*)(?::[ \t]*(.*))?$")
 
 def parse_traceback(text: str) -> TracebackInfo | None:
@@ -29,7 +31,7 @@ def parse_traceback(text: str) -> TracebackInfo | None:
         # next line after match is code
         after = text[m.end():].splitlines()
         code = after[1].strip() if len(after) > 1 else ""
-        frames.append(Frame(fn, int(ln), func, code))
+        frames.append(Frame(fn, int(ln), func or "", code))
     if not frames:
         return None
     # Search after the final frame without stripping source indentation.
@@ -62,7 +64,8 @@ def find_relevant_files(info: TracebackInfo, scan_result) -> list[Path]:
 def explain_tb(info: TracebackInfo, scan_result, analyzer_result) -> str:
     lines = [f"## {info.exc_type}: {info.exc_msg}", "", "Traceback (most relevant first):"]
     for fr in reversed(info.frames):
-        lines.append(f"- `{fr.filename}:{fr.lineno}` in `{fr.func}`" + (f" — `{fr.code}`" if fr.code else ""))
+        where = f" in `{fr.func}`" if fr.func else ""
+        lines.append(f"- `{fr.filename}:{fr.lineno}`{where}" + (f" — `{fr.code}`" if fr.code else ""))
     # heuristic: if file in Start Here ranked, add hint
     try:
         ranked = {r.rel.as_posix() for r in analyzer_result.ranked[:5]}
