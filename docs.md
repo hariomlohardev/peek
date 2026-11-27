@@ -343,7 +343,7 @@ or declarations can be analyzed.
 | JavaScript / TypeScript (`.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`) | Extension-based; non-blank lines | Regex-based `import` / `require`, resolving relative paths | Regex-based named exports; currently recorded as `def` symbols | Not supported |
 | Go (`.go`) | Extension-based; non-blank lines | Regex-based imports with local package resolution, including `go.mod` module paths | Regex-based functions, methods, structs and interfaces | Not supported |
 | Rust (`.rs`) | Extension-based; non-blank lines | Not supported | Regex-based functions, types and modules | Not supported |
-| Java (`.java`) | Extension-based; non-blank lines | Not supported | Regex-based types, modified methods and constructors | Not supported |
+| Java (`.java`) | Extension-based; non-blank lines | Regex-based `import` statements resolved by `package` and class name, plus classes of the same package that the file names | Regex-based types, modified methods and constructors | Not supported |
 | Other detected languages (for example C/C++, C#, Ruby, PHP, Swift, Kotlin and shell) | Extension-based; non-blank lines | Not supported | Not supported | Not supported |
 | Unrecognized extensions | Classified as `other`; non-blank lines where readable | Not supported | Not supported | Not supported |
 

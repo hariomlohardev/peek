@@ -19,6 +19,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from peek._java_graph import add_java_edges
 from peek.scanner import ScanResult, FileInfo
 
 # ---------------------------------------------------------------------------
@@ -329,6 +330,7 @@ def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]
             graph[f.path] = set()
         elif f.language == "go" and f.path.suffix.lower() == ".go":
             graph[f.path] = set()
+    add_java_edges(files, graph)
 
     external: set[str] = set()
 
