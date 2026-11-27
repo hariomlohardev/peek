@@ -239,6 +239,10 @@ Commands:
   find <query> [PATH]    Find by filename + content, ranked
     --limit 20 --json --max-files
 
+  cycles [PATH]          List import cycles (files that import each other)
+    --fail               Exit 1 when a cycle is found (CI gate)
+    --json --limit 20
+
   wtf [FILE]             Explain traceback (file or stdin pipe) — scan-aware hint
     --explain/--no-explain  Heuristic explain (default on)
 
@@ -418,6 +422,23 @@ peek graph --format html -o graph.html
 ```
 
 > See `peek/tests/test_graph.py`.
+
+### Cycles
+
+`peek cycles [PATH]` lists import cycles in the same graph: groups of files that import each other, directly or through other files.
+
+```bash
+peek cycles                 # 1. peek/config.py -> peek/themes.py -> peek/config.py
+peek cycles src/ --fail     # exit 1 if any cycle exists, for CI
+peek cycles . --json        # {"count": 1, "cycles": [{"files": [...], "loop": [...]}]}
+```
+
+- Files tangled in several overlapping loops are reported as one group, with one shortest loop as the example and `(+N more in this group)`; `--json` lists every file.
+- Every import statement counts, including one inside a function or an `if TYPE_CHECKING:` block.
+- A file importing the module that contains it (`pkg/a.py` -> `pkg/__init__.py`) is not counted: loading a module always loads its parent packages first.
+- Exit code is `0` unless `--fail` is given and a cycle exists.
+
+> See `peek/tests/test_cycles.py`.
 
 ---
 
