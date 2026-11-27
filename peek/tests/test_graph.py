@@ -94,6 +94,17 @@ def test_build_dot_keeps_edges_and_declares_mixed_nodes(tmp_path):
     assert '"b.py" ->' not in dot  # destinations are not re-declared as sources
 
 
+def test_build_dot_edges_are_sorted(tmp_path):
+    """Edge order must not depend on set iteration order (PYTHONHASHSEED)."""
+    from peek.graph import build_dot
+
+    src = tmp_path / "main.py"
+    targets = [tmp_path / f"mod_{i:02d}.py" for i in range(12)]
+    ar = _FakeAnalyzer({src: set(targets)}, tmp_path)
+    edges = [line.strip() for line in build_dot(ar).splitlines() if "->" in line]
+    assert edges == [f'"main.py" -> "mod_{i:02d}.py";' for i in range(12)]
+
+
 def test_build_dot_empty_graph_is_valid_dot(tmp_path):
     from peek.graph import build_dot
 

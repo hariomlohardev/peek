@@ -16,7 +16,8 @@ def build_dot(ar) -> str:
             s = src.name
         lines.append(f'  "{s}";')
     for src in nodes:
-        for dst in ar.graph.get(src, set()):
+        # Sorted: a set of Paths iterates in hash order, which changes from run to run.
+        for dst in sorted(ar.graph.get(src, set()), key=lambda p: p.as_posix()):
             try:
                 s = src.relative_to(ar.root).as_posix()
             except ValueError:
