@@ -342,7 +342,7 @@ or declarations can be analyzed.
 | Python (`.py`, `.pyi`) | Extension-based; non-blank, non-comment lines | AST-based imports with local module resolution | AST-based functions, async functions and classes | Python-only static call graph |
 | JavaScript / TypeScript (`.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`) | Extension-based; non-blank lines | Regex-based `import` / `require`, resolving relative paths | Regex-based named exports; currently recorded as `def` symbols | Not supported |
 | Go (`.go`) | Extension-based; non-blank lines | Regex-based imports with local package resolution, including `go.mod` module paths | Regex-based functions, methods, structs and interfaces | Not supported |
-| Rust (`.rs`) | Extension-based; non-blank lines | Not supported | Regex-based functions, types and modules | Not supported |
+| Rust (`.rs`) | Extension-based; non-blank lines | Regex-based `mod` declarations and `use` paths (`crate::`, `super::`, `self::`, and workspace crates by `Cargo.toml` package name) | Regex-based functions, types and modules | Not supported |
 | Java (`.java`) | Extension-based; non-blank lines | Not supported | Regex-based types, modified methods and constructors | Not supported |
 | Other detected languages (for example C/C++, C#, Ruby, PHP, Swift, Kotlin and shell) | Extension-based; non-blank lines | Not supported | Not supported | Not supported |
 | Unrecognized extensions | Classified as `other`; non-blank lines where readable | Not supported | Not supported | Not supported |

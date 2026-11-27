@@ -19,6 +19,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from peek._rust_graph import add_rust_edges
 from peek.scanner import ScanResult, FileInfo
 
 # ---------------------------------------------------------------------------
@@ -440,6 +441,7 @@ def build_graph(files: list[FileInfo], root: Path) -> tuple[dict[Path, set[Path]
                         graph[node].add(target)
             except Exception:
                 continue
+    add_rust_edges(files, root, graph)
     return graph, external, index
 
 
