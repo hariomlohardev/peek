@@ -129,7 +129,7 @@ class _PeekGroup(TyperGroup):
         if any(a in ("--help", "-h", "--version", "-V") for a in args):
             if args:
                 first = args[0]
-                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit"}
+                known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit", "cycles"}
                 if first not in known and not first.startswith("-"):
                     args = args[1:]
             return super().parse_args(ctx, args)
@@ -139,7 +139,7 @@ class _PeekGroup(TyperGroup):
         rest = _click.Command.parse_args(self, ctx, args)
         if rest:
             first = rest[0]
-            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit"}
+            known = {"scan", "analyze", "find", "watch", "wtf", "config", "graph", "index", "mcp", "log", "diff", "hot", "blame", "git", "trace", "serve", "deps", "ship", "commit", "cycles"}
             is_option = first.startswith("-")
             is_known_cmd = first in known
             # Options like --help, --theme, --no-tui etc. should not be treated as subcommand
@@ -1054,6 +1054,55 @@ def deps_command(
     # Not an error: "nothing imports it" is a useful answer, and a non-zero exit
     # would make a shell pipeline treat it as a failed command.
     raise typer.Exit(0)
+
+
+@app.command("cycles")
+def cycles_command(
+    path: Path = typer.Argument(Path("."), help="Repo path (default: current dir)."),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON instead of text."),
+    fail: bool = typer.Option(False, "--fail", help="Exit 1 when a cycle is found (for CI)."),
+    limit: int = typer.Option(20, "--limit", "-n", help="Max cycles to show."),
+) -> None:
+    """List import cycles: files that import each other, directly or through others.
+
+    \b
+    Examples:
+        peek cycles
+        peek cycles src/ --fail
+        peek cycles . --json
+    """
+    from peek.cycles import find_cycles, render
+
+    root = path.resolve() if path.exists() else Path.cwd() / path
+    if root.is_file():
+        root = root.parent
+    scan_result = scan(root)
+    analyzer_result = analyze(scan_result)
+    cycles = find_cycles(analyzer_result.graph)
+
+    def rel(p: Path) -> str:
+        try:
+            return p.relative_to(analyzer_result.root).as_posix()
+        except ValueError:
+            return p.name
+
+    if json_output:
+        payload = {
+            "root": str(analyzer_result.root),
+            "count": len(cycles),
+            "cycles": [
+                {"files": [rel(f) for f in c.files], "loop": [rel(f) for f in c.loop]}
+                for c in cycles
+            ],
+        }
+        console.print_json(data=payload)
+    else:
+        for line in render(cycles, analyzer_result.root, limit=limit):
+            # soft_wrap: one cycle per line however long, so the output can be grepped.
+            console.print(line, markup=False, highlight=False, soft_wrap=True)
+    # Finding a cycle is an answer, not a failure, unless the caller asked for
+    # a check: `--fail` is what makes this usable as a CI gate.
+    raise typer.Exit(1 if cycles and fail else 0)
 
 
 @app.command("watch")
